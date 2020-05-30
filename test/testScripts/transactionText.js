@@ -1,14 +1,14 @@
 require('dotenv').config()
-const BramblJS = require('../index')
+const BramblJS = require('../../index')
 
 const brambl = new BramblJS({
-    // Requests: {
-    //     url: 'https://valhalla.torus.topl.co:9585/',
-    //     apiKey: process.env.VALHALLA_KEY
-    // },
+    Requests: {
+        url: 'https://valhalla.torus.topl.co/',
+        apiKey: process.env.VALHALLA_KEY
+    },
     KeyManager: {
-        password: 'genesis',
-        keyPath: './keystore/itGuy.json'
+        password: 'genesis_billyBob',
+        //keyPath: './keystore/itGuy.json'
     }
 })
 

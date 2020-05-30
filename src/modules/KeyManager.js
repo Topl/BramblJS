@@ -306,7 +306,7 @@ class KeyManager {
     //// Instance constructor //////////////////////////////////////////////////////////////////////////////////////////////
     constructor(params) {
         // enforce that a password must be provided
-        if (!params.password && params.constructor !== String) throw new Error('A password must be provided at initialization')
+        if (params.constructor !== String && !params.password) throw new Error('A password must be provided at initialization')
 
         // Initialize a key manager object with a key storage object
         const initKeyStorage = (keyStorage, password) => {
@@ -425,9 +425,9 @@ class KeyManager {
     exportToFile(_keyPath) {
         const keyPath = _keyPath || "keyfiles";
 
-        outfile = generateKeystoreFilename(this.pk);
-        json = JSON.stringify(this.getKeyStorage());
-        outpath = path.join(keyPath, outfile);
+        const outfile = generateKeystoreFilename(this.pk);
+        const json = JSON.stringify(this.getKeyStorage());
+        const outpath = path.join(keyPath, outfile);
 
         fs.writeFileSync(outpath, json);
         return outpath;
