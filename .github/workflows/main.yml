@@ -18,7 +18,7 @@ jobs:
           source_dir: ./src
           output_dir: ./docs
           recurse: true
-          template_name: minami
+          template: minami
           front_page: ./README.md
 
       - name: Deploy
@@ -26,3 +26,4 @@ jobs:
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           publish_dir: ./docs
+          cname: brambljs.docs.topl.co

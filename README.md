@@ -38,7 +38,7 @@ Transactions may be issued using the method `brambl.transaction` following insta
 After issuance, the `pollTx` method may be used to begin polling the chain provider to determine the status of the newly issued transaction.
 
 ## Requests
-The `Requests` module is compliant with Bifrost's JSON-RPC interface documented at https://brambllayer.docs.topl.co <br/>
+The `Requests` module is compliant with Bifrost's JSON-RPC interface documented at https://topl-rpc.docs.topl.co <br/>
 A new JSON-RPC interface class may be instantiated by <br/>
 ```
 const requests = BramblJS.Requests()
