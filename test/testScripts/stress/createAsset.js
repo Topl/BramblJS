@@ -1,17 +1,17 @@
 require('dotenv').config()
-const BramblJS = require('../../index')
+const BramblJS = require('../../../index')
 
 const brambl = new BramblJS({
     Requests: {
-        url: 'https://valhalla.torus.topl.co/',
-        apiKey: process.env.VALHALLA_KEY
+        // url: 'https://valhalla.torus.topl.co/',
+        // apiKey: process.env.VALHALLA_KEY
     },
     KeyManager: {
         password: 'newKey'
     }
 })
 
-const arr = Array(1000).fill().map((x, i) => i);
+const arr = Array(100).fill().map((x, i) => i);
 
 const createParams = arr.map(x => {
     return {

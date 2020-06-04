@@ -1,5 +1,5 @@
 require('dotenv').config()
-const BramblJS = require('../index')
+const BramblJS = require('../../index')
 
 const brambl = new BramblJS({
     // Requests: {
@@ -8,7 +8,7 @@ const brambl = new BramblJS({
     // },
     KeyManager: {
         password: 'genesis',
-        keyPath: './keystore/itGuy.json'
+        // keyPath: './keystore/itGuy.json'
     }
 })
 
@@ -20,4 +20,8 @@ const createParams = {
     fee: 0
 };
 
-brambl.transaction('createAssetsPrototype', createParams).then(console.log)
+const int = setInterval(() => { brambl.transaction('createAssetsPrototype', createParams).then(console.log)}, 500)
+setTimeout(()=>{
+    console.log("clearing generator")
+    clearInterval(int)
+}, 60000)
