@@ -2,12 +2,12 @@ require('dotenv').config()
 const BramblJS = require('../../index')
 
 const brambl = new BramblJS({
-    Requests: {
-        url: 'https://valhalla.torus.topl.co/',
-        apiKey: process.env.VALHALLA_KEY
-    },
+    // Requests: {
+    //     url: 'https://valhalla.torus.topl.co/',
+    //     apiKey: process.env.VALHALLA_KEY
+    // },
     KeyManager: {
-        password: 'genesis',
+        password: 'password',
         // keyPath: './keystore/itGuy.json'
     }
 })
@@ -20,8 +20,4 @@ const createParams = {
     fee: 0
 };
 
-const int = setInterval(() => { brambl.transaction('createAssetsPrototype', createParams).then(console.log)}, 500)
-setTimeout(()=>{
-    console.log("clearing generator")
-    clearInterval(int)
-}, 60000)
+brambl.transaction('createAssetsPrototype', createParams).then(console.log).catch(e => console.error(e))
