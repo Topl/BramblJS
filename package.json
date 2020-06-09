@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/it"
+    "test": "mocha test/it",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
   },
   "author": "topl",
