@@ -1,41 +1,41 @@
-("use strict")
+('use strict');
 // Dependencies
-const Base58 = require("base-58")
-import blake from "blake2"
-import fs from "fs";
-import HashType from "../types/HashTypes";
+const Base58 = require('base-58');
+import blake from 'blake2';
+import fs from 'fs';
+import HashType from '../types/HashTypes';
 
 // Based on JCS spec
 // https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme-17
-let JSONCanonify = require("canonicalize");
+const JSONCanonify = require('canonicalize');
 
 /**
  * standard FastCryptographicHash in Bifrost
- * @returns Initialized hash function 
+ * @returns Initialized hash function
  */
 function hashFunc() {
-    return blake.createHash("blake2b", { digestLength: 32 })
+    return blake.createHash('blake2b', { digestLength: 32 });
 }
 
 /**
  * Create hash digest and encode
  *
- * @param {object} hash Hash object 
+ * @param {object} hash Hash object
  * @param {string} [encoding] Desired output encoding. May be one of `hex`, `base64`, or `base58`. If none provided a `Buffer` is returned
  * @returns Blake2b-256 hash digest
  */
-function digestAndEncode(hash:HashType, encoding:string) {
-    hash.end()
+function digestAndEncode(hash: HashType, encoding: string) {
+    hash.end();
     switch (encoding) {
-        case "hex":
-        case "base64":
-            return hash.read().toString(encoding)
+        case 'hex':
+        case 'base64':
+            return hash.read().toString(encoding);
 
-        case "base58":
-            return Base58.encode(hash.read())
+        case 'base58':
+            return Base58.encode(hash.read());
 
         default:
-            return hash.read()
+            return hash.read();
     }
 }
 
@@ -51,10 +51,10 @@ class Hash {
      * @param {string} encoding output encoding
      * @returns Blake2b-256 hash digest
      */
-    static any(message:any, encoding:string) {
-        const msg = Buffer.from(JSONCanonify(message))
-        const hash = hashFunc().update(msg)
-        return digestAndEncode(hash, encoding)
+    static any(message: any, encoding: string) {
+        const msg = Buffer.from(JSONCanonify(message));
+        const hash = hashFunc().update(msg);
+        return digestAndEncode(hash, encoding);
     }
 
     /**
@@ -64,10 +64,10 @@ class Hash {
      * @param {string} encoding output encoding
      * @returns Blake2b-256 hash digest
      */
-    static string(message:string, encoding:string) {
-        const msg = Buffer.from(message)
-        const hash = hashFunc().update(msg)
-        return digestAndEncode(hash, encoding)
+    static string(message: string, encoding: string) {
+        const msg = Buffer.from(message);
+        const hash = hashFunc().update(msg);
+        return digestAndEncode(hash, encoding);
     }
 
     /**
@@ -77,17 +77,17 @@ class Hash {
      * @param {string} encoding output encoding
      * @returns Blake2b-256 hash digest
      */
-    static file(filePath:string, encoding:string) {
+    static file(filePath: string, encoding: string) {
         return new Promise((resolve, reject) =>
             fs
                 .createReadStream(filePath)
-                .on("error", reject)
+                .on('error', reject)
                 .pipe(hashFunc())
-                .once("finish", function(this: any){
+                .once('finish', function (this: any) {
                     resolve(digestAndEncode(this, encoding));
-                })
+                }),
         );
-    };
+    }
 }
 
-export default Hash
+export default Hash;

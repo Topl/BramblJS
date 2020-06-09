@@ -1,22 +1,24 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-("use strict");
+'use strict';
+var __importDefault =
+    (this && this.__importDefault) ||
+    function (mod) {
+        return mod && mod.__esModule ? mod : { default: mod };
+    };
+Object.defineProperty(exports, '__esModule', { value: true });
+('use strict');
 // Dependencies
-const Base58 = require("base-58");
-const blake2_1 = __importDefault(require("blake2"));
-const fs_1 = __importDefault(require("fs"));
+const Base58 = require('base-58');
+const blake2_1 = __importDefault(require('blake2'));
+const fs_1 = __importDefault(require('fs'));
 // Based on JCS spec
 // https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme-17
-let JSONCanonify = require("canonicalize");
+let JSONCanonify = require('canonicalize');
 /**
  * standard FastCryptographicHash in Bifrost
  * @returns Initialized hash function
  */
 function hashFunc() {
-    return blake2_1.default.createHash("blake2b", { digestLength: 32 });
+    return blake2_1.default.createHash('blake2b', { digestLength: 32 });
 }
 /**
  * Create hash digest and encode
@@ -28,10 +30,10 @@ function hashFunc() {
 function digestAndEncode(hash, encoding) {
     hash.end();
     switch (encoding) {
-        case "hex":
-        case "base64":
+        case 'hex':
+        case 'base64':
             return hash.read().toString(encoding);
-        case "base58":
+        case 'base58':
             return Base58.encode(hash.read());
         default:
             return hash.read();
@@ -74,14 +76,15 @@ class Hash {
      * @returns Blake2b-256 hash digest
      */
     static file(filePath, encoding) {
-        return new Promise((resolve, reject) => fs_1.default
-            .createReadStream(filePath)
-            .on("error", reject)
-            .pipe(hashFunc())
-            .once("finish", function () {
-            resolve(digestAndEncode(this, encoding));
-        }));
+        return new Promise((resolve, reject) =>
+            fs_1.default
+                .createReadStream(filePath)
+                .on('error', reject)
+                .pipe(hashFunc())
+                .once('finish', function () {
+                    resolve(digestAndEncode(this, encoding));
+                }),
+        );
     }
-    ;
 }
 exports.default = Hash;

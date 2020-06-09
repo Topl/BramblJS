@@ -1,16 +1,16 @@
-const KeyMan = require('../../dist/modules/KeyManager'); 
-const b58 = require('base-58')
+const KeyMan = require('../../dist/modules/KeyManager');
+const b58 = require('base-58');
 
-gjal = new KeyMan("password"); 
- 
-h = gjal.getKeyStorage()
-console.log(h)
+gjal = new KeyMan('password');
 
-sig = gjal.sign('this is a msg', Buffer.from)
-console.log(sig)
+h = gjal.getKeyStorage();
+console.log(h);
 
-ver = KeyMan.verify(h.publicKeyId, 'this is a msg', sig)
-console.log(ver)
+sig = gjal.sign('this is a msg', Buffer.from);
+console.log(sig);
+
+ver = KeyMan.verify(h.publicKeyId, 'this is a msg', sig);
+console.log(ver);
 
 // gjal.exportToFile('keystore/')
 
@@ -34,7 +34,7 @@ console.log(ver)
 // /////////////////////////
 // try {
 //     gjam = new KeyMan({
-//         password: 'yet_another_password', 
+//         password: 'yet_another_password',
 //         keyPath: outKey
 //     })
 // console.log(gjam.getKeyStorage())

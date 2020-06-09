@@ -1,9 +1,9 @@
-export interface pollingRequests{
-    getTransactionById:Function
-    getTransactionFromMempool:Function
+export interface pollingRequests {
+    getTransactionById: Function;
+    getTransactionFromMempool: Function;
 }
-export interface pollingOptions{
-    timeout:number
-    maxFailedQueries:number
-    interval:number
+export interface pollingOptions {
+    timeout: number;
+    maxFailedQueries: number;
+    interval: number;
 }

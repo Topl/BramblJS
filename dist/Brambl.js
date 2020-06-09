@@ -1,36 +1,56 @@
-"use strict";
+'use strict';
 /**
  * @author James Aman (j.aman@topl.me)
  * @version 3.0.0
  * @date 2020.4.03
  **/
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __awaiter =
+    (this && this.__awaiter) ||
+    function (thisArg, _arguments, P, generator) {
+        function adopt(value) {
+            return value instanceof P
+                ? value
+                : new P(function (resolve) {
+                      resolve(value);
+                  });
+        }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
+                try {
+                    step(generator.next(value));
+                } catch (e) {
+                    reject(e);
+                }
+            }
+            function rejected(value) {
+                try {
+                    step(generator['throw'](value));
+                } catch (e) {
+                    reject(e);
+                }
+            }
+            function step(result) {
+                result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+            }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    };
+var __importDefault =
+    (this && this.__importDefault) ||
+    function (mod) {
+        return mod && mod.__esModule ? mod : { default: mod };
+    };
 // Dependencies
 const base58 = require('base-58');
 // Primary sub-modules
-const Requests_1 = __importDefault(require("./modules/Requests"));
-const KeyManager_1 = __importDefault(require("./modules/KeyManager"));
+const Requests_1 = __importDefault(require('./modules/Requests'));
+const KeyManager_1 = __importDefault(require('./modules/KeyManager'));
 // Utilities
-const Hash_1 = __importDefault(require("./utils/Hash"));
+const Hash_1 = __importDefault(require('./utils/Hash'));
 // Libraries
-const polling_1 = __importDefault(require("./lib/polling"));
+const polling_1 = __importDefault(require('./lib/polling'));
 // Constants definitions
-const validTxMethods = [
-    'createAssetsPrototype',
-    'transferAssetsPrototype',
-    'transferTargetAssetsPrototype'
-];
+const validTxMethods = ['createAssetsPrototype', 'transferAssetsPrototype', 'transferTargetAssetsPrototype'];
 /**
  * @class Creates an instance of Brambl for interacting with the Topl protocol
  * @requires KeyManager
@@ -62,28 +82,26 @@ class Brambl {
         const requestsVar = params.Requests || emptyKeyMan;
         // if only a string is given in the constructor, assume it is the password.
         // Therefore, target a local chain provider and make a new key
-        if (params.constructor === String)
-            keyManagerVar.password = params;
+        if (params.constructor === String) keyManagerVar.password = params;
         // Setup reqeusts object
         if (requestsVar.instance) {
             this.requests = requestsVar.instance;
-        }
-        else if (requestsVar.url) {
+        } else if (requestsVar.url) {
             this.requests = new Requests_1.default(requestsVar.url, requestsVar.apiKey);
-        }
-        else {
+        } else {
             this.requests = new Requests_1.default();
         }
         // Setup KeyManager object
-        if (!keyManagerVar.password)
-            throw new Error('An encryption password is required to open a keyfile');
+        if (!keyManagerVar.password) throw new Error('An encryption password is required to open a keyfile');
         if (keyManagerVar.instance) {
             this.keyManager = keyManagerVar.instance;
-        }
-        else if (keyManagerVar.keyPath) {
-            this.keyManager = new KeyManager_1.default({ password: keyManagerVar.password, keyPath: keyManagerVar.keyPath, constants: keyManagerVar.constants });
-        }
-        else {
+        } else if (keyManagerVar.keyPath) {
+            this.keyManager = new KeyManager_1.default({
+                password: keyManagerVar.password,
+                keyPath: keyManagerVar.keyPath,
+                constants: keyManagerVar.constants,
+            });
+        } else {
             this.keyManager = new KeyManager_1.default(keyManagerVar.password);
         }
         // Import utilities
@@ -135,40 +153,44 @@ Brambl.prototype.addSigToTx = function (prototypeTx, userKeys) {
         // in case a single given is given not as an array
         const keys = Array.isArray(userKeys) ? userKeys : [userKeys];
         // add signatures of all given key files to the formatted transaction
-        return Object.assign(Object.assign({}, prototypeTx.formattedTx), { signatures: genSig(keys, base58.decode(prototypeTx.messageToSign)) });
+        return Object.assign(Object.assign({}, prototypeTx.formattedTx), {
+            signatures: genSig(keys, base58.decode(prototypeTx.messageToSign)),
+        });
     });
 };
 Brambl.prototype.signAndBroadcast = function (prototypeTx) {
     return __awaiter(this, void 0, void 0, function* () {
         const formattedTx = yield this.addSigToTx(prototypeTx, this.keyManager);
-        return this.requests.broadcastTx({ tx: formattedTx }).catch((e) => { console.error(e); throw e; });
+        return this.requests.broadcastTx({ tx: formattedTx }).catch((e) => {
+            console.error(e);
+            throw e;
+        });
     });
 };
 /**
  * Create a new transaction, then sign and broadcast
  *
  * @param {string} method The chain resource method to create a transaction for
-*/
+ */
 Brambl.prototype.transaction = function (method, params) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!validTxMethods.includes(method))
-            throw new Error('Invalid transaction method');
+        if (!validTxMethods.includes(method)) throw new Error('Invalid transaction method');
         return this.requests[method](params).then((res) => this.signAndBroadcast(res.result));
     });
 };
 /**
-* A function to initiate polling of the chain provider for a specified transaction.
-* This function begins by querying 'getTransactionById' which looks for confirmed transactions only.
-* If the transaction is not confirmed, the mempool is checked using 'getTransactionFromMemPool' to
-* ensure that the transaction is pending. The parameter 'numFailedQueries' specifies the number of consecutive
-* failures (when resorting to querying the mempool) before ending the polling operation prematurely.
-*
-* @param {string} txId The unique transaction ID to look for
-* @param {object} [options] Optional parameters to control the polling behavior
-* @param {number} [options.timeout] The timeout (in seconds) before the polling operation is stopped
-* @param {number} [options.interval] The interval (in seconds) between attempts
-* @param {number} [options.maxFailedQueries] The maximum number of consecutive failures (to find the unconfirmed transaction) before ending the poll execution
-*/
+ * A function to initiate polling of the chain provider for a specified transaction.
+ * This function begins by querying 'getTransactionById' which looks for confirmed transactions only.
+ * If the transaction is not confirmed, the mempool is checked using 'getTransactionFromMemPool' to
+ * ensure that the transaction is pending. The parameter 'numFailedQueries' specifies the number of consecutive
+ * failures (when resorting to querying the mempool) before ending the polling operation prematurely.
+ *
+ * @param {string} txId The unique transaction ID to look for
+ * @param {object} [options] Optional parameters to control the polling behavior
+ * @param {number} [options.timeout] The timeout (in seconds) before the polling operation is stopped
+ * @param {number} [options.interval] The interval (in seconds) between attempts
+ * @param {number} [options.maxFailedQueries] The maximum number of consecutive failures (to find the unconfirmed transaction) before ending the poll execution
+ */
 Brambl.prototype.pollTx = function (txId, options) {
     return __awaiter(this, void 0, void 0, function* () {
         const opts = options || { timeout: 90, interval: 3, maxFailedQueries: 10 };
