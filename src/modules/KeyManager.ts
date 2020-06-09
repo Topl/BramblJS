@@ -7,16 +7,14 @@
  * https://github.com/Ethereumjs/keythereum
  */
 
-('use strict');
-
 // Dependencies
-const fs = require('fs');
+import fs from 'fs';
 import path from 'path';
 import blake from 'blake2';
 import crypto from 'crypto';
-const Base58 = require('base-58');
+import Base58 from 'base-58';
 import keccakHash from 'keccak';
-const curve25519 = require('curve25519-js');
+import curve25519 from 'curve25519-js';
 import { paramsCreate, KdfParams, KeyObject, Options, KeyStorage, ConstructorParams } from '../types/KeyManagerTypes';
 
 // Default options for key generation as of 2020.01.25
@@ -55,8 +53,7 @@ function isFunction(f: Function | undefined) {
  * @param {string=} enc Encoding of the input string (optional).
  * @return {Buffer} Buffer (bytearray) containing the input data.
  */
-function str2buf(str: any, enc?: any) {
-    if (!str || str.constructor !== String) return str;
+function str2buf(str: string, enc?: 'utf8' | 'hex' | 'base64'): Buffer {
     return enc ? Buffer.from(str, enc) : Buffer.from(Base58.decode(str));
 }
 
@@ -65,21 +62,21 @@ function str2buf(str: any, enc?: any) {
  * @param {string} algo Encryption algorithm.
  * @return {boolean} If available true, otherwise false.
  */
-function isCipherAvailable(cipher: string) {
-    return crypto.getCiphers().some(function (name) {
+function isCipherAvailable(cipher: string): boolean {
+    return crypto.getCiphers().some((name) => {
         return name === cipher;
     });
 }
 
 /**
  * Symmetric private key encryption using secret (derived) key.
- * @param {Buffer|string} plaintext Data to be encrypted.
- * @param {Buffer|string} key Secret key.
- * @param {Buffer|string} iv Initialization vector.
+ * @param {string} plaintext Data to be encrypted.
+ * @param {string} key Secret key.
+ * @param {string} iv Initialization vector.
  * @param {string=} algo Encryption algorithm (default: constants.cipher).
  * @return {Buffer} Encrypted data.
  */
-function encrypt(plaintext: string | Buffer, key: string | Buffer, iv: string | Buffer, algo: string) {
+function encrypt(plaintext: string, key: string, iv: string, algo: string): Buffer {
     if (!isCipherAvailable(algo)) throw new Error(algo + ' is not available');
     const cipher = crypto.createCipheriv(algo, str2buf(key), str2buf(iv));
     const ciphertext = cipher.update(str2buf(plaintext));
@@ -88,13 +85,13 @@ function encrypt(plaintext: string | Buffer, key: string | Buffer, iv: string | 
 
 /**
  * Symmetric private key decryption using secret (derived) key.
- * @param {Buffer|string} ciphertext Data to be decrypted.
- * @param {Buffer|string} key Secret key.
- * @param {Buffer|string} iv Initialization vector.
+ * @param {string} ciphertext Data to be decrypted.
+ * @param {string} key Secret key.
+ * @param {string} iv Initialization vector.
  * @param {string=} algo Encryption algorithm (default: constants.cipher).
  * @return {Buffer} Decrypted data.
  */
-function decrypt(ciphertext: string | Buffer, key: string | Buffer, iv: string | Buffer, algo: string) {
+function decrypt(ciphertext: string, key: string, iv: string, algo: string): Buffer {
     if (!isCipherAvailable(algo)) throw new Error(algo + ' is not available');
     const decipher = crypto.createDecipheriv(algo, str2buf(key), str2buf(iv));
     const plaintext = decipher.update(str2buf(ciphertext));
@@ -106,13 +103,12 @@ function decrypt(ciphertext: string | Buffer, key: string | Buffer, iv: string |
  * encrypted text.  The MAC is the keccak-256 hash of the byte array
  * formed by concatenating the second 16 bytes of the derived key with
  * the ciphertext key's contents.
- * @param {Buffer|string} derivedKey Secret key derived from password.
- * @param {Buffer|string} ciphertext Text encrypted with secret key.
+ * @param {string} derivedKey Secret key derived from password.
+ * @param {string} ciphertext Text encrypted with secret key.
  * @return {string} Base58-encoded MAC.
  */
-function getMAC(derivedKey: string | Buffer, ciphertext: string | Buffer) {
+function getMAC(derivedKey: string, ciphertext: string) {
     const keccak256 = (msg: any) => keccakHash('keccak256').update(msg).digest();
-
     return keccak256(Buffer.concat([str2buf(derivedKey).slice(16, 32), str2buf(ciphertext)]));
 }
 
@@ -125,7 +121,6 @@ function getMAC(derivedKey: string | Buffer, ciphertext: string | Buffer) {
  * @param {function=} cb Callback function (optional).
  * @return {Object} Keys, IV and salt.
  */
-
 function create(params: paramsCreate, cb?: Function) {
     const keyBytes = params.keyBytes;
     const ivBytes = params.ivBytes;
