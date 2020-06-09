@@ -41,7 +41,7 @@ const defaultOptions = {
 //// Generic key methods //////////////////////////////////////////////////////////////////////////////////////////////
 
 // function for checking the type input as a callback
-function isFunction(f: Function | undefined) {
+function isFunction(f: Function): {
     return typeof f === 'function';
 }
 
