@@ -1,30 +1,54 @@
-"use strict";
+'use strict';
 /**
  * @author James Aman (j.aman@topl.me)
  * @version 3.0.0
  * @date 2020.4.03
  **/
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __awaiter =
+    (this && this.__awaiter) ||
+    function (thisArg, _arguments, P, generator) {
+        function adopt(value) {
+            return value instanceof P
+                ? value
+                : new P(function (resolve) {
+                      resolve(value);
+                  });
+        }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
+                try {
+                    step(generator.next(value));
+                } catch (e) {
+                    reject(e);
+                }
+            }
+            function rejected(value) {
+                try {
+                    step(generator['throw'](value));
+                } catch (e) {
+                    reject(e);
+                }
+            }
+            function step(result) {
+                result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+            }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    };
+var __importDefault =
+    (this && this.__importDefault) ||
+    function (mod) {
+        return mod && mod.__esModule ? mod : { default: mod };
+    };
 // Dependencies
 const base58 = require('base-58');
 // Primary sub-modules
-const Requests_1 = __importDefault(require("./modules/Requests"));
-const KeyManager_1 = __importDefault(require("./modules/KeyManager"));
+const Requests_1 = __importDefault(require('./modules/Requests'));
+const KeyManager_1 = __importDefault(require('./modules/KeyManager'));
 // Utilities
-const Hash_1 = __importDefault(require("./utils/Hash"));
+const Hash_1 = __importDefault(require('./utils/Hash'));
 // Libraries
-const polling_1 = __importDefault(require("./lib/polling"));
+const polling_1 = __importDefault(require('./lib/polling'));
 // Constants definitions
 const validTxMethods = ['createAssetsPrototype', 'transferAssetsPrototype', 'transferTargetAssetsPrototype'];
 /**
@@ -58,32 +82,26 @@ class Brambl {
         const requestsVar = params.Requests || emptyKeyMan;
         // if only a string is given in the constructor, assume it is the password.
         // Therefore, target a local chain provider and make a new key
-        if (params.constructor === String)
-            keyManagerVar.password = params;
+        if (params.constructor === String) keyManagerVar.password = params;
         // Setup reqeusts object
         if (requestsVar.instance) {
             this.requests = requestsVar.instance;
-        }
-        else if (requestsVar.url) {
+        } else if (requestsVar.url) {
             this.requests = new Requests_1.default(requestsVar.url, requestsVar.apiKey);
-        }
-        else {
+        } else {
             this.requests = new Requests_1.default();
         }
         // Setup KeyManager object
-        if (!keyManagerVar.password)
-            throw new Error('An encryption password is required to open a keyfile');
+        if (!keyManagerVar.password) throw new Error('An encryption password is required to open a keyfile');
         if (keyManagerVar.instance) {
             this.keyManager = keyManagerVar.instance;
-        }
-        else if (keyManagerVar.keyPath) {
+        } else if (keyManagerVar.keyPath) {
             this.keyManager = new KeyManager_1.default({
                 password: keyManagerVar.password,
                 keyPath: keyManagerVar.keyPath,
                 constants: keyManagerVar.constants,
             });
-        }
-        else {
+        } else {
             this.keyManager = new KeyManager_1.default(keyManagerVar.password);
         }
         // Import utilities
@@ -135,7 +153,9 @@ Brambl.prototype.addSigToTx = function (prototypeTx, userKeys) {
         // in case a single given is given not as an array
         const keys = Array.isArray(userKeys) ? userKeys : [userKeys];
         // add signatures of all given key files to the formatted transaction
-        return Object.assign(Object.assign({}, prototypeTx.formattedTx), { signatures: genSig(keys, base58.decode(prototypeTx.messageToSign)) });
+        return Object.assign(Object.assign({}, prototypeTx.formattedTx), {
+            signatures: genSig(keys, base58.decode(prototypeTx.messageToSign)),
+        });
     });
 };
 Brambl.prototype.signAndBroadcast = function (prototypeTx) {
@@ -154,8 +174,7 @@ Brambl.prototype.signAndBroadcast = function (prototypeTx) {
  */
 Brambl.prototype.transaction = function (method, params) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!validTxMethods.includes(method))
-            throw new Error('Invalid transaction method');
+        if (!validTxMethods.includes(method)) throw new Error('Invalid transaction method');
         return this.requests[method](params).then((res) => this.signAndBroadcast(res.result));
     });
 };

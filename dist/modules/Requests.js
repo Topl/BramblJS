@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /** A Javascript API wrapper module for the Bifrost Protocol.
  * Currently supports version 4.1 of Bifrost's Brambl-Layer API
  * Documentation for Brambl-layer is available at https://Requests.docs.topl.co
@@ -8,20 +8,44 @@
  *
  * Based on the original work of Yamir Tainwala - 2019
  */
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __awaiter =
+    (this && this.__awaiter) ||
+    function (thisArg, _arguments, P, generator) {
+        function adopt(value) {
+            return value instanceof P
+                ? value
+                : new P(function (resolve) {
+                      resolve(value);
+                  });
+        }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
+                try {
+                    step(generator.next(value));
+                } catch (e) {
+                    reject(e);
+                }
+            }
+            function rejected(value) {
+                try {
+                    step(generator['throw'](value));
+                } catch (e) {
+                    reject(e);
+                }
+            }
+            function step(result) {
+                result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+            }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    };
+var __importDefault =
+    (this && this.__importDefault) ||
+    function (mod) {
+        return mod && mod.__esModule ? mod : { default: mod };
+    };
 // Dependencies
-const node_fetch_1 = __importDefault(require("node-fetch"));
+const node_fetch_1 = __importDefault(require('node-fetch'));
 /**
  * General builder function for formatting API request
  *
@@ -56,11 +80,9 @@ function BramblRequest(routeInfo, params, fields, self) {
             };
             // we have to await here because we don't have to evaluate whether the node returned an error
             const response = yield (yield node_fetch_1.default(payload.url, payload)).json();
-            if (response.error)
-                throw response.error;
+            if (response.error) throw response.error;
             return response;
-        }
-        catch (err) {
+        } catch (err) {
             throw err;
         }
     });
@@ -74,10 +96,11 @@ function checkParams(params = {}, fields) {
     fields.map((field) => {
         // check that all required fields have been given
         if (!Object.keys(params).includes(field))
-            throw new Error(`A required field was not found. Please provide values for the following parameters: ${field}`);
+            throw new Error(
+                `A required field was not found. Please provide values for the following parameters: ${field}`,
+            );
         // ensure that a value is given for the parameter
-        if (!params[field])
-            throw new Error(`A value for ${field} must be specified`);
+        if (!params[field]) throw new Error(`A value for ${field} must be specified`);
     });
 }
 /**
