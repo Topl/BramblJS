@@ -10,9 +10,10 @@
 ('use strict');
 
 // Dependencies
-import fs from 'fs';
+
 import path from 'path';
-import blake from 'blake2';
+
+import blake2 from 'blake2b';
 import crypto from 'crypto';
 import Base58 from 'base-58';
 import keccakHash from 'keccak';
@@ -68,7 +69,7 @@ function str2buf(str: string | Buffer, enc?: 'utf8' | 'hex' | 'base64'): Buffer 
  * @return {boolean} If available true, otherwise false.
  */
 function isCipherAvailable(cipher: string): boolean {
-    return crypto.getCiphers().some((name) => {
+    return crypto.getCiphers().some((name: string) => {
         return name === cipher;
     });
 }
@@ -128,7 +129,51 @@ function getMAC(derivedKey: string | Buffer, ciphertext: Buffer | string): Buffe
  * @param {function=} cb Callback function (optional).
  * @return {Object} Keys, IV and salt.
  */
-
+function deriveKeyUsingScryptInBrowser(
+    this: any,
+    password: string | Buffer,
+    salt: string | Buffer,
+    options: any,
+    cb?: any,
+): Buffer | undefined {
+    var self = this;
+    // if (this.scrypt === null) this.scrypt = require('./lib/scrypt');
+    if (isFunction(this.scrypt)) {
+        this.scrypt = this.scrypt(options.kdfparams.memory || this.constants.scrypt.memory);
+    }
+    if (!isFunction(cb)) {
+        return Buffer.from(
+            this.scrypt.to_hex(
+                this.scrypt.crypto_scrypt(
+                    password,
+                    salt,
+                    options.kdfparams.n || this.constants.scrypt.n,
+                    options.kdfparams.r || this.constants.scrypt.r,
+                    options.kdfparams.p || this.constants.scrypt.p,
+                    options.kdfparams.dklen || this.constants.scrypt.dklen,
+                ),
+            ),
+            'hex',
+        );
+    }
+    setTimeout(function () {
+        cb(
+            Buffer.from(
+                self.scrypt.to_hex(
+                    self.scrypt.crypto_scrypt(
+                        password,
+                        salt,
+                        options.kdfparams.n || self.constants.scrypt.n,
+                        options.kdfparams.r || self.constants.scrypt.r,
+                        options.kdfparams.p || self.constants.scrypt.p,
+                        options.kdfparams.dklen || self.constants.scrypt.dklen,
+                    ),
+                ),
+                'hex',
+            ),
+        );
+    }, 0);
+}
 function create(
     params: KeyManTypes.paramsCreate,
     cb?: (arg: KeyManTypes.KeyGen) => any,
@@ -136,8 +181,8 @@ function create(
     const keyBytes = params.keyBytes;
     const ivBytes = params.ivBytes;
 
-    function bifrostBlake2b(Buffer: Buffer) {
-        return blake.createHash('blake2b', { digestLength: 32 }).update(Buffer).digest();
+    function bifrostBlake2b(buffer: Buffer) {
+        return Buffer.from(blake2(32).update(buffer).digest());
     }
 
     function curve25519KeyGen(randomBytes: Buffer): KeyManTypes.KeyGen {
@@ -236,7 +281,7 @@ function deriveKey2(password: string, salt: Buffer | string, kdfParams: KeyManTy
     const maxmem = 2 * 128 * N * r;
 
     // use scrypt as key derivation function
-
+    console.log(dkLen);
     return crypto.scryptSync(str2buf(password, 'utf8'), str2buf(salt), dkLen, {
         N,
         r,
@@ -431,13 +476,13 @@ class KeyManager {
         };
 
         // Imports key data object from keystore JSON file.
-        const importFromFile = (filepath: string, password: Buffer | string) => {
-            const keyStorage = JSON.parse(String(fs.readFileSync(filepath)));
+        // const importFromFile = (filepath: string, password: Buffer | string) => {
+        //     const keyStorage = JSON.parse(String(fs.readFileSync(filepath)));
 
-            // todo - check that the imported object conforms to our definition of a keyfile
+        //     // todo - check that the imported object conforms to our definition of a keyfile
 
-            initKeyStorage(keyStorage, password);
-        };
+        //     initKeyStorage(keyStorage, password);
+        // };
 
         // initialize vatiables
         this.constants = params.constants || defaultOptions;
@@ -445,20 +490,20 @@ class KeyManager {
 
         // load in keyfile if a path was given, or default to generating a new key
 
-        if (params.keyPath) {
-            try {
-                importFromFile(params.keyPath, params.password);
-            } catch (err) {
-                throw new Error('Error importing keyfile');
-            }
-        } else {
-            // Will check if only a string was given and assume it is the password
-            if (params.constructor === String) {
-                generateKey(params);
-            }
-
+        // if (params.keyPath) {
+        //     try {
+        //         importFromFile(params.keyPath, params.password);
+        //     } catch (err) {
+        //         throw new Error('Error importing keyfile');
+        //     }
+        // } else {
+        // Will check if only a string was given and assume it is the password
+        if (params.constructor === String) {
             generateKey(params);
         }
+
+        generateKey(params);
+        // }
     }
 
     //// Static methods //////////////////////////////////////////////////////////////////////////////////////////////
@@ -548,16 +593,16 @@ class KeyManager {
      * @return {string} JSON filename
      * @memberof KeyManager
      */
-    exportToFile(_keyPath: string) {
-        const keyPath = _keyPath || 'keyfiles';
+    // exportToFile(_keyPath: string): string {
+    //     const keyPath = _keyPath || 'keyfiles';
 
-        const outfile = generateKeystoreFilename(this.pk);
-        const json = JSON.stringify(this.getKeyStorage());
-        const outpath = path.join(keyPath, outfile);
+    //     const outfile = generateKeystoreFilename(this.pk);
+    //     const json = JSON.stringify(this.getKeyStorage());
+    //     const outpath = path.join(keyPath, outfile);
 
-        fs.writeFileSync(outpath, json);
-        return outpath;
-    }
+    //     fs.writeFileSync(outpath, json);
+    //     return outpath;
+    // }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

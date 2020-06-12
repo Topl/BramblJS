@@ -1,5 +1,5 @@
 require('dotenv').config();
-const BramblJS = require('../index');
+const BramblJS = require('../dist/Brambl');
 const assert = require('assert');
 
 const brambljs = new BramblJS({

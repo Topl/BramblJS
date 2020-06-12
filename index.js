@@ -1,1 +1,2 @@
-module.exports = require('./dist/Brambl.js')
+var BramblJS = require('./dist/Brambl.js');
+global.BramblJS = BramblJS;

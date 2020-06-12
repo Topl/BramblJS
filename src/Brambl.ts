@@ -12,7 +12,6 @@ import Requests from './modules/Requests';
 import KeyManager from './modules/KeyManager';
 
 // Utilities
-import Hash from './utils/Hash';
 
 // Libraries
 import pollTx from './lib/polling';
@@ -50,7 +49,7 @@ class Brambl {
     requests: any;
     keyManager: KeyManager;
     keyMan: any;
-    utils: Hash;
+
     addSigToTx: (prototypeTx: PrototypeTx, userKeys: KeyManager) => any;
     signAndBroadcast: (prototypeTx: PrototypeTx) => any;
     transaction: (method: string, params: any) => any;
@@ -87,7 +86,6 @@ class Brambl {
         }
 
         // Import utilities
-        this.utils = { Hash };
     }
 
     /**
