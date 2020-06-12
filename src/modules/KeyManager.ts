@@ -19,6 +19,7 @@ import Base58 from 'base-58';
 import keccakHash from 'keccak';
 import * as curve25519 from 'curve25519-js';
 import * as KeyManTypes from '../../types/KeyManagerTypes';
+const scrypt = require('scrypt-js');
 
 // Default options for key generation as of 2020.01.25
 const defaultOptions = {
@@ -129,51 +130,7 @@ function getMAC(derivedKey: string | Buffer, ciphertext: Buffer | string): Buffe
  * @param {function=} cb Callback function (optional).
  * @return {Object} Keys, IV and salt.
  */
-function deriveKeyUsingScryptInBrowser(
-    this: any,
-    password: string | Buffer,
-    salt: string | Buffer,
-    options: any,
-    cb?: any,
-): Buffer | undefined {
-    var self = this;
-    // if (this.scrypt === null) this.scrypt = require('./lib/scrypt');
-    if (isFunction(this.scrypt)) {
-        this.scrypt = this.scrypt(options.kdfparams.memory || this.constants.scrypt.memory);
-    }
-    if (!isFunction(cb)) {
-        return Buffer.from(
-            this.scrypt.to_hex(
-                this.scrypt.crypto_scrypt(
-                    password,
-                    salt,
-                    options.kdfparams.n || this.constants.scrypt.n,
-                    options.kdfparams.r || this.constants.scrypt.r,
-                    options.kdfparams.p || this.constants.scrypt.p,
-                    options.kdfparams.dklen || this.constants.scrypt.dklen,
-                ),
-            ),
-            'hex',
-        );
-    }
-    setTimeout(function () {
-        cb(
-            Buffer.from(
-                self.scrypt.to_hex(
-                    self.scrypt.crypto_scrypt(
-                        password,
-                        salt,
-                        options.kdfparams.n || self.constants.scrypt.n,
-                        options.kdfparams.r || self.constants.scrypt.r,
-                        options.kdfparams.p || self.constants.scrypt.p,
-                        options.kdfparams.dklen || self.constants.scrypt.dklen,
-                    ),
-                ),
-                'hex',
-            ),
-        );
-    }, 0);
-}
+
 function create(
     params: KeyManTypes.paramsCreate,
     cb?: (arg: KeyManTypes.KeyGen) => any,
@@ -221,7 +178,7 @@ function deriveKey(
     password: string,
     salt: Buffer | string,
     kdfParams: KeyManTypes.KdfParams,
-    cb?: (cryptoBuffer: Buffer) => any,
+    cb?: (cryptoBuffer: any) => any,
 ): Buffer | undefined {
     if (typeof password === 'undefined' || password === null || !salt) {
         throw new Error('Must provide password and salt to derive a key');
@@ -239,34 +196,17 @@ function deriveKey(
     // use scrypt as key derivation function
     if (cb) {
         if (!isFunction(cb)) {
-            return crypto.scryptSync(str2buf(password, 'utf8'), str2buf(salt), dkLen, {
-                N,
-                r,
-                p,
-                maxmem,
-            });
+            return Buffer.from(scrypt.syncScrypt(password, salt, N, r, p, dkLen));
         }
         if (cb === undefined) {
             // asynchronous key generation
-            return crypto.scryptSync(str2buf(password, 'utf8'), str2buf(salt), dkLen, {
-                N,
-                r,
-                p,
-                maxmem,
-            });
+            return Buffer.from(scrypt.syncScrypt(password, salt, N, r, p, dkLen));
         } else {
-            cb(
-                crypto.scryptSync(str2buf(password, 'utf8'), str2buf(salt), dkLen, {
-                    N,
-                    r,
-                    p,
-                    maxmem,
-                }),
-            );
+            cb(Buffer.from(scrypt.syncScrypt(password, salt, N, r, p, dkLen)));
         }
     }
 }
-function deriveKey2(password: string, salt: Buffer | string, kdfParams: KeyManTypes.KdfParams): Buffer {
+function deriveKey2(password: string, salt: Buffer | string, kdfParams: KeyManTypes.KdfParams): any {
     if (typeof password === 'undefined' || password === null || !salt) {
         throw new Error('Must provide password and salt to derive a key');
     }
@@ -281,13 +221,8 @@ function deriveKey2(password: string, salt: Buffer | string, kdfParams: KeyManTy
     const maxmem = 2 * 128 * N * r;
 
     // use scrypt as key derivation function
-    console.log(dkLen);
-    return crypto.scryptSync(str2buf(password, 'utf8'), str2buf(salt), dkLen, {
-        N,
-        r,
-        p,
-        maxmem,
-    });
+
+    return Buffer.from(scrypt.syncScrypt(str2buf(password), salt, N, r, p, dkLen));
 }
 /**
  * Assemble key data object in secret-storage format.
