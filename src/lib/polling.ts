@@ -1,6 +1,10 @@
-import { pollingRequests, pollingOptions } from './polling';
+import { pollingRequests, pollingOptions } from './polling.d';
 
-const polling = (requests: pollingRequests, txId: string, options: pollingOptions) => {
+const polling = (
+    requests: pollingRequests,
+    txId: string,
+    options: pollingOptions,
+): Promise<{ [key: string]: string }> => {
     const { timeout, interval, maxFailedQueries } = options;
     let failureResponse: string;
     let numFailedQueries = 0; // initialize counter for number of queries to the mempool
@@ -21,7 +25,7 @@ const polling = (requests: pollingRequests, txId: string, options: pollingOption
                 .getTransactionById({ transactionId: txId })
                 .then(
                     // on fulfilled promise (when the transaction has been included in a block)
-                    function (response: { result: any }) {
+                    function (response: { result: { [key: string]: string } }) {
                         try {
                             //If result is non-null (transaction found) resolve the promise with json of result and stop interval and timeout threads
                             clearInterval(intervalID);
@@ -54,11 +58,12 @@ const polling = (requests: pollingRequests, txId: string, options: pollingOption
                                     }
                                 },
                             )
-                            .catch((err: any) => reject(err));
+                            .catch((err: Error) => reject(err));
                     },
                 )
-                .catch((err: any) => reject(err));
+                .catch((err: Error) => reject(err));
         }, interval * 1000);
     });
 };
+
 export default polling;
