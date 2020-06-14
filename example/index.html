@@ -4,8 +4,21 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Document</title>
-        <script src="../dist/main.js"></script>
-        <script src="index.js"></script>
+        <script src="../webpackDist/main.js"></script>
+        <script>
+            const brambl = new BramblJS({
+                Requests: {
+                    url: 'https://valhalla.torus.topl.co/',
+                    apiKey: 'Ku6v7NUyFFFkhqN5',
+                },
+                KeyManager: {
+                    password: 'password',
+                    //keyPath: './keystore/itGuy.json'
+                },
+            });
+            // var h = brambl.keyManager.getKeyStorage();
+            // console.log(h);
+        </script>
     </head>
 
     <body></body>

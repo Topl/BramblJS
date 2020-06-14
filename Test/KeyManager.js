@@ -1,7 +1,7 @@
 require('dotenv').config();
-const BramblJS = require('../dist/main');
+const BramblJS = require('../dist/Brambl');
 const assert = require('assert');
-console.log(BramblJS);
+
 const brambljs = new BramblJS({
     Requests: {
         url: 'https://valhalla.torus.topl.co/',

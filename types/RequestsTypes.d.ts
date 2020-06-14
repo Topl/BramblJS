@@ -1,12 +1,7 @@
-// export type BramblHeaders = {
-//     'Content-Type': string;
-//     'x-api-key': string;
-//     'Access-Control-Allow-Origin': string;
-//     'Access-Control-Expose-Headers': string;
-// };
-export interface BramblHeaders {
-    [key: string]: string;
-}
+export type BramblHeaders = {
+    'Content-Type': string;
+    'x-api-key': string;
+};
 
 export interface Params {
     [key: string]: any;
