@@ -1,30 +1,27 @@
 ('use strict');
-// Dependencies
-import Base58 from 'base-58';
-import blake from 'blake2';
-import fs from 'fs';
-import HashType from './Hash.d';
 
-// Based on JCS spec
-// https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme-17
-import JSONCanonify from 'canonicalize';
+// Dependencies
+import fs from 'fs';
+import blake from 'blake2';
+import Base58 from 'base-58';
+import JSONCanonify from 'canonicalize'; // https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme-17
 
 /**
  * standard FastCryptographicHash in Bifrost
  * @returns Initialized hash function
  */
-function hashFunc() {
+function hashFunc(): blake.Hash {
     return blake.createHash('blake2b', { digestLength: 32 });
 }
 
 /**
  * Create hash digest and encode
  *
- * @param {object} hash Hash object
+ * @param {Hash} hash Hash object
  * @param {string} [encoding] Desired output encoding. May be one of `hex`, `base64`, or `base58`. If none provided a `Buffer` is returned
  * @returns Blake2b-256 hash digest
  */
-function digestAndEncode(hash: HashType, encoding: string) {
+function digestAndEncode(hash: blake.Hash, encoding: string) {
     hash.end();
     switch (encoding) {
         case 'hex':
@@ -47,11 +44,11 @@ class Hash {
      * Calculates the Blake2b-256 hash of an arbitrary input. This function will apply JSON canonicalization to the given message.
      * Further information regarding JON canonicalization may be found at {@link https://github.com/cyberphone/json-canonicalization}
      *
-     * @param {any} message input message to create the hash digest of
+     * @param {string} message input message to create the hash digest of
      * @param {string} encoding output encoding
      * @returns Blake2b-256 hash digest
      */
-    static any(message: any, encoding: string) {
+    static any(message: Record<string, unknown>, encoding: string): string {
         const msg = Buffer.from(JSONCanonify(message));
         const hash = hashFunc().update(msg);
         return digestAndEncode(hash, encoding);
@@ -64,7 +61,7 @@ class Hash {
      * @param {string} encoding output encoding
      * @returns Blake2b-256 hash digest
      */
-    static string(message: string, encoding: string) {
+    static string(message: string, encoding: string): string {
         const msg = Buffer.from(message);
         const hash = hashFunc().update(msg);
         return digestAndEncode(hash, encoding);
@@ -77,13 +74,13 @@ class Hash {
      * @param {string} encoding output encoding
      * @returns Blake2b-256 hash digest
      */
-    static file(filePath: string, encoding: string) {
+    static file(filePath: string, encoding: string): Promise<string> {
         return new Promise((resolve, reject) =>
             fs
                 .createReadStream(filePath)
                 .on('error', reject)
                 .pipe(hashFunc())
-                .once('finish', function (this: any) {
+                .once('finish', function (this: blake.Hash) {
                     resolve(digestAndEncode(this, encoding));
                 }),
         );
