@@ -19,7 +19,7 @@ import Base58 from 'base-58';
 import keccakHash from 'keccak';
 import * as curve25519 from 'curve25519-js';
 import * as KeyManTypes from '../../types/KeyManagerTypes';
-const scrypt = require('scrypt-js');
+import scrypt from 'scrypt-js';
 
 // Default options for key generation as of 2020.01.25
 const defaultOptions = {
@@ -196,13 +196,13 @@ function deriveKey(
     // use scrypt as key derivation function
     if (cb) {
         if (!isFunction(cb)) {
-            return Buffer.from(scrypt.syncScrypt(password, salt, N, r, p, dkLen));
+            return Buffer.from(scrypt.syncScrypt(str2buf(password), str2buf(salt), N, r, p, dkLen));
         }
         if (cb === undefined) {
             // asynchronous key generation
-            return Buffer.from(scrypt.syncScrypt(password, salt, N, r, p, dkLen));
+            return Buffer.from(scrypt.syncScrypt(str2buf(password), str2buf(salt), N, r, p, dkLen));
         } else {
-            cb(Buffer.from(scrypt.syncScrypt(password, salt, N, r, p, dkLen)));
+            cb(Buffer.from(scrypt.syncScrypt(str2buf(password), str2buf(salt), N, r, p, dkLen)));
         }
     }
 }
@@ -222,7 +222,7 @@ function deriveKey2(password: string, salt: Buffer | string, kdfParams: KeyManTy
 
     // use scrypt as key derivation function
 
-    return Buffer.from(scrypt.syncScrypt(str2buf(password), salt, N, r, p, dkLen));
+    return Buffer.from(scrypt.syncScrypt(str2buf(password), str2buf(salt), N, r, p, dkLen));
 }
 /**
  * Assemble key data object in secret-storage format.

@@ -9,9 +9,11 @@
  */
 
 // Dependencies
-import fetch, { HeadersInit } from 'node-fetch';
+// import { HeadersInit } from 'node-fetch';
+import fetch from 'cross-fetch';
 import * as ReqTypes from '../../types/RequestsTypes';
 
+// const bindFetch = typeof fetch == 'function' && typeof window != 'undefined' ? fetch.bind(window)
 /**
  * General builder function for formatting API request
  *
@@ -35,7 +37,9 @@ async function BramblRequest(
 
     // construct
     try {
-        const headers: HeadersInit = self.headers;
+        const headers: ReqTypes.BramblHeaders = self.headers;
+
+        console.log(headers);
         const route = routeInfo.route;
         const body = {
             jsonrpc: '2.0',
@@ -92,6 +96,7 @@ class Requests {
         this.headers = {
             'Content-Type': 'application/json',
             'x-api-key': apiKey,
+            'Access-Control-Allow-Origin': '*',
         };
     }
 
