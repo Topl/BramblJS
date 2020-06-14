@@ -2,62 +2,59 @@ export interface paramsCreate {
     keyBytes: number;
     ivBytes: number;
 }
-export interface KdfParams {
-    n: number;
-    r: number;
-    p: number;
-    dkLen: number;
-}
+
 export interface ConstructorParams {
-    password: any;
-    constants: any;
-    constructor: any;
+    password: string;
+    constants: KeyEncryptOptions;
     keyPath: string;
 }
-export interface KeyObject {
-    publicKey: string | Buffer;
-    privateKey: string | Buffer;
-}
-export interface Options {
-    kdfParams: KdfParams;
-    scrypt: any;
-    cipher: string;
-}
-interface CipherParams {
-    iv: any;
-}
-interface Crypto {
+
+export interface KeyCrypto {
     kdfSalt: string;
     kdsfSalt: string;
     cipherText: string;
     mac: string;
     cipher: string;
-    cipherParams: CipherParams;
+    cipherParams: {
+        iv: string;
+    };
 }
+
 export interface KeyStorage {
     crypto: Crypto;
 }
-interface Crypt {
-    cipher: string;
-    cipherText: any;
-    cipherParams: any;
-    mac: any;
-    kdf: string;
-    kdsfSalt: any;
-}
+
 export interface DeriveKey {
     publicKeyId: any;
-    crypto: Crypt;
+    crypto: Crypto;
 }
-export interface KeyGen {
+
+export interface KeyPair {
     publicKey: Buffer;
     privateKey: Buffer;
+}
+
+export interface KeyObject extends KeyPair {
     iv: Buffer;
     salt: Buffer;
 }
-export interface KeyGenBuff {
-    publicKey: string;
-    privateKey: string;
-    iv: string;
-    salt: string;
+
+export interface KeyStorage {
+    publicKeyId: string;
+    crypto: KeyCrypto;
+}
+
+export interface KeyEncryptOptions {
+    cipher: string;
+    ivBytes: number;
+    keyBytes: number;
+    scrypt: KdfParams;
+    kdfParams?: KdfParams;
+}
+
+export interface KdfParams {
+    n: number;
+    r: number;
+    p: number;
+    dkLen: number;
 }
