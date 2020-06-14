@@ -10,18 +10,15 @@
 
 // Dependencies
 import fetch, { HeadersInit } from 'node-fetch';
-import * as ReqTypes from '../../types/RequestsTypes';
+import * as ReqTypes from './Requests.d';
 
 /**
  * General builder function for formatting API request
  *
- * @param {object} routeInfo - call specific information
- * @param {string} routeInfo.route - the route where the request will be sent
- * @param {string} routeInfo.method - the json-rpc method that will be triggered on the node
- * @param {string} routeInfo.id - an identifier for tracking requests sent to the node
- * @param {object} params - method specific parameter object
+ * @param {ReqTypes.RouteInfo} routeInfo - call specific information
+ * @param {ReqTypes.Params} params - method specific parameter object
  * @param {string[]} fields List of Keys nessesary for the parameter object to include.
- * @param {object} self - internal reference for accessing constructor data
+ * @param {Requests} self - internal reference for accessing constructor data
  * @returnss {object} JSON response from the node
  */
 async function BramblRequest(
@@ -61,7 +58,7 @@ async function BramblRequest(
 
 /**
  * A function to ensure the parameters object is not empty and has the correct keys.
- * @param {object} params generic parameter object
+ * @param {ReqTypes.Params} params generic parameter object
  * @param {string[]} fields List of Keys nessesary for the parameter object to include.
  */
 function checkParams(params: ReqTypes.Params = {}, fields: Array<string>) {
@@ -96,10 +93,10 @@ class Requests {
     }
 
     //Allows setting a different url than the default from which to create and accept RPC connections
-    setUrl(url: string) {
+    setUrl(url: string): void {
         this.url = url;
     }
-    setApiKey(apiKey: string) {
+    setApiKey(apiKey: string): void {
         this.headers['x-api-key'] = apiKey;
     }
 
@@ -109,13 +106,12 @@ class Requests {
     //////getBalancesByKey/////////////////////
     /**
      * Get the balances of a specified public key in the keyfiles directory of the node
-     * @param {} params - body parameters passed to the specified json-rpc method
-     * @param {string[]} params.publicKeys - An array of public keys to query the balance for
+     * @param {ReqTypes.Balances} params - body parameters passed to the specified json-rpc method
      * @param {string} [id="1"] - identifying number for the json-rpc request
-     * @returns {any} json-rpc response from the chain
+     * @returns json-rpc response from the chain
      * @memberof Requests
      */
-    async getBalancesByKey(params: ReqTypes.Balances, id = '1'): Promise<any> {
+    async getBalancesByKey(params: ReqTypes.Balances, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['publicKeys'];
         const route = 'wallet/';
         const method = 'balances';
@@ -126,10 +122,10 @@ class Requests {
     /**
      * Get a list of all open keyfiles
      * @param {string} [id="1"] - identifying number for the json-rpc request
-     * @returns {any} json-rpc response from the chain
+     * @returns json-rpc response from the chain
      * @memberof Requests
      */
-    async listOpenKeyfiles(id = '1'): Promise<any> {
+    async listOpenKeyfiles(id = '1'): Promise<{ [key: string]: string }> {
         const params = {};
         const requiredFields: Array<string> = [];
         const route = 'wallet/';
@@ -140,13 +136,12 @@ class Requests {
     //////generateKeyfile////////////////
     /**
      * Generate a new keyfile in the node keyfile directory
-     * @param {Object} params - body parameters passed to the specified json-rpc method
-     * @param {string} params.password - Password for encrypting the new keyfile
+     * @param {password: string} params - body parameters passed to the specified json-rpc method
      * @param {string} [id="1"] - identifying number for the json-rpc request
-     * @returns {object} json-rpc response from the chain
+     * @returns json-rpc response from the chain
      * @memberof Requests
      */
-    async generateKeyfile(params: ReqTypes.Params, id = '1'): Promise<any> {
+    async generateKeyfile(params: { password: string }, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['password'];
         const route = 'wallet/';
         const method = 'generateKeyfile';
@@ -156,14 +151,12 @@ class Requests {
     //////lockKeyfile////////////////
     /**
      * Lock an open keyfile
-     * @param {object} params - body parameters passed to the specified json-rpc method
-     * @param {string} params.publicKey - Base58 encoded public key to get the balance of
-     * @param {string} params.password - Password used to encrypt the keyfile
+     * @param {ReqTypes.Keyfile} params - body parameters passed to the specified json-rpc method
      * @param {string} [id="1"] - identifying number for the json-rpc request
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async lockKeyfile(params: ReqTypes.Params, id = '1'): Promise<any> {
+    async lockKeyfile(params: ReqTypes.Keyfile, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['publicKey', 'password'];
         const route = 'wallet/';
         const method = 'lockKeyfile';
@@ -173,14 +166,12 @@ class Requests {
     //////unlockKeyfile////////////////
     /**
      * Unlock a keyfile in the node's keyfile directory
-     * @param {object} params - body parameters passed to the specified json-rpc method
-     * @param {string} params.publicKey - Base58 encoded public key to get the balance of
-     * @param {string} params.password - Password used to encrypt the keyfile
+     * @param {ReqTypes.Keyfile} params - body parameters passed to the specified json-rpc method
      * @param {string} [id="1"] - identifying number for the json-rpc request
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async unlockKeyfile(params: ReqTypes.Params, id = '1'): Promise<any> {
+    async unlockKeyfile(params: ReqTypes.Keyfile, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['publicKey', 'password'];
         const route = 'wallet/';
         const method = 'unlockKeyfile';
@@ -190,14 +181,12 @@ class Requests {
     //////signTransaction////////////////
     /**
      * Have the node sign a JSON formatted prototype transaction
-     * @param {object} params - body parameters passed to the specified json-rpc method
-     * @param {string} params.publicKey - Base58 encoded public key to get the balance of
-     * @param {string} params.tx - a JSON formatted prototype transaction
+     * @param {ReqTypes.TxParams} params - body parameters passed to the specified json-rpc method
      * @param {string} [id="1"] - identifying number for the json-rpc request
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async signTransaction(params: ReqTypes.TxParams, id = '1'): Promise<any> {
+    async signTransaction(params: ReqTypes.SignTx, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['publicKey', 'tx'];
         const route = 'wallet/';
         const method = 'signTx';
@@ -214,7 +203,7 @@ class Requests {
      * @memberof Requests
      */
 
-    async broadcastTx(params: ReqTypes.txParams2, id = '1'): Promise<any> {
+    async broadcastTx(params: ReqTypes.Params, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['tx'];
         const route = 'wallet/';
         const method = 'broadcastTx';
@@ -235,7 +224,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async transferPolys(params: ReqTypes.TransferArbitParams, id = '1'): Promise<any> {
+    async transferPolys(params: ReqTypes.TransferTokens, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['amount', 'recipient', 'fee'];
         const route = 'wallet/';
         const method = 'transferPolys';
@@ -256,7 +245,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async transferArbits(params: ReqTypes.TransferArbitParams, id = '1'): Promise<any> {
+    async transferArbits(params: ReqTypes.TransferTokens, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['amount', 'recipient', 'fee'];
         const route = 'wallet/';
         const method = 'transferArbits';
@@ -280,7 +269,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async createAssets(params: ReqTypes.TransferParams, id = '1'): Promise<any> {
+    async createAssets(params: ReqTypes.TransferAssets, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['amount', 'recipient', 'fee', 'assetCode', 'issuer'];
         const route = 'asset/';
         const method = 'createAssets';
@@ -301,7 +290,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async createAssetsPrototype(params: ReqTypes.TransferParams, id = '1'): Promise<any> {
+    async createAssetsPrototype(params: ReqTypes.TransferAssets, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['amount', 'recipient', 'fee', 'assetCode', 'issuer'];
         const route = 'asset/';
         const method = 'createAssetsPrototype';
@@ -324,7 +313,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async transferAssets(params: ReqTypes.TransferParams, id = '1'): Promise<any> {
+    async transferAssets(params: ReqTypes.TransferAssets, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['amount', 'recipient', 'fee', 'assetCode', 'issuer'];
         const route = 'asset/';
         const method = 'transferAssets';
@@ -347,7 +336,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async transferAssetsPrototype(params: ReqTypes.TransferAssetsParams, id = '1'): Promise<any> {
+    async transferAssetsPrototype(params: ReqTypes.TransferAssets, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['amount', 'recipient', 'fee', 'assetCode', 'issuer'];
         const route = 'asset/';
         const method = 'transferAssetsPrototype';
@@ -367,7 +356,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async transferTargetAssets(params: ReqTypes.TransferTargetAssetsParams, id = '1'): Promise<any> {
+    async transferTargetAssets(params: ReqTypes.TransferAssets, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['amount', 'recipient', 'fee', 'assetId'];
         const route = 'asset/';
         const method = 'transferTargetAssets';
@@ -388,7 +377,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async transferTargetAssetsPrototype(params: ReqTypes.TransferTargetAssetsPrototypeParams, id = '1'): Promise<any> {
+    async transferTargetAssetsPrototype(params: ReqTypes.TransferAssets, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['amount', 'recipient', 'fee', 'assetId', 'sender'];
         const route = 'asset/';
         const method = 'transferTargetAssetsPrototype';
@@ -407,7 +396,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async getTransactionById(params: ReqTypes.getTransactionById, id = '1'): Promise<any> {
+    async getTransactionById(params: ReqTypes.getTransactionById, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['transactionId'];
         const route = 'nodeView/';
         const method = 'transactionById';
@@ -423,7 +412,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async getTransactionFromMempool(params: ReqTypes.getTransactionById, id = '1'): Promise<any> {
+    async getTransactionFromMempool(params: ReqTypes.getTransactionById, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['transactionId'];
         const route = 'nodeView/';
         const method = 'transactionFromMempool';
@@ -437,7 +426,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async getMempool(id = '1'): Promise<any> {
+    async getMempool(id = '1'): Promise<{ [key: string]: string }> {
         const params = {};
         const requiredFields: Array<string> = [];
         const route = 'nodeView/';
@@ -454,7 +443,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async getBlockById(params: ReqTypes.GetBlockById, id = '1'): Promise<any> {
+    async getBlockById(params: ReqTypes.GetBlockById, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['blockId'];
         const route = 'nodeView/';
         const method = 'blockById';
@@ -471,7 +460,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async chainInfo(id = '1'): Promise<any> {
+    async chainInfo(id = '1'): Promise<{ [key: string]: string }> {
         const params = {};
         const requiredFields: Array<string> = [];
         const route = 'debug/';
@@ -489,7 +478,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async calcDelay(params: ReqTypes.CalcDelay, id = '1'): Promise<any> {
+    async calcDelay(params: ReqTypes.CalcDelay, id = '1'): Promise<{ [key: string]: string }> {
         const requiredFields = ['blockId', 'numBlocks'];
         const route = 'debug/';
         const method = 'delay';
@@ -503,7 +492,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async myBlocks(id = '1'): Promise<any> {
+    async myBlocks(id = '1'): Promise<{ [key: string]: string }> {
         const params = {};
         const requiredFields: Array<string> = [];
         const route = 'debug/';
@@ -518,7 +507,7 @@ class Requests {
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
      */
-    async blockGenerators(id = '1'): Promise<any> {
+    async blockGenerators(id = '1'): Promise<{ [key: string]: string }> {
         const params = {};
         const requiredFields: Array<string> = [];
         const route = 'debug/';

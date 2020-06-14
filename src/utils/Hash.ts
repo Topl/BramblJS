@@ -3,7 +3,7 @@
 import Base58 from 'base-58';
 import blake from 'blake2';
 import fs from 'fs';
-import HashType from '../../types/HashTypes';
+import HashType from './Hash.d';
 
 // Based on JCS spec
 // https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme-17
