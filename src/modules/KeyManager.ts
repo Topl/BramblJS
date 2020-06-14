@@ -10,16 +10,14 @@
 ('use strict');
 
 // Dependencies
-
+import fs from 'fs';
 import path from 'path';
-
-import blake2 from 'blake2b';
+import blake from 'blake2';
 import crypto from 'crypto';
 import Base58 from 'base-58';
 import keccakHash from 'keccak';
 import * as curve25519 from 'curve25519-js';
 import * as KeyManTypes from '../../types/KeyManagerTypes';
-const scrypt = require('scrypt-js');
 
 // Default options for key generation as of 2020.01.25
 const defaultOptions = {
@@ -70,7 +68,7 @@ function str2buf(str: string | Buffer, enc?: 'utf8' | 'hex' | 'base64'): Buffer 
  * @return {boolean} If available true, otherwise false.
  */
 function isCipherAvailable(cipher: string): boolean {
-    return crypto.getCiphers().some((name: string) => {
+    return crypto.getCiphers().some((name) => {
         return name === cipher;
     });
 }
@@ -138,8 +136,8 @@ function create(
     const keyBytes = params.keyBytes;
     const ivBytes = params.ivBytes;
 
-    function bifrostBlake2b(buffer: Buffer) {
-        return Buffer.from(blake2(32).update(buffer).digest());
+    function bifrostBlake2b(Buffer: Buffer) {
+        return blake.createHash('blake2b', { digestLength: 32 }).update(Buffer).digest();
     }
 
     function curve25519KeyGen(randomBytes: Buffer): KeyManTypes.KeyGen {
@@ -178,7 +176,7 @@ function deriveKey(
     password: string,
     salt: Buffer | string,
     kdfParams: KeyManTypes.KdfParams,
-    cb?: (cryptoBuffer: any) => any,
+    cb?: (cryptoBuffer: Buffer) => any,
 ): Buffer | undefined {
     if (typeof password === 'undefined' || password === null || !salt) {
         throw new Error('Must provide password and salt to derive a key');
@@ -196,17 +194,34 @@ function deriveKey(
     // use scrypt as key derivation function
     if (cb) {
         if (!isFunction(cb)) {
-            return Buffer.from(scrypt.syncScrypt(password, salt, N, r, p, dkLen));
+            return crypto.scryptSync(str2buf(password, 'utf8'), str2buf(salt), dkLen, {
+                N,
+                r,
+                p,
+                maxmem,
+            });
         }
         if (cb === undefined) {
             // asynchronous key generation
-            return Buffer.from(scrypt.syncScrypt(password, salt, N, r, p, dkLen));
+            return crypto.scryptSync(str2buf(password, 'utf8'), str2buf(salt), dkLen, {
+                N,
+                r,
+                p,
+                maxmem,
+            });
         } else {
-            cb(Buffer.from(scrypt.syncScrypt(password, salt, N, r, p, dkLen)));
+            cb(
+                crypto.scryptSync(str2buf(password, 'utf8'), str2buf(salt), dkLen, {
+                    N,
+                    r,
+                    p,
+                    maxmem,
+                }),
+            );
         }
     }
 }
-function deriveKey2(password: string, salt: Buffer | string, kdfParams: KeyManTypes.KdfParams): any {
+function deriveKey2(password: string, salt: Buffer | string, kdfParams: KeyManTypes.KdfParams): Buffer {
     if (typeof password === 'undefined' || password === null || !salt) {
         throw new Error('Must provide password and salt to derive a key');
     }
@@ -222,7 +237,12 @@ function deriveKey2(password: string, salt: Buffer | string, kdfParams: KeyManTy
 
     // use scrypt as key derivation function
 
-    return Buffer.from(scrypt.syncScrypt(str2buf(password), salt, N, r, p, dkLen));
+    return crypto.scryptSync(str2buf(password, 'utf8'), str2buf(salt), dkLen, {
+        N,
+        r,
+        p,
+        maxmem,
+    });
 }
 /**
  * Assemble key data object in secret-storage format.
@@ -411,13 +431,13 @@ class KeyManager {
         };
 
         // Imports key data object from keystore JSON file.
-        // const importFromFile = (filepath: string, password: Buffer | string) => {
-        //     const keyStorage = JSON.parse(String(fs.readFileSync(filepath)));
+        const importFromFile = (filepath: string, password: Buffer | string) => {
+            const keyStorage = JSON.parse(String(fs.readFileSync(filepath)));
 
-        //     // todo - check that the imported object conforms to our definition of a keyfile
+            // todo - check that the imported object conforms to our definition of a keyfile
 
-        //     initKeyStorage(keyStorage, password);
-        // };
+            initKeyStorage(keyStorage, password);
+        };
 
         // initialize vatiables
         this.constants = params.constants || defaultOptions;
@@ -425,20 +445,20 @@ class KeyManager {
 
         // load in keyfile if a path was given, or default to generating a new key
 
-        // if (params.keyPath) {
-        //     try {
-        //         importFromFile(params.keyPath, params.password);
-        //     } catch (err) {
-        //         throw new Error('Error importing keyfile');
-        //     }
-        // } else {
-        // Will check if only a string was given and assume it is the password
-        if (params.constructor === String) {
+        if (params.keyPath) {
+            try {
+                importFromFile(params.keyPath, params.password);
+            } catch (err) {
+                throw new Error('Error importing keyfile');
+            }
+        } else {
+            // Will check if only a string was given and assume it is the password
+            if (params.constructor === String) {
+                generateKey(params);
+            }
+
             generateKey(params);
         }
-
-        generateKey(params);
-        // }
     }
 
     //// Static methods //////////////////////////////////////////////////////////////////////////////////////////////
@@ -528,16 +548,16 @@ class KeyManager {
      * @return {string} JSON filename
      * @memberof KeyManager
      */
-    // exportToFile(_keyPath: string): string {
-    //     const keyPath = _keyPath || 'keyfiles';
+    exportToFile(_keyPath: string) {
+        const keyPath = _keyPath || 'keyfiles';
 
-    //     const outfile = generateKeystoreFilename(this.pk);
-    //     const json = JSON.stringify(this.getKeyStorage());
-    //     const outpath = path.join(keyPath, outfile);
+        const outfile = generateKeystoreFilename(this.pk);
+        const json = JSON.stringify(this.getKeyStorage());
+        const outpath = path.join(keyPath, outfile);
 
-    //     fs.writeFileSync(outpath, json);
-    //     return outpath;
-    // }
+        fs.writeFileSync(outpath, json);
+        return outpath;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

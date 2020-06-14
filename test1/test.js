@@ -1,5 +1,5 @@
 require('dotenv').config();
-const BramblJS = require('../dist/Brambl');
+const BramblJS = require('../index');
 const assert = require('assert');
 
 const brambljs = new BramblJS({
@@ -12,5 +12,4 @@ const brambljs = new BramblJS({
         //keyPath: './keystore/itGuy.json'
     },
 });
-var h = brambljs.keyManager.getKeyStorage();
-console.log(h);
+brambljs.requests.chainInfo().then(console.log);
