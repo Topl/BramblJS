@@ -2,8 +2,6 @@
 // const BramblJS = require('../index')
 // const assert = require("assert")
 
-
-
 // const brambljs = new BramblJS({
 //     Requests: {
 //         url: 'https://valhalla.torus.topl.co/',
@@ -15,10 +13,7 @@
 //     }
 // })
 
-
-
 // describe("Requests Module", () => {
-
 
 //     it("should return a newly generated keyfile", done => {
 //         brambljs.requests
@@ -45,11 +40,10 @@
 //             })
 //             .catch(error => {
 //                 console.log("Locked Key")
-            
+
 //                 console.log(error);
 //             });
 //     }).timeout("20000");
-
 
 //     it("should return a successfully unlocked keyfile", done => {
 //         brambljs.requests

@@ -1,7 +1,7 @@
 "use strict";
 /**
  * @author James Aman (j.aman@topl.me)
- * @version 2.0.0
+ * @version 3.0.0
  * @date 2020.4.03
  **/
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -89,9 +89,6 @@ class Brambl {
         this.transaction = (method, params) => __awaiter(this, void 0, void 0, function* () {
             if (!validTxMethods.includes(method))
                 throw new Error('Invalid transaction method');
-            // TODO: Figure out how to type Requests correctly so that an arbirtrary function can be called by name
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             return this.requests[method](params).then((res) => this.signAndBroadcast(res.result));
         });
         /**
@@ -142,7 +139,7 @@ class Brambl {
             });
         }
         else {
-            this.keyManager = new KeyManager_1.default(keyManagerVar);
+            this.keyManager = new KeyManager_1.default(keyManagerVar.password);
         }
         // Import utilities
         this.utils = { Hash: Hash_1.default };

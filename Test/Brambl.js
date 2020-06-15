@@ -2,8 +2,6 @@
 // const BramblJS = require('../index')
 // const assert = require("assert")
 
-
-
 // const brambljs = new BramblJS({
 //     Requests: {
 //         url: 'https://valhalla.torus.topl.co/',

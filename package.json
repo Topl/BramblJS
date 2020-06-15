@@ -1,29 +1,38 @@
 {
-  "name": "brambljs",
-  "repository": "https://github.com/Topl/Brambl-JS",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "mocha Test/"
-  },
-  "author": "topl",
-  "license": "MPL-2.0",
-  "description": "",
-  "dependencies": {
-    "@types/blake2": "^4.0.0",
-    "@types/keccak": "^3.0.1",
-    "@types/node-fetch": "^2.5.7",
-    "assert": "^2.0.0",
-    "base-58": "0.0.1",
-    "blake2": "^4.0.0",
-    "canonicalize": "^1.0.1",
-    "curve25519-js": "0.0.4",
-    "keccak": "^3.0.0",
-    "node-fetch": "^2.6.0"
-  },
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "dotenv": "^8.2.0",
-    "mocha": "^7.2.0"
-  }
+    "name": "brambljs",
+    "repository": "https://github.com/Topl/Brambl-JS",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "test": "mocha",
+        "build": "tsc",
+        "lint": "eslint '*/**/*.{js, ts,tsx}' --quiet --fix"
+    },
+    "author": "topl",
+    "license": "MPL-2.0",
+    "description": "",
+    "dependencies": {
+        "assert": "^2.0.0",
+        "base-58": "0.0.1",
+        "blake2": "^4.0.0",
+        "canonicalize": "^1.0.1",
+        "curve25519-js": "0.0.4",
+        "eslint": "^7.2.0",
+        "keccak": "^3.0.0",
+        "node-fetch": "^2.6.0",
+        "typescript": "^3.9.5"
+    },
+    "devDependencies": {
+        "@types/blake2": "^4.0.0",
+        "@types/keccak": "^3.0.1",
+        "@types/node-fetch": "^2.5.7",
+        "@typescript-eslint/eslint-plugin": "^3.2.0",
+        "@typescript-eslint/parser": "^3.2.0",
+        "chai": "^4.2.0",
+        "dotenv": "^8.2.0",
+        "eslint-config-prettier": "^6.11.0",
+        "eslint-plugin-prettier": "^3.1.3",
+        "mocha": "^7.2.0",
+        "prettier": "^2.0.5"
+    }
 }
