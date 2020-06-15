@@ -313,7 +313,7 @@ class KeyManager {
             this.#keyStorage = keyStorage;
 
             if (this.pk) {
-                this.#sk = recover(String(password), keyStorage, this.constants.scrypt);
+                this.#sk = recover(password, keyStorage, this.constants.scrypt);
             }
         };
 
@@ -341,13 +341,13 @@ class KeyManager {
             } catch (err) {
                 throw new Error('Error importing keyfile');
             }
-        } else {
-            // Will check if only a string was given and assume it is the password
-            if (params.constructor === String) {
-                generateKey(params);
-            }
+
+            // check if only a string was given and assume it is the password
+        } else if (params.constructor === String) {
+            generateKey(params);
 
             // finally, try to generate a key from a password provided in the params object
+        } else {
             generateKey(params.password);
         }
     }

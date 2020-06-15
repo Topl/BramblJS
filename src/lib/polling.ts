@@ -1,10 +1,7 @@
-import { pollingRequests, pollingOptions } from './polling.d';
+import Requests from '../modules/Requests';
+import { pollingOptions } from './polling.d';
 
-const polling = (
-    requests: pollingRequests,
-    txId: string,
-    options: pollingOptions,
-): Promise<{ [key: string]: string }> => {
+const polling = (requests: Requests, txId: string, options: pollingOptions): Promise<any> => {
     const { timeout, interval, maxFailedQueries } = options;
     let failureResponse: string;
     let numFailedQueries = 0; // initialize counter for number of queries to the mempool
@@ -25,7 +22,7 @@ const polling = (
                 .getTransactionById({ transactionId: txId })
                 .then(
                     // on fulfilled promise (when the transaction has been included in a block)
-                    function (response: { result: { [key: string]: string } }) {
+                    function (response: { [key: string]: string }): void {
                         try {
                             //If result is non-null (transaction found) resolve the promise with json of result and stop interval and timeout threads
                             clearInterval(intervalID);
@@ -37,7 +34,7 @@ const polling = (
                         }
                     },
                     // on rejected promise, see if ithe transaction can be found in the mempool
-                    function (response: { error: { message: string } }) {
+                    function (response: { error: { message: string } }): void {
                         failureResponse = response.error ? response.error.message : 'Uncaught exception';
                         requests
                             .getTransactionFromMempool({ transactionId: txId })

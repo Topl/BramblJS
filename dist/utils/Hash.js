@@ -1,18 +1,14 @@
-'use strict';
-var __importDefault =
-    (this && this.__importDefault) ||
-    function (mod) {
-        return mod && mod.__esModule ? mod : { default: mod };
-    };
-Object.defineProperty(exports, '__esModule', { value: true });
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 ('use strict');
 // Dependencies
-const base_58_1 = __importDefault(require('base-58'));
-const blake2_1 = __importDefault(require('blake2'));
-const fs_1 = __importDefault(require('fs'));
-// Based on JCS spec
-// https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme-17
-const canonicalize_1 = __importDefault(require('canonicalize'));
+const fs_1 = __importDefault(require("fs"));
+const blake2_1 = __importDefault(require("blake2"));
+const base_58_1 = __importDefault(require("base-58"));
+const canonicalize_1 = __importDefault(require("canonicalize")); // https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme-17
 /**
  * standard FastCryptographicHash in Bifrost
  * @returns Initialized hash function
@@ -23,7 +19,7 @@ function hashFunc() {
 /**
  * Create hash digest and encode
  *
- * @param {object} hash Hash object
+ * @param {Hash} hash Hash object
  * @param {string} [encoding] Desired output encoding. May be one of `hex`, `base64`, or `base58`. If none provided a `Buffer` is returned
  * @returns Blake2b-256 hash digest
  */
@@ -47,7 +43,7 @@ class Hash {
      * Calculates the Blake2b-256 hash of an arbitrary input. This function will apply JSON canonicalization to the given message.
      * Further information regarding JON canonicalization may be found at {@link https://github.com/cyberphone/json-canonicalization}
      *
-     * @param {any} message input message to create the hash digest of
+     * @param {string} message input message to create the hash digest of
      * @param {string} encoding output encoding
      * @returns Blake2b-256 hash digest
      */
@@ -76,15 +72,13 @@ class Hash {
      * @returns Blake2b-256 hash digest
      */
     static file(filePath, encoding) {
-        return new Promise((resolve, reject) =>
-            fs_1.default
-                .createReadStream(filePath)
-                .on('error', reject)
-                .pipe(hashFunc())
-                .once('finish', function () {
-                    resolve(digestAndEncode(this, encoding));
-                }),
-        );
+        return new Promise((resolve, reject) => fs_1.default
+            .createReadStream(filePath)
+            .on('error', reject)
+            .pipe(hashFunc())
+            .once('finish', function () {
+            resolve(digestAndEncode(this, encoding));
+        }));
     }
 }
 exports.default = Hash;

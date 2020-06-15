@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 /** A Javascript API wrapper module for the Bifrost Protocol.
  * Currently supports version 4.1 of Bifrost's Brambl-Layer API
  * Documentation for Brambl-layer is available at https://Requests.docs.topl.co
@@ -8,54 +8,27 @@
  *
  * Based on the original work of Yamir Tainwala - 2019
  */
-var __awaiter =
-    (this && this.__awaiter) ||
-    function (thisArg, _arguments, P, generator) {
-        function adopt(value) {
-            return value instanceof P
-                ? value
-                : new P(function (resolve) {
-                      resolve(value);
-                  });
-        }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-                try {
-                    step(generator.next(value));
-                } catch (e) {
-                    reject(e);
-                }
-            }
-            function rejected(value) {
-                try {
-                    step(generator['throw'](value));
-                } catch (e) {
-                    reject(e);
-                }
-            }
-            function step(result) {
-                result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-            }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
-var __importDefault =
-    (this && this.__importDefault) ||
-    function (mod) {
-        return mod && mod.__esModule ? mod : { default: mod };
-    };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 // Dependencies
-const node_fetch_1 = __importDefault(require('node-fetch'));
+const node_fetch_1 = __importDefault(require("node-fetch"));
 /**
  * General builder function for formatting API request
  *
- * @param {object} routeInfo - call specific information
- * @param {string} routeInfo.route - the route where the request will be sent
- * @param {string} routeInfo.method - the json-rpc method that will be triggered on the node
- * @param {string} routeInfo.id - an identifier for tracking requests sent to the node
- * @param {object} params - method specific parameter object
+ * @param {ReqTypes.RouteInfo} routeInfo - call specific information
+ * @param {ReqTypes.Params} params - method specific parameter object
  * @param {string[]} fields List of Keys nessesary for the parameter object to include.
- * @param {object} self - internal reference for accessing constructor data
+ * @param {Requests} self - internal reference for accessing constructor data
  * @returnss {object} JSON response from the node
  */
 function BramblRequest(routeInfo, params, fields, self) {
@@ -80,27 +53,28 @@ function BramblRequest(routeInfo, params, fields, self) {
             };
             // we have to await here because we don't have to evaluate whether the node returned an error
             const response = yield (yield node_fetch_1.default(payload.url, payload)).json();
-            if (response.error) throw response.error;
+            if (response.error)
+                throw response.error;
             return response;
-        } catch (err) {
+        }
+        catch (err) {
             throw err;
         }
     });
 }
 /**
  * A function to ensure the parameters object is not empty and has the correct keys.
- * @param {object} params generic parameter object
+ * @param {ReqTypes.Params} params generic parameter object
  * @param {string[]} fields List of Keys nessesary for the parameter object to include.
  */
 function checkParams(params = {}, fields) {
     fields.map((field) => {
         // check that all required fields have been given
         if (!Object.keys(params).includes(field))
-            throw new Error(
-                `A required field was not found. Please provide values for the following parameters: ${field}`,
-            );
+            throw new Error(`A required field was not found. Please provide values for the following parameters: ${field}`);
         // ensure that a value is given for the parameter
-        if (!params[field]) throw new Error(`A value for ${field} must be specified`);
+        if (!params[field])
+            throw new Error(`A value for ${field} must be specified`);
     });
 }
 /**
@@ -130,10 +104,9 @@ class Requests {
     //////getBalancesByKey/////////////////////
     /**
      * Get the balances of a specified public key in the keyfiles directory of the node
-     * @param {} params - body parameters passed to the specified json-rpc method
-     * @param {string[]} params.publicKeys - An array of public keys to query the balance for
+     * @param {ReqTypes.Balances} params - body parameters passed to the specified json-rpc method
      * @param {string} [id="1"] - identifying number for the json-rpc request
-     * @returns {any} json-rpc response from the chain
+     * @returns json-rpc response from the chain
      * @memberof Requests
      */
     getBalancesByKey(params, id = '1') {
@@ -148,7 +121,7 @@ class Requests {
     /**
      * Get a list of all open keyfiles
      * @param {string} [id="1"] - identifying number for the json-rpc request
-     * @returns {any} json-rpc response from the chain
+     * @returns json-rpc response from the chain
      * @memberof Requests
      */
     listOpenKeyfiles(id = '1') {
@@ -163,10 +136,9 @@ class Requests {
     //////generateKeyfile////////////////
     /**
      * Generate a new keyfile in the node keyfile directory
-     * @param {Object} params - body parameters passed to the specified json-rpc method
-     * @param {string} params.password - Password for encrypting the new keyfile
+     * @param {password: string} params - body parameters passed to the specified json-rpc method
      * @param {string} [id="1"] - identifying number for the json-rpc request
-     * @returns {object} json-rpc response from the chain
+     * @returns json-rpc response from the chain
      * @memberof Requests
      */
     generateKeyfile(params, id = '1') {
@@ -180,9 +152,7 @@ class Requests {
     //////lockKeyfile////////////////
     /**
      * Lock an open keyfile
-     * @param {object} params - body parameters passed to the specified json-rpc method
-     * @param {string} params.publicKey - Base58 encoded public key to get the balance of
-     * @param {string} params.password - Password used to encrypt the keyfile
+     * @param {ReqTypes.Keyfile} params - body parameters passed to the specified json-rpc method
      * @param {string} [id="1"] - identifying number for the json-rpc request
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
@@ -198,9 +168,7 @@ class Requests {
     //////unlockKeyfile////////////////
     /**
      * Unlock a keyfile in the node's keyfile directory
-     * @param {object} params - body parameters passed to the specified json-rpc method
-     * @param {string} params.publicKey - Base58 encoded public key to get the balance of
-     * @param {string} params.password - Password used to encrypt the keyfile
+     * @param {ReqTypes.Keyfile} params - body parameters passed to the specified json-rpc method
      * @param {string} [id="1"] - identifying number for the json-rpc request
      * @returns {object} json-rpc response from the chain
      * @memberof Requests
@@ -216,9 +184,7 @@ class Requests {
     //////signTransaction////////////////
     /**
      * Have the node sign a JSON formatted prototype transaction
-     * @param {object} params - body parameters passed to the specified json-rpc method
-     * @param {string} params.publicKey - Base58 encoded public key to get the balance of
-     * @param {string} params.tx - a JSON formatted prototype transaction
+     * @param {ReqTypes.TxParams} params - body parameters passed to the specified json-rpc method
      * @param {string} [id="1"] - identifying number for the json-rpc request
      * @returns {object} json-rpc response from the chain
      * @memberof Requests

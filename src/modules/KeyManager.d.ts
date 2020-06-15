@@ -5,8 +5,8 @@ export interface paramsCreate {
 
 export interface ConstructorParams {
     password: string;
-    constants: KeyEncryptOptions;
-    keyPath: string;
+    constants?: KeyEncryptOptions;
+    keyPath?: string;
 }
 
 export interface KeyCrypto {
@@ -25,7 +25,7 @@ export interface KeyStorage {
 }
 
 export interface DeriveKey {
-    publicKeyId: any;
+    publicKeyId: string;
     crypto: Crypto;
 }
 
