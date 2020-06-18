@@ -62,8 +62,11 @@ const keyManager = BramblJS.KeyManager('PASSWORD')
 where `'PASSWORD'` is the user provided encryption password for the keyfile.
 
 # Testing
-To test run "npm test" from the root directory. 
-This will run a mocha test that will ensure that the encryption and KeyManager code is functioning properly.
+A minimal test suite has been implmeented and may be run by executing
+```
+npm test
+```
+after cloning and installing all needed dependencies. This suite uses mocha and primarily serves to test the encryption and KeyManager code is functioning properly.
 
 # Examples
 Below are examples for using the BramblJS library with a private testnet running on your localhost. Please consult the [Bifrost documentation](https://github.com/topl/bifrost) for further instructions on deploying a local private testnet.

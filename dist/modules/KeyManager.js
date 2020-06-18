@@ -51,6 +51,7 @@ const blake2_1 = __importDefault(require("blake2"));
 const crypto_1 = __importDefault(require("crypto"));
 const base_58_1 = __importDefault(require("base-58"));
 const keccak_1 = __importDefault(require("keccak"));
+const str2buf_1 = __importDefault(require("../lib/str2buf"));
 const curve25519 = __importStar(require("curve25519-js"));
 // Default options for key generation as of 2020.01.25
 const defaultOptions = {
@@ -69,28 +70,6 @@ const defaultOptions = {
     },
 };
 //// Generic key methods //////////////////////////////////////////////////////////////////////////////////////////////
-/**
- * Convert a string to a Buffer.  If encoding is not specified, hex-encoding
- * will be used if the input is valid hex.  If the input is valid base64 but
- * not valid hex, base64 will be used.  Otherwise, utf8 will be used.
- * @param {string | Buffer} str String to be converted.
- * @param {string=} enc Encoding of the input string (optional).
- * @return {Buffer} Buffer (bytearray) containing the input data.
- */
-function str2buf(str, enc) {
-    if (Buffer.isBuffer(str)) {
-        return str;
-    }
-    switch (enc) {
-        case 'utf8':
-        case 'hex':
-        case 'base64':
-            return Buffer.from(str, enc);
-        case 'base58':
-        default:
-            return Buffer.from(base_58_1.default.decode(str));
-    }
-}
 /**
  * Check if the selected cipher is available.
  * @param {string} algo Encryption algorithm.
@@ -112,8 +91,8 @@ function isCipherAvailable(cipher) {
 function encrypt(plaintext, key, iv, algo) {
     if (!isCipherAvailable(algo))
         throw new Error(algo + ' is not available');
-    const cipher = crypto_1.default.createCipheriv(algo, str2buf(key), iv);
-    const ciphertext = cipher.update(str2buf(plaintext));
+    const cipher = crypto_1.default.createCipheriv(algo, str2buf_1.default(key), iv);
+    const ciphertext = cipher.update(str2buf_1.default(plaintext));
     return Buffer.concat([ciphertext, cipher.final()]);
 }
 /**
@@ -127,8 +106,8 @@ function encrypt(plaintext, key, iv, algo) {
 function decrypt(ciphertext, key, iv, algo) {
     if (!isCipherAvailable(algo))
         throw new Error(algo + ' is not available');
-    const decipher = crypto_1.default.createDecipheriv(algo, str2buf(key), iv);
-    const plaintext = decipher.update(str2buf(ciphertext));
+    const decipher = crypto_1.default.createDecipheriv(algo, str2buf_1.default(key), iv);
+    const plaintext = decipher.update(str2buf_1.default(ciphertext));
     return Buffer.concat([plaintext, decipher.final()]);
 }
 /**
@@ -142,7 +121,7 @@ function decrypt(ciphertext, key, iv, algo) {
  */
 function getMAC(derivedKey, ciphertext) {
     const keccak256 = (msg) => keccak_1.default('keccak256').update(msg).digest();
-    return base_58_1.default.encode(keccak256(Buffer.concat([str2buf(derivedKey).slice(16, 32), str2buf(ciphertext)])));
+    return base_58_1.default.encode(keccak256(Buffer.concat([str2buf_1.default(derivedKey).slice(16, 32), str2buf_1.default(ciphertext)])));
 }
 /**
  * Generate random numbers for private key, initialization vector,
@@ -194,7 +173,7 @@ function deriveKey(password, salt, kdfParams) {
         p,
         maxmem,
     };
-    return crypto_1.default.scryptSync(str2buf(password, 'utf8'), str2buf(salt), dkLen, scryptOpts);
+    return crypto_1.default.scryptSync(str2buf_1.default(password, 'utf8'), str2buf_1.default(salt), dkLen, scryptOpts);
 }
 /**
  * Assemble key data object in secret-storage format.
@@ -255,11 +234,11 @@ function recover(password, keyStorage, kdfParams) {
         }
         if (!isCipherAvailable(algo))
             throw new Error(algo + ' is not available');
-        return decrypt(ciphertext, derivedKey, str2buf(iv), algo);
+        return decrypt(ciphertext, derivedKey, str2buf_1.default(iv), algo);
     }
-    const iv = str2buf(keyStorage.crypto.cipherParams.iv);
-    const salt = str2buf(keyStorage.crypto.kdsfSalt);
-    const ciphertext = str2buf(keyStorage.crypto.cipherText);
+    const iv = str2buf_1.default(keyStorage.crypto.cipherParams.iv);
+    const salt = str2buf_1.default(keyStorage.crypto.kdsfSalt);
+    const ciphertext = str2buf_1.default(keyStorage.crypto.cipherText);
     const mac = keyStorage.crypto.mac;
     const algo = keyStorage.crypto.cipher;
     // derive secret key from password
@@ -339,22 +318,6 @@ class KeyManager {
         }
     }
     //// Static methods //////////////////////////////////////////////////////////////////////////////////////////////
-    /**
-     * Check whether a private key was used to generate the signature for a message.
-     * This method is static so that it may be used without generating a keyfile
-     * @param {Buffer|string} publicKey A public key (if string, must be base-58 encoded)
-     * @param {string} message Message to sign (utf-8 encoded)
-     * @param {Buffer|string} signature Signature to verify (if string, must be base-58 encoded)
-     * @param {function=} cb Callback function (optional).
-     * @return {boolean}
-     * @memberof KeyManager
-     */
-    static verify(publicKey, message, signature) {
-        const pk = str2buf(publicKey, 'base58');
-        const msg = str2buf(message, 'utf8');
-        const sig = str2buf(signature);
-        return curve25519.verify(pk, msg, sig);
-    }
     ////////////////// Public methods ////////////////////////////////////////////////////////////////////////
     /**
      * Getter function to retrieve key storage in the Bifrost compatible format
@@ -397,7 +360,7 @@ class KeyManager {
             throw new Error('The key is currently locked. Please unlock and try again.');
         }
         function curve25519sign(privateKey, message) {
-            return curve25519.sign(str2buf(privateKey), str2buf(message, 'utf8'), crypto_1.default.randomBytes(64));
+            return curve25519.sign(str2buf_1.default(privateKey), str2buf_1.default(message, 'utf8'), crypto_1.default.randomBytes(64));
         }
         return curve25519sign(__classPrivateFieldGet(this, _sk), message);
     }

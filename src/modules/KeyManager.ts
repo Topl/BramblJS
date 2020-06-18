@@ -16,6 +16,7 @@ import blake from 'blake2';
 import crypto from 'crypto';
 import Base58 from 'base-58';
 import keccakHash from 'keccak';
+import str2buf from '../lib/str2buf';
 import * as curve25519 from 'curve25519-js';
 import * as KeyManTypes from './KeyManager.d';
 
@@ -40,31 +41,6 @@ const defaultOptions: KeyManTypes.KeyEncryptOptions = {
 };
 
 //// Generic key methods //////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Convert a string to a Buffer.  If encoding is not specified, hex-encoding
- * will be used if the input is valid hex.  If the input is valid base64 but
- * not valid hex, base64 will be used.  Otherwise, utf8 will be used.
- * @param {string | Buffer} str String to be converted.
- * @param {string=} enc Encoding of the input string (optional).
- * @return {Buffer} Buffer (bytearray) containing the input data.
- */
-function str2buf(str: string | Buffer, enc?: 'utf8' | 'hex' | 'base64' | 'base58'): Buffer {
-    if (Buffer.isBuffer(str)) {
-        return str;
-    }
-
-    switch (enc) {
-        case 'utf8':
-        case 'hex':
-        case 'base64':
-            return Buffer.from(str, enc);
-
-        case 'base58':
-        default:
-            return Buffer.from(Base58.decode(str));
-    }
-}
 
 /**
  * Check if the selected cipher is available.
@@ -353,23 +329,6 @@ class KeyManager {
     }
 
     //// Static methods //////////////////////////////////////////////////////////////////////////////////////////////
-    /**
-     * Check whether a private key was used to generate the signature for a message.
-     * This method is static so that it may be used without generating a keyfile
-     * @param {Buffer|string} publicKey A public key (if string, must be base-58 encoded)
-     * @param {string} message Message to sign (utf-8 encoded)
-     * @param {Buffer|string} signature Signature to verify (if string, must be base-58 encoded)
-     * @param {function=} cb Callback function (optional).
-     * @return {boolean}
-     * @memberof KeyManager
-     */
-    static verify(publicKey: Buffer | string, message: string | Buffer, signature: Buffer | string): boolean {
-        const pk = str2buf(publicKey, 'base58');
-        const msg = str2buf(message, 'utf8');
-        const sig = str2buf(signature);
-
-        return curve25519.verify(pk, msg, sig);
-    }
 
     ////////////////// Public methods ////////////////////////////////////////////////////////////////////////
     /**

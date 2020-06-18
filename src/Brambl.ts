@@ -13,6 +13,7 @@ import KeyManager from './modules/KeyManager';
 
 // Utilities
 import Hash from './utils/Hash';
+import Crypto from './utils/Crypto';
 
 // Libraries
 import pollTx from './lib/polling';
@@ -48,7 +49,7 @@ const validTxMethods = ['createAssetsPrototype', 'transferAssetsPrototype', 'tra
 class Brambl {
     requests: Requests;
     keyManager: KeyManager;
-    utils: { Hash: Hash };
+    utils: { Hash: Hash; Crypto: Crypto };
 
     constructor(params: any) {
         // default values for the constructor arguement
@@ -84,7 +85,7 @@ class Brambl {
         }
 
         // Import utilities
-        this.utils = { Hash };
+        this.utils = { Hash, Crypto };
     }
 
     /**

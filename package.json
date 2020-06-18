@@ -4,7 +4,7 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "test": "mocha",
+        "test": "mocha ./test/unit",
         "build": "tsc",
         "lint": "eslint '*/**/*.{js, ts,tsx}' --quiet --fix"
     },
@@ -12,17 +12,17 @@
     "license": "MPL-2.0",
     "description": "",
     "dependencies": {
-        "assert": "^2.0.0",
         "base-58": "0.0.1",
         "blake2": "^4.0.0",
         "canonicalize": "^1.0.1",
         "curve25519-js": "0.0.4",
-        "eslint": "^7.2.0",
         "keccak": "^3.0.0",
-        "node-fetch": "^2.6.0",
-        "typescript": "^3.9.5"
+        "node-fetch": "^2.6.0"
     },
     "devDependencies": {
+        "typescript": "^3.9.5",
+        "eslint": "^7.2.0",
+        "assert": "^2.0.0",
         "@types/blake2": "^4.0.0",
         "@types/keccak": "^3.0.1",
         "@types/node-fetch": "^2.5.7",

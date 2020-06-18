@@ -23,6 +23,7 @@ const Requests_1 = __importDefault(require("./modules/Requests"));
 const KeyManager_1 = __importDefault(require("./modules/KeyManager"));
 // Utilities
 const Hash_1 = __importDefault(require("./utils/Hash"));
+const Crypto_1 = __importDefault(require("./utils/Crypto"));
 // Libraries
 const polling_1 = __importDefault(require("./lib/polling"));
 // Constants definitions
@@ -145,7 +146,7 @@ class Brambl {
             this.keyManager = new KeyManager_1.default(keyManagerVar);
         }
         // Import utilities
-        this.utils = { Hash: Hash_1.default };
+        this.utils = { Hash: Hash_1.default, Crypto: Crypto_1.default };
     }
     /**
      * Method for creating a separate Requests instance
