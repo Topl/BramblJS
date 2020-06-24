@@ -6,7 +6,13 @@
     "scripts": {
         "test": "mocha ./test/unit",
         "build": "tsc",
-        "lint": "eslint '*/**/*.{js, ts,tsx}' --quiet --fix"
+        "lint": "eslint '*/**/*.{js, ts,tsx}' --quiet --fix",
+        "format": "prettier --write \"src/**/*.ts\"",
+        "prepare" : "npm run build",
+        "prepublishOnly" : "npm test && npm run lint",
+        "preversion" : "npm run lint",
+        "version" : "npm run format && git add -A src",
+        "postversion" : "git push && git push --tags"
     },
     "author": "topl",
     "license": "MPL-2.0",
