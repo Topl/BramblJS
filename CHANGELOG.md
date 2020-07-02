@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Initial release
 * Published package to `npm` and changed name to Brambl-JS
 
-## 1.0.1 - 2020.07.01
+## 1.1.1 - 2020.07.01
 ### Added
 * A static function in Brambl to allow accessing the hash utilities without creating an instance of Brambl
 
