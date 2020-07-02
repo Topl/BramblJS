@@ -111,7 +111,7 @@
      * @static
      *
      * @param {string} type type of hash to construct
-     * @param {object || string} msg the msg that will be hashed
+     * @param {object | string} msg the msg that will be hashed
      * @memberof Brambl
      */
     static Hash(type, msg, encoding = "base58") {
