@@ -105,6 +105,20 @@
      static KeyManager(params) {
          return new KeyManager(params)
      }
+
+    /**
+     * Method for accessing the hash utility as a static method
+     * @static
+     *
+     * @param {string} type type of hash to construct
+     * @param {object || string} msg the msg that will be hashed
+     * @memberof Brambl
+     */
+    static Hash(type, msg, encoding = "base58") {
+        const allowedTypes = ["string", "file", "any"]
+        if (!allowedTypes.includes(type)) throw new Error(`Invalid type specified. Must be one of ${allowedTypes}`);
+        return Hash[type](msg, encoding);
+    }
  }
  
  /**  
