@@ -1,8 +1,8 @@
 const brambl = require('../index')
 require('dotenv').config()
 
-const bramblLayer = new brambl.Requests("https://valhalla.torus.topl.co", process.env.VALHALLA_KEY)
-const keyMan = new brambl.KeyManager; keyMan.importFromFile('./keystore/itGuy.json' , 'genesis')
+const bramblLayer = new brambl.Requests()
+const keyMan = new brambl.KeyManager( { keyPath: './keystore/itGuy.json' , password: 'genesis' })
 const signAndBroadcast = (tx) => brambl.utils.transactions.signAndBroadcast(bramblLayer, keyMan, tx)
 
 const createParams = {
