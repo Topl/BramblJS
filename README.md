@@ -4,7 +4,7 @@ A NodeJS library to facilitate interaction with the Topl blockchain network. Thi
 
 # Installation
 
-To install from npm run ``npm install --save brambljs`` in your project directory<br/>
+To install from npm run ``npm install --save brambljs`` in your project directory.<br/>
 
 To install from source:
 - Git clone using ``git clone https://github.com/topl/BramblJS``
@@ -113,8 +113,11 @@ brambl.transaction('createAssetsPrototype', createParams)
 ```
 
 # Testing
-package.json contains 2 scripts to run the mocha tests: `test` for general usage and `testOnWindows` specifically for Windows.
-Run the following on your terminal: ```npm run-script testOnMac```
+package.json contains 2 scripts as options to run the mocha tests: `test` for general usage and `testOnWindows` specifically for Windows.
+Run the following on your terminal:
+```
+npm run-script test
+```
 
 # License
 BramblJS is licensed under the [Mozilla Public License version 2.0 (MPL 2.0)](https://www.mozilla.org/en-US/MPL/2.0). A copy of this license may be found [here](../LICENSE.md)
