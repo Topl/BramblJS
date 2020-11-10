@@ -8,7 +8,7 @@ To install from npm run ``npm install --save brambljs`` in your project director
 
 To install from source:
 - Git clone using ``git clone https://github.com/topl/BramblJS``
-- Run `npm run install` within the cloned repo to install all dependencies
+- Run `npm install` within the cloned repo to install all dependencies
 
 # Usage
 
@@ -111,6 +111,10 @@ brambl.transaction('createAssetsPrototype', createParams)
     .then(res => { console.log('\nConfirmed transaction'); console.log(res) })
     .catch(console.log)
 ```
+
+# Testing
+package.json contains 2 scripts to run the mocha tests: `test` for general usage and `testOnWindows` specifically for Windows.
+Run the following on your terminal: ```npm run-script testOnMac```
 
 # License
 BramblJS is licensed under the [Mozilla Public License version 2.0 (MPL 2.0)](https://www.mozilla.org/en-US/MPL/2.0). A copy of this license may be found [here](../LICENSE.md)

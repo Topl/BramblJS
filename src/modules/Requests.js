@@ -2,7 +2,7 @@
  * Currently supports version 4.1 of Bifrost's Brambl-Layer API
  * Documentation for Brambl-layer is available at https://Requests.docs.topl.co
  *
- * @author James Ama (j.aman@topl.me)
+ * @author James Aman (j.aman@topl.me)
  * @date 2020.0.29
  * 
  * Based on the original work of Yamir Tainwala - 2019
@@ -11,7 +11,7 @@
 ("use strict");
 
 // Dependencies
-const fetch = require('node-fetch')
+const fetch = require('node-fetch');
 
 /**
  * General builder function for formatting API request

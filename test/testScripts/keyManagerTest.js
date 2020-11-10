@@ -34,7 +34,7 @@ try {
 /////////////////////////
 try {
     gjam = new KeyMan({
-        password: 'yet_another_password', 
+        password: 'yet_another_password',
         keyPath: outKey
     })
 console.log(gjam.getKeyStorage())

@@ -1,4 +1,4 @@
-const BramblJS = require('../index.js')
+const BramblJS = require('../../index.js')
 
 const brambl = new BramblJS('test')
 const bramblLayer = BramblJS.Requests()
@@ -11,7 +11,7 @@ function getAllFuncs(toCheck) {
         props = props.concat(Object.getOwnPropertyNames(obj));
     } while (obj = Object.getPrototypeOf(obj));
 
-    return props.sort().filter(function(e, i, arr) { 
+    return props.sort().filter(function(e, i, arr) {
        if (e!=arr[i+1] && typeof toCheck[e] == 'function') return true;
     });
 }

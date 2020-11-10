@@ -1,5 +1,5 @@
 const assert = require("assert");
-const BramblJS = require("./../../src/Requests");
+const BramblJS = require("../../src/Modules/Requests");
 
 describe("Keyfile", () => {
   before(() => {

@@ -2,7 +2,7 @@
  * Create, import, and export Topl Bifrost keys.
  * Also allows for signing of transactions
  * @author James Aman (j.aman@topl.me)
- * 
+ *
  * Based on the keythereum library from Jack Peterson
  * https://github.com/Ethereumjs/keythereum
  */
@@ -10,15 +10,15 @@
 ("use strict");
 
 // Dependencies
-const fs = require('fs')
-const path = require('path')
-const blake = require('blake2')
-const crypto = require('crypto')
-const Base58 = require('base-58')
-const keccakHash = require('keccak')
-const curve25519 = require("curve25519-js")
+const fs = require('fs');
+const path = require('path');
+const blake = require('blake2');
+const crypto = require('crypto');
+const Base58 = require('base-58');
+const keccakHash = require('keccak');
+const curve25519 = require("curve25519-js");
 
-// Default options for key generation as of 2020.01.25  
+// Default options for key generation as of 2020.01.25
 const defaultOptions = {
     // Symmetric cipher for private key encryption
     //--- anything from crypto.getCiphers() is eligible
@@ -189,7 +189,7 @@ function deriveKey(password, salt, kdfParams, cb) {
 /**
  * Assemble key data object in secret-storage format.
  * @param {Buffer} derivedKey Password-derived secret key.
- * @param {Object} keyObject Object containing the raw public / private keypair 
+ * @param {Object} keyObject Object containing the raw public / private keypair
  * @param {Buffer} salt Randomly generated salt.
  * @param {Buffer} iv Initialization vector.
  * @param {Buffer} algo encryption algorithm to be used
@@ -218,7 +218,7 @@ function marshal(derivedKey, keyObject, salt, iv, algo) {
 /**
  * Export private key to keystore secret-storage format.
  * @param {string|Buffer} password User-supplied password.
- * @param {Object} keyObject Object containing the raw public / private keypair 
+ * @param {Object} keyObject Object containing the raw public / private keypair
  * @param {Buffer} algo encryption algorithm to be used
  * @param {function=} cb Callback function (optional).
  * @return {Object} keyStorage for use with exportToFile
@@ -322,7 +322,7 @@ class KeyManager {
             // this will create a new curve25519 key pair and dump to an encrypted format
             initKeyStorage(dump(password, create(this.constants), this.constants), password)
         }
-    
+
         // Imports key data object from keystore JSON file.
         const importFromFile = (filepath, password) => {
             const keyStorage = JSON.parse(fs.readFileSync(filepath));
@@ -346,13 +346,13 @@ class KeyManager {
 
     //// Static methods //////////////////////////////////////////////////////////////////////////////////////////////
     /**
-     * Check whether a private key was used to generate the signature for a message. 
+     * Check whether a private key was used to generate the signature for a message.
      * This method is static so that it may be used without generating a keyfile
      * @param {Buffer|string} publicKey A public key (if string, must be base-58 encoded)
      * @param {string} message Message to sign (utf-8 encoded)
      * @param {Buffer|string} signature Signature to verify (if string, must be base-58 encoded)
      * @param {function=} cb Callback function (optional).
-     * @return {boolean} 
+     * @return {boolean}
      * @memberof KeyManager
      */
     static verify(publicKey, message, signature, cb) {
@@ -402,7 +402,7 @@ class KeyManager {
     /**
      * Generate the signature of a message using the provided private key
      * @param {string} message Message to sign (utf-8 encoded)
-     * @return {Buffer=} signature 
+     * @return {Buffer=} signature
      * @memberof KeyManager
      */
     sign(message) {
@@ -419,7 +419,7 @@ class KeyManager {
      * Export formatted JSON to keystore file.
      * @param {Object} keyStorage Keystore object.
      * @param {string=} keystore Path to keystore folder (default: "keystore").
-     * @return {string} JSON filename 
+     * @return {string} JSON filename
      * @memberof KeyManager
      */
     exportToFile(_keyPath) {

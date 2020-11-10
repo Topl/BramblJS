@@ -1,9 +1,10 @@
-const brambl = require('../index')
+const BramblJS = require('../../index')
 require('dotenv').config()
 
-const bramblLayer = new brambl.Requests()
-const keyMan = new brambl.KeyManager( { keyPath: './keystore/itGuy.json' , password: 'genesis' })
-const signAndBroadcast = (tx) => brambl.utils.transactions.signAndBroadcast(bramblLayer, keyMan, tx)
+const brambl = new BramblJS('test')
+const bramblLayer = BramblJS.Requests()
+const keyMan = BramblJS.KeyManager( { keyPath: './keystore/itGuy.json' , password: 'genesis' })
+const signAndBroadcast = (tx) => BramblJS.utils.transactions.signAndBroadcast(bramblLayer, keyMan, tx)
 
 const createParams = {
     issuer: keyMan.pk,
