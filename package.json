@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "pretest": "eslint --ignore-path .gitignore .",
-    "test": "./node_modules/mocha/bin/mocha test/it",
+    "lint": "eslint src --ext .js",
+    "lint:fix": "npm run lint -- --fix",
+    "test:run": "./node_modules/mocha/bin/mocha test/it",
+    "test": "run lint && npm run test:run",
     "testOnWindows": "node node_modules/mocha/bin/mocha test/it"
   },
   "author": "topl",
@@ -23,7 +26,7 @@
     "chai": "^4.2.0",
     "dotenv": "^8.2.0",
     "eslint": "^7.13.0",
-    "eslint-config-strongloop": "^2.1.0",
+    "eslint-config-google": "^0.14.0",
     "express": "^4.17.1",
     "mocha": "^7.2.0",
     "npm": "^6.14.8"
