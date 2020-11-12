@@ -1,4 +1,4 @@
-("use strict")
+("use strict");
 // Dependencies
 const Base58 = require("base-58");
 const blake = require("blake2");

@@ -15,7 +15,7 @@ console.log(ver)
 gjal.exportToFile('keystore/')
 
 /////////////////////////
-gjak = new KeyMan('yet_another_password')
+gjak = new KeyMan('genesis_test_password')
 
 try {
     gjak.sign('this should break')
@@ -34,7 +34,7 @@ try {
 /////////////////////////
 try {
     gjam = new KeyMan({
-        password: 'yet_another_password',
+        password: 'genesis_test_password',
         keyPath: outKey
     })
 console.log(gjam.getKeyStorage())

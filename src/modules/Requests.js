@@ -4,7 +4,7 @@
  *
  * @author James Aman (j.aman@topl.me)
  * @date 2020.0.29
- * 
+ *
  * Based on the original work of Yamir Tainwala - 2019
  */
 

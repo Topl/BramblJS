@@ -1,6 +1,13 @@
 const assert = require("assert");
 const BramblJS = require("../../src/Modules/Requests");
 
+/**
+ * This test cases should cover the following:
+ * 1. create keyfile
+ * 2. get list of keyfiles
+ * 3. get
+ */
+
 describe("Keyfile", () => {
   before(() => {
     brambljs = new BramblJS();
@@ -8,10 +15,10 @@ describe("Keyfile", () => {
 
   it("should return a list of open keyfiles", done => {
     brambljs
-      .getOpenKeyfiles()
+      .listOpenKeyfiles()
       .then(response => {
         console.log(response);
-        assert.equal(typeof response.result, "object");
+        assert.strictEqual(typeof response.result, "object");
         done();
       })
       .catch(error => {
@@ -24,7 +31,7 @@ describe("Keyfile", () => {
       .generateKeyfile("password")
       .then(response => {
         console.log(response);
-        assert.equal(typeof response.result, "object");
+        assert.strictEqual(typeof response.result, "object");
         done();
       })
       .catch(error => {
@@ -37,19 +44,7 @@ describe("Keyfile", () => {
       .lockKeyfile("6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ", "genesis")
       .then(response => {
         console.log(response);
-        assert.equal(typeof response.result, "object");
-        done();
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  });
-
-  it("should return a successfully unlocked keyfile", done => {
-    brambljs
-      .unlockKeyfile("6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ", "genesis")
-      .then(response => {
-        assert.equal(typeof response.result, "object");
+        assert.strictEqual(typeof response.result, "object");
         done();
       })
       .catch(error => {

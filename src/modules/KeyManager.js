@@ -336,7 +336,7 @@ class KeyManager {
 
         // load in keyfile if a path was given, or default to generating a new key
         if (params.keyPath) {
-            try { importFromFile(params.keyPath, params.password) } catch (err) { throw new Error('Error importing keyfile') }
+            try { importFromFile(params.keyPath, params.password) } catch (err) { throw new Error('Error importing keyfile - ' + err) }
         } else {
             // Will check if only a string was given and assume it is the password
             if (params.constructor === String) generateKey(params)

@@ -5,7 +5,7 @@
  **/
 
  // Dependencies
- const base58 = require('base-58');
+ const base58 = require("base-58");
 
  // Primary sub-modules
  const Requests = require('./modules/Requests');
@@ -30,7 +30,7 @@
   * @requires Requests
   *
   * Each sub-module may be initialized in one of three ways
-  * 1. Providing a separetly initialized Request and KeyManager instance. Each of these instances may be initialized using the 
+  * 1. Providing a separetly initialized Request and KeyManager instance. Each of these instances may be initialized using the
   *    static methods `Requests` or `KeyManager` available in the BramblJS class.
   * 2. Providing custom configuration parameters needed to create new instances of each sub-module with the specified parameters
   * 3. Providing minimal inputs (i.e. calling Brambl with only a string constructor arguement). This will create new instances of
