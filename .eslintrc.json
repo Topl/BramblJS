@@ -11,6 +11,8 @@
         "ecmaVersion": 12
     },
     "rules": {
-        "quotes": ["error", "double", { "allowTemplateLiterals": true }]
+        "quotes": ["error", "double", { "allowTemplateLiterals": true }],
+        "comma-dangle": ["error", "never"],
+        "max-len": 0
     }
 }
