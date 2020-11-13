@@ -13,6 +13,7 @@
     "rules": {
         "quotes": ["error", "double", { "allowTemplateLiterals": true }],
         "comma-dangle": ["error", "never"],
+        "valid-jsdoc": ["error", { "prefer": { "return": "returns"} }],
         "max-len": 0
     }
 }
