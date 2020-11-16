@@ -25,7 +25,7 @@ module.exports = (requests, txId, options) => {
                   reject("Unexepected API response from findTransactionById \n" + error);
                 }
               },
-              // on rejected promise, see if ithe transaction can be found in the mempool
+              // on rejected promise, see if the transaction can be found in the mempool
               function(response) {
                 failureResponse = response.error ? response.error.message : "Uncaught exception";
                 requests.getTransactionFromMempool({transactionId: txId})
