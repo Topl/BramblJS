@@ -7,8 +7,7 @@
     "lint": "eslint src --ext .js",
     "lint:fix": "npm run lint -- --fix",
     "test:run": "./node_modules/mocha/bin/mocha test/it --timeout 15000",
-    "test": "run lint && npm run test:run",
-    "testOnWindows": "node node_modules/mocha/bin/mocha test/it"
+    "test": "run lint && npm run test:run"
   },
   "author": "topl",
   "license": "MPL-2.0",

@@ -113,11 +113,10 @@ brambl.transaction('createAssetsPrototype', createParams)
 ```
 
 # Testing
-package.json contains 2 scripts as options to run the mocha tests: `test` for general usage and `testOnWindows` specifically for Windows.
-Run the following on your terminal:
-```
-npm run-script test
-```
+* Run only unit tests (uses mocha and chai): `npm run test:run`
+* Run both unit testing and linter: `npm run test`
+* Run linter before committing any code or creating a PR: `npm run lint`
+* You can easily apply some fixes (make sure you review them after): `npm run lint:fix`
 
 # License
 BramblJS is licensed under the [Mozilla Public License version 2.0 (MPL 2.0)](https://www.mozilla.org/en-US/MPL/2.0). A copy of this license may be found [here](../LICENSE.md)
