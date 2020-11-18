@@ -8,7 +8,7 @@
  * Based on the original work of Yamir Tainwala - 2019
  */
 
-("use strict");
+"use strict";
 
 // Dependencies
 const fetch = require("node-fetch");
@@ -22,9 +22,9 @@ const fetch = require("node-fetch");
  * @param {string} routeInfo.id - an identifier for tracking requests sent to the node
  * @param {object} params - method specific parameter object
  * @param {object} self - internal reference for accessing constructor data
- * @returnss {object} JSON response from the node
+ * @returns {object} JSON response from the node
  */
-async function BramblRequest(routeInfo, params, self) {
+async function bramblRequest(routeInfo, params, self) {
   try {
     const route = routeInfo.route;
     const body = {
@@ -53,12 +53,15 @@ async function BramblRequest(routeInfo, params, self) {
 };
 
 /**
- * A class for sending requests to the Brambl layer interface of the given chain provider
- * @param {string} [url="http://localhost:9085/"] Chain provider location
- * @param {string} [apiKey="topl_the_world!"] Access key for authorizing requests to the client API
  * @class Requests
+ * @classdesc A class for sending requests to the Brambl layer interface of the given chain provider
  */
 class Requests {
+  /**
+   * @constructor
+   * @param {string} [url="http://localhost:9085/"] Chain provider location
+   * @param {string} [apiKey="topl_the_world!"] Access key for authorizing requests to the client API ["x-api-key"]
+   */
   constructor(url = "http://localhost:9085/", apiKey = "topl_the_world!") {
     this.url = url;
     this.headers = {
@@ -66,13 +69,25 @@ class Requests {
       "x-api-key": apiKey
     };
   }
-  // Allows setting a different url than the default from which to create and accept RPC connections
+
+  /**
+   * Allows setting a different url than the default from which to create and accept RPC connections
+   * @param {string} url url string for instance
+   * @returns {void}
+   */
   setUrl(url) {
     this.url = url;
   }
+
+  /**
+   * Allows setting a different x-api-key than the default
+   * @param {string} apiKey api-key for "x-api-key"
+   * @returns {void}
+   */
   setApiKey(apiKey) {
     this.headers["x-api-key"] = apiKey;
   }
+
   // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // ///Wallet Api Routes////////////////////////////////////////////////////////////////////////////////////////////////
   // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,7 +106,7 @@ class Requests {
     }
     const route = "wallet/";
     const method = "balances";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ////listOpenKeyfiles////////////////
   /**
@@ -104,7 +119,7 @@ class Requests {
     const params = {};
     const route = "wallet/";
     const method = "listOpenKeyfiles";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ////generateKeyfile////////////////
   /**
@@ -124,7 +139,7 @@ class Requests {
     }
     const route = "wallet/";
     const method = "generateKeyfile";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ////lockKeyfile////////////////
   /**
@@ -148,7 +163,7 @@ class Requests {
     }
     const route = "wallet/";
     const method = "lockKeyfile";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ////unlockKeyfile////////////////
   /**
@@ -172,7 +187,7 @@ class Requests {
     }
     const route = "wallet/";
     const method = "unlockKeyfile";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ////signTransaction////////////////
   /**
@@ -196,7 +211,7 @@ class Requests {
     }
     const route = "wallet/";
     const method = "signTx";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // /////////broadcastTx////////////////////
   /**
@@ -216,7 +231,7 @@ class Requests {
     }
     const route = "wallet/";
     const method = "broadcastTx";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ///////////////transferPolys////////////
   /**
@@ -247,7 +262,7 @@ class Requests {
     }
     const route = "wallet/";
     const method = "transferPolys";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ///////////////transferArbits////////////
   /**
@@ -278,7 +293,7 @@ class Requests {
     }
     const route = "wallet/";
     const method = "transferArbits";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // ///Asset Api Routes/////////////////////////////////////////////////////////////////////////////////////////////////
@@ -318,7 +333,7 @@ class Requests {
     }
     const route = "asset/";
     const method = "createAssets";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ///////////////createAssetsPrototype////////////
   /**
@@ -355,7 +370,7 @@ class Requests {
     }
     const route = "asset/";
     const method = "createAssetsPrototype";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ///////////////transferAssets////////////
   /**
@@ -394,7 +409,7 @@ class Requests {
     }
     const route = "asset/";
     const method = "transferAssets";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ///////////////transferAssetsPrototype////////////
   /**
@@ -436,7 +451,7 @@ class Requests {
     }
     const route = "asset/";
     const method = "transferAssetsPrototype";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ///////////////transferTargetAssets////////////
   /**
@@ -469,7 +484,7 @@ class Requests {
     }
     const route = "asset/";
     const method = "transferTargetAssets";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ///////////////transferTargetAssetsPrototype////////////
   /**
@@ -506,7 +521,7 @@ class Requests {
     }
     const route = "asset/";
     const method = "transferTargetAssetsPrototype";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // ///NodeView Api Routes//////////////////////////////////////////////////////////////////////////////////////////////
@@ -529,7 +544,7 @@ class Requests {
     }
     const route = "nodeView/";
     const method = "transactionById";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ///////////////getTransactionFromMempool////////////
   /**
@@ -549,7 +564,7 @@ class Requests {
     }
     const route = "nodeView/";
     const method = "transactionFromMempool";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ///////////////getMempool////////////
   /**
@@ -562,7 +577,7 @@ class Requests {
     const params = {};
     const route = "nodeView/";
     const method = "mempool";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ///////////////getBlockById////////////
   /**
@@ -582,7 +597,7 @@ class Requests {
     }
     const route = "nodeView/";
     const method = "blockById";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // ///Debug Api Routes/////////////////////////////////////////////////////////////////////////////////////////////////
@@ -598,19 +613,19 @@ class Requests {
     const params = {};
     const route = "debug/";
     const method = "info";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // //////////Calculate block delay////////////
   /**
    * Get the average delay between blocks
+   * @param {string} [id="1"] - identifying number for the json-rpc request
    * @param {object} params - body parameters passed to the specified json-rpc method
    * @param {string} params.blockId - Unique identifier of a block
    * @param {string} params.numBlocks - Number of blocks to consider behind the specified block
-   * @param {string} [id="1"] - identifying number for the json-rpc request
    * @returns {object} json-rpc response from the chain
    * @memberof Requests
    */
-  async calcDelay(id = "1") {
+  async calcDelay(id = "1", params) {
     if (!params) {
       throw new Error("A parameter object must be specified");
     }
@@ -622,7 +637,7 @@ class Requests {
     }
     const route = "debug/";
     const method = "delay";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ////////Blocks generated by node's keys////////////
   /**
@@ -635,7 +650,7 @@ class Requests {
     const params = {};
     const route = "debug/";
     const method = "myBlocks";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
   // ///////Map block geneators to blocks////////////
   /**
@@ -648,7 +663,7 @@ class Requests {
     const params = {};
     const route = "debug/";
     const method = "generators";
-    return BramblRequest({route, method, id}, params, this);
+    return bramblRequest({route, method, id}, params, this);
   }
 }
 
