@@ -2,12 +2,11 @@ const assert = require("assert");
 const BramblJS = require("../../src/Modules/Requests");
 
 describe("Asset", () => {
-
   before(() => {
     brambljs = new BramblJS();
   });
 
-  it("should create assets", done => {
+  it("should create assets", (done) => {
     const parameters_create = {
       "issuer": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
       "assetCode": "testAssets",
@@ -17,19 +16,19 @@ describe("Asset", () => {
     };
 
     brambljs
-      .createAssetsPrototype(parameters_create)
-      .then(response => {
-        //console.log("Create Assets Response: ", response);
-        assert.strictEqual(typeof response.result, "object");
-        done();
-      })
-      .catch(error => {
-        console.log("Create Assets ERROR: ", error);
-        done(new Error("Create Assets Failed"));
-      });
+        .createAssetsPrototype(parameters_create)
+        .then((response) => {
+        // console.log("Create Assets Response: ", response);
+          assert.strictEqual(typeof response.result, "object");
+          done();
+        })
+        .catch((error) => {
+          console.log("Create Assets ERROR: ", error);
+          done(new Error("Create Assets Failed"));
+        });
   });
 
-  it('should transfer assets', (done) => {
+  it("should transfer assets", (done) => {
     const parameters_transfer = {
       "issuer": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
       "assetCode": "testAssets",
@@ -40,15 +39,15 @@ describe("Asset", () => {
     };
 
     brambljs
-      .transferAssetsPrototype(parameters_transfer)
-      .then((response) => {
-          //console.log("Transfer Assets Response: ", response);
-          assert.strictEqual(typeof response.result, 'object');
+        .transferAssetsPrototype(parameters_transfer)
+        .then((response) => {
+          // console.log("Transfer Assets Response: ", response);
+          assert.strictEqual(typeof response.result, "object");
           done();
-      })
-      .catch((error) => {
+        })
+        .catch((error) => {
           console.log("Transfer Assets ERROR: ", error);
           done(new Error("Transfer Assets Failed"));
-      })
-  })
+        });
+  });
 });
