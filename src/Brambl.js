@@ -27,20 +27,18 @@ const validTxMethods = [
 ];
 
 /**
-  *
-  * @class
-  * @classdesc Creates an instance of Brambl for interacting with the Topl protocol
-  * @requires KeyManager
-  * @requires Requests
-  *
-  * Each sub-module may be initialized in one of three ways
-  * 1. Providing a separetly initialized Request and KeyManager instance. Each of these instances may be initialized using the
-  *    static methods `Requests` or `KeyManager` available in the BramblJS class.
-  * 2. Providing custom configuration parameters needed to create new instances of each sub-module with the specified parameters
-  * 3. Providing minimal inputs (i.e. calling Brambl with only a string constructor arguement). This will create new instances of
-  *    the sub-modules with default parameters. KeyManager will create a new keyfile and Requests will target a locally running
-  *    instance of Bifrost.
-  */
+ * Each sub-module may be initialized in one of three ways
+ * 1. Providing a separetly initialized {@link Requests} and {@link KeyManager} instance. Each of these instances may be initialized using the
+ *    static methods `Requests` or `KeyManager` available in the BramblJS class.
+ * 2. Providing custom configuration parameters needed to create new instances of each sub-module with the specified parameters
+ * 3. Providing minimal inputs (i.e. calling Brambl with only a string constructor arguement). This will create new instances of
+ *    the sub-modules with default parameters. KeyManager will create a new keyfile and Requests will target a locally running
+ *    instance of Bifrost.
+ * @class
+ * @classdesc Creates an instance of Brambl for interacting with the Topl protocol
+ * @requires Requests
+ * @requires KeyManager
+ */
 class Brambl {
   /**
     * @constructor

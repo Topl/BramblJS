@@ -50,7 +50,7 @@ class Hash {
      *
      * @param {any} message input message to create the hash digest of
      * @param {string} encoding output encoding
-     * @returns Blake2b-256 hash digest
+     * @returns {function} digestAndEncode returns Blake2b-256 hash digest
      */
   static any(message, encoding) {
     const msg = Buffer.from(JSON.canonify(message));
@@ -63,7 +63,7 @@ class Hash {
      *
      * @param {string} message input string message to create the hash digest of
      * @param {string} encoding output encoding
-     * @returns Blake2b-256 hash digest
+     * @returns {function} digestAndEncode returns Blake2b-256 hash digest
      */
   static string(message, encoding) {
     const msg = Buffer.from(message);
@@ -76,7 +76,7 @@ class Hash {
      *
      * @param {string} filePath path to the input file
      * @param {string} encoding output encoding
-     * @returns Blake2b-256 hash digest
+     * @returns {promise} on "finish" -> Blake2b-256 hash digest
      */
   static file(filePath, encoding) {
     return new Promise((resolve, reject) =>
