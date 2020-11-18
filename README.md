@@ -20,9 +20,9 @@ const brambl = new BramblJS('PASSWORD')
 This will create a new `Requests` instance targetting a local node running at `http://localhost:9085` and generate a new `KeyManager` instance for signing transactions, using Curve25519 and encrypted with `PASSWORD`
 
 BramblJS provides the following modules:
-* `Brambl` - primary module that provides high-level capabilities and access to 
+* `Brambl` - primary module that provides high-level capabilities and access to
 * `Requests` - sub-module for sending json-rpc requests to a specified chain provider.
-* `KeyManager` - sub-module that provides functions for creating, importing, and exporting Bifrost compatible keyfiles. 
+* `KeyManager` - sub-module that provides functions for creating, importing, and exporting Bifrost compatible keyfiles.
 * `Hash` - utility to recreates hashes calculated in Bifrost
 
 A brief overview of each module is given below but for a detailed descriptions of all available methods, please visit https://brambljs.docs.topl.co

@@ -1,4 +1,5 @@
-("use strict");
+"use strict";
+
 // Dependencies
 const Base58 = require("base-58");
 const blake = require("blake2");
@@ -10,7 +11,7 @@ JSON.canonify = require("canonicalize");
 
 /**
  * standard FastCryptographicHash in Bifrost
- * @returns Initialized hash function
+ * @returns {Function} Initialized hash function
  */
 function hashFunc() {
   return blake.createHash("blake2b", {digestLength: 32});
@@ -21,7 +22,7 @@ function hashFunc() {
  *
  * @param {object} hash Hash object
  * @param {string} [encoding] Desired output encoding. May be one of `hex`, `base64`, or `base58`. If none provided a `Buffer` is returned
- * @returns Blake2b-256 hash digest
+ * @returns {string | object} Blake2b-256 hash digest
  */
 function digestAndEncode(hash, encoding) {
   hash.end();
@@ -39,7 +40,8 @@ function digestAndEncode(hash, encoding) {
 }
 
 /**
- * @class Static only class to hash an input message and produce an output that matches the output of Bifrost FastCrytographicHash
+ * @class
+ * @classdesc Static only class to hash an input message and produce an output that matches the output of Bifrost FastCrytographicHash
  */
 class Hash {
   /**

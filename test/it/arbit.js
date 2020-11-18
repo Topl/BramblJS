@@ -24,7 +24,7 @@ describe("Arbit", () => {
       })
       .catch(error => {
         console.log("Transfer Arbits ERROR: ", error);
-        done(new Error("Transfer Assets Failed"));
+        done(new Error("Transfer Arbits Failed"));
       });
   });
 });

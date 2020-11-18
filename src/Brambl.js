@@ -4,6 +4,8 @@
  * @date 2020.4.03
  **/
 
+"use strict";
+
 // Dependencies
 const base58 = require("base-58");
 
@@ -25,7 +27,9 @@ const validTxMethods = [
 ];
 
 /**
-  * @class Creates an instance of Brambl for interacting with the Topl protocol
+  *
+  * @class
+  * @classdesc Creates an instance of Brambl for interacting with the Topl protocol
   * @requires KeyManager
   * @requires Requests
   *
@@ -36,17 +40,20 @@ const validTxMethods = [
   * 3. Providing minimal inputs (i.e. calling Brambl with only a string constructor arguement). This will create new instances of
   *    the sub-modules with default parameters. KeyManager will create a new keyfile and Requests will target a locally running
   *    instance of Bifrost.
-  * @param {object|string} [params={}]
-  * @param {object} params.KeyManager KeyManager object (may be either an instance or config parameters)
-  * @param {string} params.KeyManager.password The password used to encrpt the keyfile
-  * @param {object} [params.KeyManager.instance] A previously initialized instance of KeyManager
-  * @param {string} [params.KeyManager.keyPath] Path to a keyfile
-  * @param {string} [params.KeyManager.constants] Parameters for encrypting the user's keyfile
-  * @param {object} params.Requests Request object (may be either an instance or config parameters)
-  * @param {string} [params.Requests.url] The chain provider to send requests to
-  * @param {string} [params.Requests.apikey] Api key for authorizing access to the chain provider
   */
 class Brambl {
+  /**
+    * @constructor
+    * @param {object|string} params Constructor parameters object
+    * @param {object} params.KeyManager KeyManager object (may be either an instance or config parameters)
+    * @param {string} params.KeyManager.password The password used to encrpt the keyfile
+    * @param {object} [params.KeyManager.instance] A previously initialized instance of KeyManager
+    * @param {string} [params.KeyManager.keyPath] Path to a keyfile
+    * @param {string} [params.KeyManager.constants] Parameters for encrypting the user's keyfile
+    * @param {object} params.Requests Request object (may be either an instance or config parameters)
+    * @param {string} [params.Requests.url] The chain provider to send requests to
+    * @param {string} [params.Requests.apikey] Api key for authorizing access to the chain provider
+   */
   constructor(params = {}) {
     // default values for the constructor arguement
     const keyManagerVar = params.KeyManager || {};
@@ -80,39 +87,43 @@ class Brambl {
   }
 
   /**
-      * Method for creating a separate Requests instance
-      * @static
-      *
-      * @param {string} [url="http://localhost:9085/"] Chain provider location
-      * @param {string} [apiKey="topl_the_world!"] Access key for authorizing requests to the client API
-      * @memberof Brambl
-      */
+    * Method for creating a separate Requests instance
+    * @static
+    *
+    * @param {string} [url="http://localhost:9085/"] Chain provider location
+    * @param {string} [apiKey="topl_the_world!"] Access key for authorizing requests to the client API
+    * @returns {object} new Requests instance
+    * @memberof Brambl
+    */
   static Requests(url, apiKey) {
     return new Requests(url, apiKey);
   }
 
   /**
-      * Method for creating a separate KeyManager instance
-      * @static
-      *
-      * @param {object} params constructor object for key manager
-      * @param {string} params.password password for encrypting (decrypting) the keyfile
-      * @param {string} [params.path] path to import keyfile
-      * @param {object} [params.constants] default encryption options for storing keyfiles
-      * @memberof Brambl
-      */
+    * Method for creating a separate KeyManager instance
+    * @static
+    *
+    * @param {object} params constructor object for key manager
+    * @param {string} params.password password for encrypting (decrypting) the keyfile
+    * @param {string} [params.path] path to import keyfile
+    * @param {object} [params.constants] default encryption options for storing keyfiles
+    * @returns {object} new KeyManager instance
+    * @memberof Brambl
+    */
   static KeyManager(params) {
     return new KeyManager(params);
   }
 
   /**
-     * Method for accessing the hash utility as a static method
-     * @static
-     *
-     * @param {string} type type of hash to construct
-     * @param {object | string} msg the msg that will be hashed
-     * @memberof Brambl
-     */
+   * Method for accessing the hash utility as a static method
+   * @static
+   *
+   * @param {string} type type of hash to construct
+   * @param {object | string} msg the msg that will be hashed
+   * @param {object | string} encoding optional, default is "base58"
+   * @returns {object} Hash Instance
+   * @memberof Brambl
+   */
   static Hash(type, msg, encoding = "base58") {
     const allowedTypes = ["string", "file", "any"];
     if (!allowedTypes.includes(type)) throw new Error(`Invalid type specified. Must be one of ${allowedTypes}`);
@@ -121,10 +132,11 @@ class Brambl {
 }
 
 /**
-  * Add a signature to a prototype transaction using the an unlocked key manager object
+  * Add a signature to a prototype transaction using an unlocked key manager object
   *
   * @param {object} prototypeTx An unsigned transaction JSON object
   * @param {object|object[]} userKeys A keyManager object containing the user's key (may be an array)
+  * @returns {object} transaction with signatures to all given key files
  */
 Brambl.prototype.addSigToTx = async function(prototypeTx, userKeys) {
   // function for generating a signature in the correct format
@@ -146,6 +158,7 @@ Brambl.prototype.addSigToTx = async function(prototypeTx, userKeys) {
   * Used to sign a prototype transaction and broadcast to a chain provider
   *
   * @param {object} prototypeTx An unsigned transaction JSON object
+  * @returns {promise} requests.broadcastTx promise
   */
 Brambl.prototype.signAndBroadcast = async function(prototypeTx) {
   const formattedTx = await this.addSigToTx(prototypeTx, this.keyManager);
@@ -158,6 +171,8 @@ Brambl.prototype.signAndBroadcast = async function(prototypeTx) {
   * Create a new transaction, then sign and broadcast
   *
   * @param {string} method The chain resource method to create a transaction for
+  * @param {object} params Transaction parameters object
+  * @returns {promise} signAndBroadcast promise
  */
 Brambl.prototype.transaction = async function(method, params) {
   if (!validTxMethods.includes(method)) throw new Error("Invalid transaction method");
@@ -176,6 +191,7 @@ Brambl.prototype.transaction = async function(method, params) {
   * @param {number} [options.timeout] The timeout (in seconds) before the polling operation is stopped
   * @param {number} [options.interval] The interval (in seconds) between attempts
   * @param {number} [options.maxFailedQueries] The maximum number of consecutive failures (to find the unconfirmed transaction) before ending the poll execution
+  * @returns {promise} pollTx - polling promise
  */
 Brambl.prototype.pollTx = async function(txId, options) {
   const opts = options || {timeout: 90, interval: 3, maxFailedQueries: 10};

@@ -7,7 +7,7 @@
  * https://github.com/Ethereumjs/keythereum
  */
 
-("use strict");
+"use strict";
 
 // Dependencies
 const fs = require('fs');

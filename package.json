@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint src --ext .js",
-    "lint:fix": "npm run lint -- --fix",
+    "lint:fix": "npm lint -- --fix",
     "test:run": "./node_modules/mocha/bin/mocha test/it --timeout 15000",
-    "test": "run lint && npm run test:run"
+    "test": "npm run lint && npm run test:run"
   },
   "author": "topl",
   "license": "MPL-2.0",

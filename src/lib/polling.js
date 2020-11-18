@@ -1,3 +1,9 @@
+/**
+ * @todo RA- Refactor this polling module
+ * @todo RA- Simplify funcitonality & cleanup error handling
+ * @todo RA- Add documentation
+ */
+
 module.exports = (requests, txId, options) => {
   const {timeout, interval, maxFailedQueries} = options;
   let failureResponse;
@@ -7,7 +13,8 @@ module.exports = (requests, txId, options) => {
     // Setting timeout thread to clear interval thread after timeout duration
     const timeoutID = setTimeout(function() {
       clearInterval(intervalID);
-      reject(new Error("Request timed out, transaction was not included in a block before expiration \n" + failureResponse));
+      console.error("Request timed out, transaction was not included in a block before expiration: ", failureResponse);
+      reject(new Error("Request timed out, transaction was not included in a block before expiration"));
     }, timeout*1000);
 
     const intervalID = setInterval(function() {
@@ -22,7 +29,8 @@ module.exports = (requests, txId, options) => {
                   resolve(response.result);
                 } catch (error) {
                 // Catch if response cannot be parsed correctly
-                  reject("Unexepected API response from findTransactionById \n" + error);
+                  console.error("Unexepected API response from findTransactionById: ", error);
+                  reject(new Error("Unexepected API response"));
                 }
               },
               // on rejected promise, see if the transaction can be found in the mempool
