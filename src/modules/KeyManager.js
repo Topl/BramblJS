@@ -39,7 +39,7 @@ const defaultOptions = {
     }
 }
 
-//// Generic key methods //////////////////////////////////////////////////////////////////////////////////////////////
+/* ------------------------------ Generic key methods  ------------------------------ */
 
 // function for checking the type input as a callback
 function isFunction(f) { return typeof f === "function"; }
@@ -286,15 +286,12 @@ function generateKeystoreFilename(publicKey) {
     return filename.split(":").join("-");
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///// Key Manager Class //////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* -------------------------------------------------------------------------- */
+/*                           Key Manager Class                                */
+/* -------------------------------------------------------------------------- */
 /**
- * @class Create a new instance of the Key management interface.
- * @param {object} params constructor object for key manager
- * @param {string} params.password password for encrypting (decrypting) the keyfile
- * @param {string} [params.path] path to import keyfile
- * @param {object} [params.constants] default encryption options for storing keyfiles
+ * @class
+ * @classdesc Create a new instance of the Key management interface.
  */
 class KeyManager {
     // Private variables
@@ -302,8 +299,14 @@ class KeyManager {
     #isLocked;
     #password;
     #keyStorage;
-
-    //// Instance constructor //////////////////////////////////////////////////////////////////////////////////////////////
+    /* ------------------------------ Instance constructor ------------------------------ */
+    /**
+     * @constructor
+     * @param {object} params constructor object for key manager
+     * @param {string} params.password password for encrypting (decrypting) the keyfile
+     * @param {string} [params.path] path to import keyfile
+     * @param {object} [params.constants] default encryption options for storing keyfiles
+     */
     constructor(params) {
         // enforce that a password must be provided
         if (params.constructor !== String && !params.password) throw new Error('A password must be provided at initialization')
@@ -344,7 +347,7 @@ class KeyManager {
         }
     }
 
-    //// Static methods //////////////////////////////////////////////////////////////////////////////////////////////
+    /* ------------------------------ Static methods ------------------------------------ */
     /**
      * Check whether a private key was used to generate the signature for a message.
      * This method is static so that it may be used without generating a keyfile
@@ -369,7 +372,7 @@ class KeyManager {
         cb(curve25519.verify(pk, msg, sug));
     };
 
-    ////////////////// Public methods ////////////////////////////////////////////////////////////////////////
+    /* ------------------------------ Public methods -------------------------------- */
     /**
      * Getter function to retrieve key storage in the Bifrost compatible format
      * @memberof KeyManager
@@ -434,8 +437,8 @@ class KeyManager {
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* -------------------------------------------------------------------------- */
 
 module.exports = KeyManager;
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* -------------------------------------------------------------------------- */
