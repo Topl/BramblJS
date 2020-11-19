@@ -41,7 +41,7 @@ After issuance, the `pollTx` method may be used to begin polling the chain provi
 The `Requests` module is compliant with Bifrost's JSON-RPC interface documented at https://topl-rpc.docs.topl.co <br/>
 A new JSON-RPC interface class may be instantiated by <br/>
 ```
-const requests = BramblJS.Requests()
+const requests = BramblJS.Requests();
 ```
 
 By default requests will be sent to ``http://localhost:9085``. This is the standard address and API port that Bifrost listens on when launched locally. All of the methods available in this module are asynchronous and will return `Promises` that must be handled using `async/await` structures or `.then()`. For example:

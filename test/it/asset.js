@@ -7,7 +7,7 @@ describe("Asset", () => {
   });
 
   it("should create assets", (done) => {
-    const parameters_create = {
+    const paramsCreate = {
       "issuer": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
       "assetCode": "testAssets",
       "recipient": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
@@ -16,7 +16,7 @@ describe("Asset", () => {
     };
 
     brambljs
-        .createAssetsPrototype(parameters_create)
+        .createAssetsPrototype(paramsCreate)
         .then((response) => {
         // console.log("Create Assets Response: ", response);
           assert.strictEqual(typeof response.result, "object");
@@ -29,7 +29,7 @@ describe("Asset", () => {
   });
 
   it("should transfer assets", (done) => {
-    const parameters_transfer = {
+    const paramsTransfer = {
       "issuer": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
       "assetCode": "testAssets",
       "recipient": "DXLLQ1cX8MDG3QjCdkH1Q9w3G1UQDU8f2gb4865fNJSh",
@@ -39,7 +39,7 @@ describe("Asset", () => {
     };
 
     brambljs
-        .transferAssetsPrototype(parameters_transfer)
+        .transferAssetsPrototype(paramsTransfer)
         .then((response) => {
           // console.log("Transfer Assets Response: ", response);
           assert.strictEqual(typeof response.result, "object");

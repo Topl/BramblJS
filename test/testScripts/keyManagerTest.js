@@ -1,5 +1,4 @@
 const KeyMan = require("../../src/modules/KeyManager");
-const b58 = require("base-58");
 
 gjal = new KeyMan("password");
 
@@ -14,7 +13,7 @@ console.log(ver);
 
 gjal.exportToFile("keystore/");
 
-// ///////////////////////
+/* ----------------------------------------------------------- */
 gjak = new KeyMan("genesis_test_password");
 
 try {
@@ -31,7 +30,7 @@ try {
   console.log(err);
 }
 
-// ///////////////////////
+/* ----------------------------------------------------------- */
 try {
   gjam = new KeyMan({
     password: "genesis_test_password",

@@ -26,7 +26,6 @@ const createParams = {
 
 const maxTxs = 50;
 const timeToNextSet = 10*1000; // ms
-const startFlag = true;
 const txTypes = ["createAssetsPrototype\", \"transferAssetsPrototype"];
 
 setInterval(() => {

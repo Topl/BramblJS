@@ -7,7 +7,7 @@ describe("Arbit", () => {
   });
 
   it("should transfer arbits", (done) => {
-    const params_transferArbits = {
+    const paramsTransferArbits = {
       "recipient": "A9vRt6hw7w4c7b4qEkQHYptpqBGpKM5MGoXyrkGCbrfb",
       "amount": 1,
       "fee": 0,
@@ -15,7 +15,7 @@ describe("Arbit", () => {
     };
 
     brambljs
-        .transferArbits(params_transferArbits)
+        .transferArbits(paramsTransferArbits)
         .then((response) => {
         // console.log("Transfer Arbits Response: ", response);
           assert.strictEqual(typeof response.result, "object");
