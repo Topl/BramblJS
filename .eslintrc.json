@@ -11,10 +11,17 @@
     "parserOptions": {
         "ecmaVersion": 12
     },
+    "parser": "@babel/eslint-parser",
+    "plugins": ["@babel"],
     "rules": {
         "quotes": ["error", "double", { "allowTemplateLiterals": true }],
         "comma-dangle": ["error", "never"],
         "valid-jsdoc": ["error", { "prefer": { "return": "returns"} }],
-        "max-len": 0
+        "max-len": 0,
+        //"@babel/new-cap": "error",
+        //"@babel/no-invalid-this": "error",
+        "@babel/no-unused-expressions": "error",
+        //"@babel/object-curly-spacing": "error",
+        "@babel/semi": "error"
     }
 }
