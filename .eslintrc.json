@@ -18,10 +18,10 @@
         "comma-dangle": ["error", "never"],
         "valid-jsdoc": ["error", { "prefer": { "return": "returns"} }],
         "max-len": 0,
-        //"@babel/new-cap": "error",
-        //"@babel/no-invalid-this": "error",
+        "no-invalid-this": 0,
+        "@babel/new-cap": "error",
         "@babel/no-unused-expressions": "error",
-        //"@babel/object-curly-spacing": "error",
+        "@babel/object-curly-spacing": "error",
         "@babel/semi": "error"
     }
 }

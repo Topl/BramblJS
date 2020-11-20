@@ -41,7 +41,11 @@ const defaultOptions = {
 
 /* ------------------------------ Generic key methods  ------------------------------ */
 
-// function for checking the type input as a callback
+/**
+ * Function for checking the type input as a callback
+ * @param {object} f obj f to verify if type is function
+ * @returns {boolean} returns true if obj provided is a function
+ */
 function isFunction(f) {
   return typeof f === "function";
 }
@@ -61,7 +65,7 @@ function str2buf(str, enc) {
 
 /**
  * Check if the selected cipher is available.
- * @param {string} algo Encryption algorithm.
+ * @param {string} cipher Encryption algorithm.
  * @returns {boolean} If available true, otherwise false.
  */
 function isCipherAvailable(cipher) {
@@ -132,10 +136,20 @@ function create(params, cb) {
   const keyBytes = params.keyBytes;
   const ivBytes = params.ivBytes;
 
+  /**
+   * Create hash using Blake2b
+   * @param {Object} Buffer buffer to process
+   * @returns {Object} has created by blake2b
+   */
   function bifrostBlake2b(Buffer) {
     return blake.createHash("blake2b", {digestLength: 32}).update(Buffer).digest();
   }
 
+  /**
+   * Generate curve25519 Key
+   * @param {Object} randomBytes random bytes
+   * @returns {Object} curve25519 Key as obj
+   */
   function curve25519KeyGen(randomBytes) {
     const {public: pk, private: sk} = curve25519.generateKeyPair(bifrostBlake2b(randomBytes));
     return {
@@ -223,7 +237,7 @@ function marshal(derivedKey, keyObject, salt, iv, algo) {
  * Export private key to keystore secret-storage format.
  * @param {string|Buffer} password User-supplied password.
  * @param {Object} keyObject Object containing the raw public / private keypair
- * @param {Buffer} algo encryption algorithm to be used
+ * @param {Buffer} options encryption algorithm to be used
  * @param {function=} cb Callback function (optional).
  * @returns {Object} keyStorage for use with exportToFile
  */
@@ -254,7 +268,15 @@ function dump(password, keyObject, options, cb) {
  * @returns {Buffer} Plaintext private key.
  */
 function recover(password, keyStorage, kdfParams, cb) {
-  // verify that message authentication codes match, then decrypt
+  /**
+   * Verify that message authentication codes match, then decrypt
+   * @param {Buffer} derivedKey Password-derived secret key.
+   * @param {Buffer} iv Initialization vector.
+   * @param {Object} ciphertext cipher text
+   * @param {Object} mac keccak-256 hash of the byte array
+   * @param {Buffer} algo encryption algorithm to be used
+   * @returns {object} returns result of fn decrypt
+   */
   function verifyAndDecrypt(derivedKey, iv, ciphertext, mac, algo) {
     if (!getMAC(derivedKey, ciphertext).equals(mac)) {
       throw new Error("message authentication code mismatch");
@@ -363,7 +385,7 @@ class KeyManager {
      * @param {string} message Message to sign (utf-8 encoded)
      * @param {Buffer|string} signature Signature to verify (if string, must be base-58 encoded)
      * @param {function=} cb Callback function (optional).
-     * @returns {boolean}
+     * @returns {function} returns function Verify or includes fuinction verify if callback provided
      * @memberof KeyManager
      */
     static verify(publicKey, message, signature, cb) {
@@ -384,6 +406,7 @@ class KeyManager {
     /**
      * Getter function to retrieve key storage in the Bifrost compatible format
      * @memberof KeyManager
+     * @returns {any} #keyStorage
      */
     getKeyStorage() {
       if (this.#isLocked) throw new Error("Key manager is currently locked. Please unlock and try again.");
@@ -394,6 +417,7 @@ class KeyManager {
     /**
      * Set the key manager to locked so that the private key may not be decrypted
      * @memberof KeyManager
+     * @returns {void}
      */
     lockKey() {
       this.#isLocked = true;
@@ -403,6 +427,7 @@ class KeyManager {
      * Unlock the key manager to be used in transactions
      * @param {string} password encryption password for accessing the keystorage object
      * @memberof KeyManager
+     * @returns {void}
      */
     unlockKey(password) {
       if (!this.#isLocked) throw new Error("The key is already unlocked");
@@ -413,23 +438,18 @@ class KeyManager {
     /**
      * Generate the signature of a message using the provided private key
      * @param {string} message Message to sign (utf-8 encoded)
-     * @return {Buffer=} signature
      * @memberof KeyManager
+     * @returns {Buffer} signature
      */
     sign(message) {
       if (this.#isLocked) throw new Error("The key is currently locked. Please unlock and try again.");
-
-      function curve25519sign(privateKey, message) {
-        return curve25519.sign(str2buf(privateKey), str2buf(message, "utf8"), crypto.randomBytes(64));
-      }
-
-      return curve25519sign(this.#sk, message);
+      // curve25519sign using this.#sk as private key and provided message
+      return curve25519.sign(str2buf(this.#sk), str2buf(message, "utf8"), crypto.randomBytes(64));
     }
 
     /**
      * Export formatted JSON to keystore file.
-     * @param {Object} keyStorage Keystore object.
-     * @param {string=} keystore Path to keystore folder (default: "keystore").
+     * @param {string=} _keyPath Path to keystore folder (default: "keystore").
      * @returns {string} JSON filename
      * @memberof KeyManager
      */

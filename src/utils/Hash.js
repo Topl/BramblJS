@@ -45,13 +45,13 @@ function digestAndEncode(hash, encoding) {
  */
 class Hash {
   /**
-     * Calculates the Blake2b-256 hash of an arbitrary input. This function will apply JSON canonicalization to the given message.
-     * Further information regarding JON canonicalization may be found at {@link https://github.com/cyberphone/json-canonicalization}
-     *
-     * @param {any} message input message to create the hash digest of
-     * @param {string} encoding output encoding
-     * @returns {function} digestAndEncode returns Blake2b-256 hash digest
-     */
+   * Calculates the Blake2b-256 hash of an arbitrary input. This function will apply JSON canonicalization to the given message.
+   * Further information regarding JON canonicalization may be found at {@link https://github.com/cyberphone/json-canonicalization}
+   *
+   * @param {any} message input message to create the hash digest of
+   * @param {string} encoding output encoding
+   * @returns {function} digestAndEncode returns Blake2b-256 hash digest
+   */
   static any(message, encoding) {
     const msg = Buffer.from(JSON.canonify(message));
     const hash = hashFunc().update(msg);
@@ -59,12 +59,12 @@ class Hash {
   }
 
   /**
-     * Calculates the Blake2b-256 of a string input
-     *
-     * @param {string} message input string message to create the hash digest of
-     * @param {string} encoding output encoding
-     * @returns {function} digestAndEncode returns Blake2b-256 hash digest
-     */
+   * Calculates the Blake2b-256 of a string input
+   *
+   * @param {string} message input string message to create the hash digest of
+   * @param {string} encoding output encoding
+   * @returns {function} digestAndEncode returns Blake2b-256 hash digest
+   */
   static string(message, encoding) {
     const msg = Buffer.from(message);
     const hash = hashFunc().update(msg);
@@ -72,12 +72,12 @@ class Hash {
   }
 
   /**
-     * Reads the file from disk and calculates the Blake2b-256
-     *
-     * @param {string} filePath path to the input file
-     * @param {string} encoding output encoding
-     * @returns {promise} on "finish" -> Blake2b-256 hash digest
-     */
+   * Reads the file from disk and calculates the Blake2b-256
+   *
+   * @param {string} filePath path to the input file
+   * @param {string} encoding output encoding
+   * @returns {promise} on "finish" -> Blake2b-256 hash digest
+   */
   static file(filePath, encoding) {
     return new Promise((resolve, reject) =>
       fs
