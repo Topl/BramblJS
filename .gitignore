@@ -114,8 +114,12 @@ dist
 keyfiles/
 keystore/
 local/
+local-test/
 docs/
 .env
 
 # Silly DS files
 .DS_Store
+
+# IDE Config files
+.idea/

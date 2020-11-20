@@ -1,14 +1,16 @@
-![GitHub pages](https://github.com/Topl/Brambl-JS/workflows/GitHub%20pages/badge.svg?branch=master)
+![build](https://github.com/Topl/BramblJS/workflows/build/badge.svg?branch=master)
+![gh-pages docs](https://github.com/Topl/BramblJS/workflows/build/docs.svg?branch=master)
+
 
 A NodeJS library to facilitate interaction with the Topl blockchain network. This server-side SDK is compliant with the Dion version of the Topl protocol as defined by the reference implementation, [Bifrost client](https://github.com/topl/bifrost).
 
 # Installation
 
-To install from npm run ``npm install --save brambljs`` in your project directory<br/>
+To install from npm run ``npm install --save brambljs`` in your project directory.<br/>
 
 To install from source:
 - Git clone using ``git clone https://github.com/topl/BramblJS``
-- Run `npm run install` within the cloned repo to install all dependencies
+- Run `npm install` within the cloned repo to install all dependencies
 
 # Usage
 
@@ -20,9 +22,9 @@ const brambl = new BramblJS('PASSWORD')
 This will create a new `Requests` instance targetting a local node running at `http://localhost:9085` and generate a new `KeyManager` instance for signing transactions, using Curve25519 and encrypted with `PASSWORD`
 
 BramblJS provides the following modules:
-* `Brambl` - primary module that provides high-level capabilities and access to 
+* `Brambl` - primary module that provides high-level capabilities and access to
 * `Requests` - sub-module for sending json-rpc requests to a specified chain provider.
-* `KeyManager` - sub-module that provides functions for creating, importing, and exporting Bifrost compatible keyfiles. 
+* `KeyManager` - sub-module that provides functions for creating, importing, and exporting Bifrost compatible keyfiles.
 * `Hash` - utility to recreates hashes calculated in Bifrost
 
 A brief overview of each module is given below but for a detailed descriptions of all available methods, please visit https://brambljs.docs.topl.co
@@ -41,7 +43,7 @@ After issuance, the `pollTx` method may be used to begin polling the chain provi
 The `Requests` module is compliant with Bifrost's JSON-RPC interface documented at https://topl-rpc.docs.topl.co <br/>
 A new JSON-RPC interface class may be instantiated by <br/>
 ```
-const requests = BramblJS.Requests()
+const requests = BramblJS.Requests();
 ```
 
 By default requests will be sent to ``http://localhost:9085``. This is the standard address and API port that Bifrost listens on when launched locally. All of the methods available in this module are asynchronous and will return `Promises` that must be handled using `async/await` structures or `.then()`. For example:
@@ -111,6 +113,12 @@ brambl.transaction('createAssetsPrototype', createParams)
     .then(res => { console.log('\nConfirmed transaction'); console.log(res) })
     .catch(console.log)
 ```
+
+# Testing
+* Run only unit tests (uses mocha and chai): `npm run test:run`
+* Run both unit testing and linter: `npm run test`
+* Run linter before committing any code or creating a PR: `npm run lint`
+* You can easily apply some fixes (make sure you review them after): `npm run lint:fix`
 
 # License
 BramblJS is licensed under the [Mozilla Public License version 2.0 (MPL 2.0)](https://www.mozilla.org/en-US/MPL/2.0). A copy of this license may be found [here](../LICENSE.md)
