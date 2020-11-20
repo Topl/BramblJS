@@ -88,10 +88,11 @@ class Requests {
     this.headers["x-api-key"] = apiKey;
   }
 
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // ///Wallet Api Routes////////////////////////////////////////////////////////////////////////////////////////////////
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // ////getBalancesByKey/////////////////////
+  /* -------------------------------------------------------------------------- */
+  /*                           Wallet Api Routes                                */
+  /* -------------------------------------------------------------------------- */
+
+  /* ------------------------------ getBalancesByKey ------------------------------------ */
   /**
    * Get the balances of a specified public key in the keyfiles directory of the node
    * @param {Object} params - body parameters passed to the specified json-rpc method
@@ -108,7 +109,8 @@ class Requests {
     const method = "balances";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ////listOpenKeyfiles////////////////
+
+  /* ------------------------------ listOpenKeyfiles ------------------------------------ */
   /**
    * Get a list of all open keyfiles
    * @param {string} [id="1"] - identifying number for the json-rpc request
@@ -121,7 +123,8 @@ class Requests {
     const method = "listOpenKeyfiles";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ////generateKeyfile////////////////
+
+  /* ------------------------------ generateKeyfile ------------------------------------- */
   /**
    * Generate a new keyfile in the node keyfile directory
    * @param {Object} params - body parameters passed to the specified json-rpc method
@@ -141,7 +144,8 @@ class Requests {
     const method = "generateKeyfile";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ////lockKeyfile////////////////
+
+  /* --------------------------------- lockKeyfile -------------------------------------- */
   /**
    * Lock an open keyfile
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -165,7 +169,8 @@ class Requests {
     const method = "lockKeyfile";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ////unlockKeyfile////////////////
+
+  /* -------------------------------- unlockKeyfile ------------------------------------- */
   /**
    * Unlock a keyfile in the node's keyfile directory
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -189,7 +194,8 @@ class Requests {
     const method = "unlockKeyfile";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ////signTransaction////////////////
+
+  /* ------------------------------ signTransaction --------------------------------------- */
   /**
    * Have the node sign a JSON formatted prototype transaction
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -213,7 +219,8 @@ class Requests {
     const method = "signTx";
     return bramblRequest({route, method, id}, params, this);
   }
-  // /////////broadcastTx////////////////////
+
+  /* --------------------------------- broadcastTx --------------------------------------- */
   /**
    * Have the node sign a `messageToSign` raw transaction
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -233,7 +240,8 @@ class Requests {
     const method = "broadcastTx";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ///////////////transferPolys////////////
+
+  /* ------------------------------ transferPolys --------------------------------------- */
   /**
    * Transfer Polys to a specified public key.
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -264,7 +272,8 @@ class Requests {
     const method = "transferPolys";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ///////////////transferArbits////////////
+
+  /* ------------------------------ transferArbits --------------------------------------- */
   /**
    * Transfer Arbits to a specified public key.
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -295,10 +304,12 @@ class Requests {
     const method = "transferArbits";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // ///Asset Api Routes/////////////////////////////////////////////////////////////////////////////////////////////////
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // ///////////////createAssets////////////
+
+  /* -------------------------------------------------------------------------- */
+  /*                           Asset Api Routes                                 */
+  /* -------------------------------------------------------------------------- */
+
+  /* ---------------------------- createAssets -------------------------------- */
   /**
    * Create a new asset on chain
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -335,7 +346,8 @@ class Requests {
     const method = "createAssets";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ///////////////createAssetsPrototype////////////
+
+  /* ---------------------- createAssetsPrototype ------------------------ */
   /**
    * Create a new asset on chain
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -372,7 +384,8 @@ class Requests {
     const method = "createAssetsPrototype";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ///////////////transferAssets////////////
+
+  /* -------------------------- transferAssets ------------------------------- */
   /**
    * Transfer an asset to a recipient
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -411,7 +424,8 @@ class Requests {
     const method = "transferAssets";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ///////////////transferAssetsPrototype////////////
+
+  /* --------------------------- transferAssetsPrototype ------------------------------ */
   /**
    * Transfer an asset to a recipient
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -453,7 +467,8 @@ class Requests {
     const method = "transferAssetsPrototype";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ///////////////transferTargetAssets////////////
+
+  /* ------------------------------ transferTargetAssets -------------------------------- */
   /**
    * Transfer a specific asset box to a recipient
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -486,7 +501,8 @@ class Requests {
     const method = "transferTargetAssets";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ///////////////transferTargetAssetsPrototype////////////
+
+  /* -------------------------- transferTargetAssetsPrototype ----------------------------- */
   /**
    * Get an unsigned targeted transfer transaction
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -523,10 +539,12 @@ class Requests {
     const method = "transferTargetAssetsPrototype";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // ///NodeView Api Routes//////////////////////////////////////////////////////////////////////////////////////////////
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // ///////////////getTransactionById////////////
+
+  /* -------------------------------------------------------------------------- */
+  /*                           NodeView Api Routes                              */
+  /* -------------------------------------------------------------------------- */
+
+  /* -------------------------- getTransactionById ---------------------------- */
   /**
    * Lookup a transaction from history by the provided id
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -546,7 +564,8 @@ class Requests {
     const method = "transactionById";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ///////////////getTransactionFromMempool////////////
+
+  /* -------------------------- getTransactionFromMempool ---------------------------- */
   /**
    * Lookup a transaction from the mempool by the provided id
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -566,7 +585,8 @@ class Requests {
     const method = "transactionFromMempool";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ///////////////getMempool////////////
+
+  /* ----------------------------- getMempool ------------------------------------ */
   /**
    * Return the entire mempool of the node
    * @param {string} [id="1"] - identifying number for the json-rpc request
@@ -579,7 +599,8 @@ class Requests {
     const method = "mempool";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ///////////////getBlockById////////////
+
+  /* ----------------------------- getBlockById --------------------------------- */
   /**
    * Lookup a block from history by the provided id
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -599,10 +620,12 @@ class Requests {
     const method = "blockById";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // ///Debug Api Routes/////////////////////////////////////////////////////////////////////////////////////////////////
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // /////////Get chain information////////////
+
+  /* -------------------------------------------------------------------------- */
+  /*                            Debug Api Routes                                */
+  /* -------------------------------------------------------------------------- */
+
+  /* ------------------------- Get chain information -------------------------- */
   /**
    * Return the chain information
    * @param {string} [id="1"] - identifying number for the json-rpc request
@@ -615,7 +638,8 @@ class Requests {
     const method = "info";
     return bramblRequest({route, method, id}, params, this);
   }
-  // //////////Calculate block delay////////////
+
+  /* ------------------------- Calculate block delay --------------------------- */
   /**
    * Get the average delay between blocks
    * @param {string} [id="1"] - identifying number for the json-rpc request
@@ -639,7 +663,8 @@ class Requests {
     const method = "delay";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ////////Blocks generated by node's keys////////////
+
+  /* -------------------- Blocks generated by node's keys ------------------------- */
   /**
    * Return the number of blocks forged by keys held by this node
    * @param {string} [id="1"] - identifying number for the json-rpc request
@@ -652,7 +677,8 @@ class Requests {
     const method = "myBlocks";
     return bramblRequest({route, method, id}, params, this);
   }
-  // ///////Map block geneators to blocks////////////
+
+  /* --------------------- Map block geneators to blocks --------------------------- */
   /**
    * Return the blockIds that each accessible key has forged
    * @param {string} [id="1"] - identifying number for the json-rpc request
@@ -667,8 +693,8 @@ class Requests {
   }
 }
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* -------------------------------------------------------------------------- */
 
 module.exports = Requests;
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* -------------------------------------------------------------------------- */
