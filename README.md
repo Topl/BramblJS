@@ -1,5 +1,6 @@
 ![build](https://github.com/Topl/BramblJS/workflows/build/badge.svg?branch=master)
-![gh-pages docs](https://github.com/Topl/BramblJS/workflows/build/docs.svg?branch=master)
+![gh-pages docs](https://github.com/Topl/BramblJS/workflows/gh-pages%20docs/badge.svg?branch=master)
+[![npm version](https://badge.fury.io/js/bramblejs.svg)](https://badge.fury.io/js/bramblejs)
 
 
 A NodeJS library to facilitate interaction with the Topl blockchain network. This server-side SDK is compliant with the Dion version of the Topl protocol as defined by the reference implementation, [Bifrost client](https://github.com/topl/bifrost).
