@@ -76,7 +76,7 @@ describe("Keyfiles", () => {
         });
     });
 
-    describe("open keyfiles", () => {
+    describe("list open keyfiles", () => {
         it('should return list of keyfiles', async () => {
             // query params
             const parameters = {};
@@ -177,25 +177,79 @@ describe("Keyfiles", () => {
             });
         });
     });
+    describe("unlock keyfiles", () => {
+        it('should make api call to unlock keyfile', async () => {
+            // query params
+            const parameters = {
+                "publicKey": "7HxSUU6yS8f7JLaEKnC4b1CSp23v5BKofx2Tb24P5WhL",
+                "password": "foo"
+            };
 
-    // describe("Wrap existing method", function() {
-    //     const sandbox = sinon.createSandbox();
-    
-    //     beforeEach(function() {
-    //         sandbox.spy(Requests, "bramblRequest");
-    //     });
-    
-    //     afterEach(function() {
-    //         sandbox.restore();
-    //     });
-    
-    //     it("should inspect jQuery.getJSON's usage of jQuery.ajax", function() {
-    //         const url = "https://jsonplaceholder.typicode.com/todos/1";
-    //         //jQuery.getJSON(url);
-    
-    //         //assert(jQuery.ajax.calledOnce);
-    //         //assert.equals(url, jQuery.ajax.getCall(0).args[0].url);
-    //         //assert.equals("json", jQuery.ajax.getCall(0).args[0].dataType);
-    //     });
-    // });
+            // mock response data
+            let jsonObject = {
+                "jsonrpc": "2.0",
+                "id": "1",
+                "result": {
+                    "7HxSUU6yS8f7JLaEKnC4b1CSp23v5BKofx2Tb24P5WhL": "unlocked"
+                }
+            }
+
+            var responseObject = {"status":'200',json: () => { return jsonObject }};
+            sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
+
+            //expect(fetchSpy.args).toBe("a");
+            var response = await brambljs.lockKeyfile(parameters);
+
+            // validation
+            expect(response).to.be.a('object');
+            expect(response.result).to.deep.equal({
+                "7HxSUU6yS8f7JLaEKnC4b1CSp23v5BKofx2Tb24P5WhL": "unlocked"
+            });
+        });
+        it('should fail if no parameters provided', function(done) {
+            brambljs
+            .lockKeyfile()
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: A parameter object must be specified');
+                done();
+            });
+        });
+        it('should fail if no pubKey provided', function(done) {
+            // query params
+                const parameters = {
+                "publicKey": "",
+                "password": "topl_the_world"
+            };
+
+            brambljs
+            .lockKeyfile(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: A publicKey field must be specified');
+                done();
+            });
+        });
+        it('should fail if no password provided', function(done) {
+            // query params
+                const parameters = {
+                "publicKey": "CACjU6PmX7RJRQ61BRkkMtwQyLqtYkapXSGwb13u2F4C",
+                "password": ""
+            };
+
+            brambljs
+            .lockKeyfile(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: A password must be provided to encrypt the keyfile');
+                done();
+            });
+        });
+    });
 });
