@@ -12,13 +12,11 @@
  * and Sinon(https://sinonjs.org/).
  */
 
-"use strict";
-
+const BramblJS = require("../../index");
 const assert = require("assert");
-const BramblJS = require("../../src/Modules/Requests");
-var sinon = require('sinon');
-var chai = require('chai');
-var expect = chai.expect;
+const sinon = require('sinon');
+const chai = require('chai');
+const expect = chai.expect;
 const nodeFetch = require('node-fetch');
 
 /* -------------------------------------------------------------------------- */
@@ -36,7 +34,7 @@ describe("Transactions", () => {
 
     // run this before all tests
     before(() => {
-        brambljs = new BramblJS();
+        brambljs = BramblJS.Requests();
     });
 
     // run this before every test

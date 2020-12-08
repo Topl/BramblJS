@@ -1,30 +1,53 @@
+/** Unit testing for transaction type funtionality:
+ * - generate keyfile
+ * - list open keyfiles
+ * - lock keyfile
+ * - unlock keyfile
+ *
+ * @author Raul Aragonez (r.aragonez@topl.me)
+ * @date 2020.12.8
+ *
+ * This test suite uses Mocha(https://mochajs.org/), Chai(https://www.chaijs.com/)
+ * and Sinon(https://sinonjs.org/).
+ */
+
+const BramblJS = require("../../index");
 const assert = require("assert");
-const BramblJS = require("../../src/Modules/Requests");
-var sinon = require('sinon');
-var chai = require('chai');
-var expect = chai.expect;
-
-const Assert = require('assert');
+const sinon = require('sinon');
+const chai = require('chai');
+const expect = chai.expect;
 const nodeFetch = require('node-fetch');
-const Requests = require("../../src/Modules/Requests");
 
-afterEach(() => {
-    sinon.restore();
-});
-
-beforeEach(() => {
-    brambljs = new BramblJS();
-});
-
+/* -------------------------------------------------------------------------- */
+/*                         Keyfile type unit tests                            */
+/* -------------------------------------------------------------------------- */
 describe("Keyfiles", () => {
-    const password = "encryption_password";
-    let publicKey = "";
+    const localTestObj = {"status":'200',json: () => { return {"test":"dummy data"} }};
 
+    // avoid server side calls and return dummy data
+    function enforceLocalTesting(){
+        return sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(localTestObj));
+    }
+
+    // run this before all tests
+    before(() => {
+        brambljs = BramblJS.Requests();
+    });
+
+    // run this before every test
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    /* ---------------------------- generate keyfile -------------------------------- */
     describe("generate keyfile", () => {
+        beforeEach(() => {
+            parameters = {
+                "password": "foo"
+            };
+        });
         it('should generate keyfile', async () => {
-            // query params
-            const parameters = {"password": password};
-
+            // query params using params under beforeEach()
             // mock response data
             let jsonObject = {
                 "jsonrpc": "2.0",
@@ -41,13 +64,16 @@ describe("Keyfiles", () => {
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
-            var result = await brambljs.generateKeyfile(parameters);
+            var response = await brambljs.generateKeyfile(parameters);
 
             // do validation here
-            assert.strictEqual(result.result.publicKey, "CACjU6PmX7RJRQ61BRkkMtwQyLqtYkapXSGwb13u2F4C");
+            assert.strictEqual(response.result.publicKey, "CACjU6PmX7RJRQ61BRkkMtwQyLqtYkapXSGwb13u2F4C");
         });
-
         it('should fail if no parameters present', function(done) {
+            // avoid server side calls
+            enforceLocalTesting();
+
+            // make call without parameters
             brambljs
             .generateKeyfile()
             .then((response) => {
@@ -59,10 +85,10 @@ describe("Keyfiles", () => {
             });
         });
         it('should fail if no password provided', function(done) {
-            // query params
-             const parameters = {"password": ""};
-            // var responseObject = {"status":'200',json: () => { return {"msg":"PREVENT SERVER CALL"} }};
-            // sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
+            // set "password" as empty string to validate
+            parameters.password = "";
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .generateKeyfile(parameters)
@@ -76,10 +102,13 @@ describe("Keyfiles", () => {
         });
     });
 
+    /* --------------------------- list open keyfiles ------------------------------- */
     describe("list open keyfiles", () => {
         it('should return list of keyfiles', async () => {
-            // query params
-            const parameters = {};
+            // mock parameters
+            let parameters = {
+                "password": "foo"
+            };
 
             // mock response data
             let jsonObject = {
@@ -94,22 +123,24 @@ describe("Keyfiles", () => {
             var responseObject = {"status":'200',json: () => { return jsonObject }};
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
-            var result = await brambljs.listOpenKeyfiles();
+            var response = await brambljs.listOpenKeyfiles();
 
             // validation
-            expect(result).to.be.a('object');
-            assert.strictEqual(result.result[0], "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ");
+            expect(response).to.be.a('object');
+            assert.strictEqual(response.result[0], "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ");
         });
     });
 
+    /* ------------------------------ lock keyfile ---------------------------------- */
     describe("lock keyfiles", () => {
-        it('should make api call to lock keyfile', async () => {
-            // query params
-            const parameters = {
-                "publicKey": "CACjU6PmX7RJRQ61BRkkMtwQyLqtYkapXSGwb13u2F4C",
-                "password": "topl_the_world"
+        beforeEach(() => {
+            parameters = {
+                "publicKey": "7HxSUU6yS8f7JLaEKnC4b1CSp23v5BKofx2Tb24P5WhL",
+                "password": "foo"
             };
-
+        });
+        it('should make api call to lock keyfile', async () => {
+            // query params using params under beforeEach()
             // mock response data
             let jsonObject = {
                 "jsonrpc": "2.0",
@@ -122,7 +153,6 @@ describe("Keyfiles", () => {
             var responseObject = {"status":'200',json: () => { return jsonObject }};
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
-            //expect(fetchSpy.args).toBe("a");
             var response = await brambljs.lockKeyfile(parameters);
 
             // validation
@@ -132,6 +162,9 @@ describe("Keyfiles", () => {
             });
         });
         it('should fail if no parameters provided', function(done) {
+            // avoid server side calls
+            enforceLocalTesting();
+
             brambljs
             .lockKeyfile()
             .then((response) => {
@@ -143,11 +176,10 @@ describe("Keyfiles", () => {
             });
         });
         it('should fail if no pubKey provided', function(done) {
-            // query params
-             const parameters = {
-                "publicKey": "",
-                "password": "topl_the_world"
-            };
+            // set "publicKey" as empty string to validate
+            parameters.publicKey = "";
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .lockKeyfile(parameters)
@@ -160,11 +192,10 @@ describe("Keyfiles", () => {
             });
         });
         it('should fail if no password provided', function(done) {
-            // query params
-             const parameters = {
-                "publicKey": "CACjU6PmX7RJRQ61BRkkMtwQyLqtYkapXSGwb13u2F4C",
-                "password": ""
-            };
+            // set "password" as empty string to validate
+            parameters.password = "";
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .lockKeyfile(parameters)
@@ -177,14 +208,17 @@ describe("Keyfiles", () => {
             });
         });
     });
+
+    /* ----------------------------- unlock keyfile --------------------------------- */
     describe("unlock keyfiles", () => {
-        it('should make api call to unlock keyfile', async () => {
-            // query params
-            const parameters = {
+        beforeEach(() => {
+            parameters = {
                 "publicKey": "7HxSUU6yS8f7JLaEKnC4b1CSp23v5BKofx2Tb24P5WhL",
                 "password": "foo"
             };
-
+        });
+        it('should make api call to unlock keyfile', async () => {
+            // query params using params under beforeEach()
             // mock response data
             let jsonObject = {
                 "jsonrpc": "2.0",
@@ -207,6 +241,10 @@ describe("Keyfiles", () => {
             });
         });
         it('should fail if no parameters provided', function(done) {
+            // avoid server side calls
+            enforceLocalTesting();
+
+            // make call without parameters
             brambljs
             .lockKeyfile()
             .then((response) => {
@@ -218,11 +256,11 @@ describe("Keyfiles", () => {
             });
         });
         it('should fail if no pubKey provided', function(done) {
-            // query params
-                const parameters = {
-                "publicKey": "",
-                "password": "topl_the_world"
-            };
+            // set "publicKey" as empty string to validate
+            parameters.publicKey = "";
+
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .lockKeyfile(parameters)
@@ -235,11 +273,11 @@ describe("Keyfiles", () => {
             });
         });
         it('should fail if no password provided', function(done) {
-            // query params
-                const parameters = {
-                "publicKey": "CACjU6PmX7RJRQ61BRkkMtwQyLqtYkapXSGwb13u2F4C",
-                "password": ""
-            };
+            // set "password" as empty string to validate
+            parameters.password = "";
+
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .lockKeyfile(parameters)
