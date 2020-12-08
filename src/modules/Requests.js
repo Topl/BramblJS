@@ -239,7 +239,7 @@ class Requests {
     if (!params.tx.signatures || !Object.keys(params.tx.signatures)[0]) {
       throw new Error("Tx must include signatures");
     }
-    if(Object.keys(params.tx).length < 10 && params.tx.constructor === Object) {
+    if (Object.keys(params.tx).length < 10 && params.tx.constructor === Object) {
       throw new Error("Invalid tx object, one or more tx keys not specified");
     }
     const route = "wallet/";
