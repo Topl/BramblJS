@@ -236,6 +236,12 @@ class Requests {
     if (!params.tx) {
       throw new Error("A tx object must be specified");
     }
+    if (!params.tx.signatures || !Object.keys(params.tx.signatures)[0]) {
+      throw new Error("Tx must include signatures");
+    }
+    if(Object.keys(params.tx).length < 10 && params.tx.constructor === Object) {
+      throw new Error("Invalid tx object, one or more tx keys not specified");
+    }
     const route = "wallet/";
     const method = "broadcastTx";
     return bramblRequest({route, method, id}, params, this);
@@ -268,6 +274,9 @@ class Requests {
     if (!params.fee && params.fee !== 0) {
       throw new Error("A fee must be specified");
     }
+    if (params.fee < 0) {
+      throw new Error("Invalid fee, a fee must be greater or equal to zero");
+    }
     const route = "wallet/";
     const method = "transferPolys";
     return bramblRequest({route, method, id}, params, this);
@@ -299,6 +308,9 @@ class Requests {
     }
     if (!params.fee && params.fee !== 0) {
       throw new Error("A fee must be specified");
+    }
+    if (params.fee < 0) {
+      throw new Error("Invalid fee, a fee must be greater or equal to zero");
     }
     const route = "wallet/";
     const method = "transferArbits";
@@ -342,6 +354,9 @@ class Requests {
     if (!params.fee && params.fee !== 0) {
       throw new Error("A fee must be specified");
     }
+    if (params.fee < 0) {
+      throw new Error("Invalid fee, a fee must be greater or equal to zero");
+    }
     const route = "asset/";
     const method = "createAssets";
     return bramblRequest({route, method, id}, params, this);
@@ -377,8 +392,13 @@ class Requests {
     if (!params.amount) {
       throw new Error("An amount must be specified");
     }
+    // 0 fee value is accepted
     if (!params.fee && params.fee !== 0) {
       throw new Error("A fee must be specified");
+    }
+    // fee must be >= 0
+    if (params.fee < 0) {
+      throw new Error("Invalid fee, a fee must be greater or equal to zero");
     }
     const route = "asset/";
     const method = "createAssetsPrototype";
@@ -419,6 +439,9 @@ class Requests {
     }
     if (!params.fee && params.fee !== 0) {
       throw new Error("A fee must be specified");
+    }
+    if (params.fee < 0) {
+      throw new Error("Invalid fee, a fee must be greater or equal to zero");
     }
     const route = "asset/";
     const method = "transferAssets";
@@ -463,6 +486,9 @@ class Requests {
     if (!params.fee && params.fee !== 0) {
       throw new Error("A fee must be specified");
     }
+    if (params.fee < 0) {
+      throw new Error("Invalid fee, a fee must be greater or equal to zero");
+    }
     const route = "asset/";
     const method = "transferAssetsPrototype";
     return bramblRequest({route, method, id}, params, this);
@@ -496,6 +522,9 @@ class Requests {
     }
     if (!params.fee && params.fee !== 0) {
       throw new Error("A fee must be specified");
+    }
+    if (params.fee < 0) {
+      throw new Error("Invalid fee, a fee must be greater or equal to zero");
     }
     const route = "asset/";
     const method = "transferTargetAssets";
@@ -534,6 +563,9 @@ class Requests {
     }
     if (!params.fee && params.fee !== 0) {
       throw new Error("A fee must be specified");
+    }
+    if (params.fee < 0) {
+      throw new Error("Invalid fee, a fee must be greater or equal to zero");
     }
     const route = "asset/";
     const method = "transferTargetAssetsPrototype";
