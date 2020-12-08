@@ -1,34 +1,50 @@
+/** Unit testing for transaction type funtionality:
+ * - create raw asset transfer
+ * - create raw arbit transfer
+ * - broadcast transaction
+ * - lookup transaction by id
+ * - lookup transaction in Mempool by id
+ *
+ * @author Raul Aragonez (r.aragonez@topl.me)
+ * @date 2020.12.8
+ *
+ * This test suite uses Mocha(https://mochajs.org/), Chai(https://www.chaijs.com/)
+ * and Sinon(https://sinonjs.org/).
+ */
+
+"use strict";
+
 const assert = require("assert");
 const BramblJS = require("../../src/Modules/Requests");
 var sinon = require('sinon');
 var chai = require('chai');
 var expect = chai.expect;
-
-const Assert = require('assert');
 const nodeFetch = require('node-fetch');
-const Requests = require("../../src/Modules/Requests");
 
-/**
- * create raw asset transfer
- * create raw poly trasfer
- * create raw arbit transfer
- * broadcast transaction
- * lookup transaction
- * lookup transaction in Mempool
- */
-
+/* -------------------------------------------------------------------------- */
+/*                       Transaction type unit tests                          */
+/* -------------------------------------------------------------------------- */
 describe("Transactions", () => {
-    const password = "encryption_password";
-    let publicKey = "";
+    const localTestObj = {"status":'200',json: () => {
+            return {"test":"dummy data"}
+        }};
 
+    // avoid server side calls and return dummy data
+    function enforceLocalTesting(){
+        return sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(localTestObj));
+    }
+
+    // run this before all tests
     before(() => {
         brambljs = new BramblJS();
     });
 
-    after(() => {
+    // run this before every test
+    afterEach(() => {
         sinon.restore();
     });
 
+    /* ---------------------------- raw asset -------------------------------- */
     describe("create raw asset transfer", () => {
         beforeEach(() => {
             parameters = {
@@ -99,6 +115,9 @@ describe("Transactions", () => {
             assert.strictEqual(response.result.formattedTx.txHash, "2ChyrPLSdAXof49X2cd75PmT2Jz1xZdphHkf4WLzdfdW");
         });
         it('should fail if no parameters present', function(done) {
+            // avoid server side calls
+            enforceLocalTesting();
+
             // make call without parameters
             brambljs
             .createAssetsPrototype()
@@ -113,6 +132,8 @@ describe("Transactions", () => {
         it('should fail if no issuer provided', function(done) {
             // set "issuer" as empty string to validate
             parameters.issuer = "";
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .createAssetsPrototype(parameters)
@@ -127,6 +148,8 @@ describe("Transactions", () => {
         it('should fail if no assetCode provided', function(done) {
             // set "assetCode" as empty string to validate
             parameters.assetCode = "";
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .createAssetsPrototype(parameters)
@@ -141,6 +164,8 @@ describe("Transactions", () => {
         it('should fail if no recipient provided', function(done) {
             // set "assetCode" as empty string to validate
             parameters.recipient = "";
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .createAssetsPrototype(parameters)
@@ -155,6 +180,8 @@ describe("Transactions", () => {
         it('should fail if no amount provided', function(done) {
             // set "assetCode" as empty string to validate
             parameters.amount = "";
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .createAssetsPrototype(parameters)
@@ -169,6 +196,8 @@ describe("Transactions", () => {
         it('should fail if no fee provided', function(done) {
             // set "fee" as empty string to validate
             parameters.fee = "";
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .createAssetsPrototype(parameters)
@@ -183,6 +212,8 @@ describe("Transactions", () => {
         it('should fail if fee < 0', function(done) {
             // set "fee" a value < 0
             parameters.fee = -23;
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .createAssetsPrototype(parameters)
@@ -196,6 +227,7 @@ describe("Transactions", () => {
         });
     });
 
+    /* ---------------------------- raw arbit -------------------------------- */
     describe("create raw arbit transfer", () => {
         beforeEach(() => {
             parameters = {
@@ -260,6 +292,9 @@ describe("Transactions", () => {
             assert.strictEqual(response.result.txHash, "EeRwxuVuMsrud2xfd2zXaADkqsAJkH6ve1WRNEXu2f7T");
         });
         it('should fail if no parameters present', function(done) {
+            // avoid server side calls
+            enforceLocalTesting();
+
             // make call without parameters
             brambljs
             .transferArbits()
@@ -274,6 +309,8 @@ describe("Transactions", () => {
         it('should fail if no recipient provided', function(done) {
             // set "assetCode" as empty string to validate
             parameters.recipient = "";
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .transferArbits(parameters)
@@ -288,6 +325,8 @@ describe("Transactions", () => {
         it('should fail if no amount provided', function(done) {
             // set "assetCode" as empty string to validate
             parameters.amount = "";
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .transferArbits(parameters)
@@ -302,6 +341,8 @@ describe("Transactions", () => {
         it('should fail if no fee provided', function(done) {
             // set "fee" as empty string to validate
             parameters.fee = "";
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .transferArbits(parameters)
@@ -316,6 +357,8 @@ describe("Transactions", () => {
         it('should fail if fee < 0', function(done) {
             // set "fee" a value < 0
             parameters.fee = -23;
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .transferArbits(parameters)
@@ -329,6 +372,7 @@ describe("Transactions", () => {
         });
     });
 
+    /* ---------------------------- broadcastTx ------------------------------ */
     describe("broadcast transaction", () => {
         beforeEach(() => {
             parameters = {
@@ -399,6 +443,9 @@ describe("Transactions", () => {
             assert.strictEqual(response.result.txHash, "3Z5SzHiCuHKPdn8wypN8GuhnWJkSL2ZtRVbJq4a1jLry");
         });
         it('should fail if no parameters present', function(done) {
+            // avoid server side calls
+            enforceLocalTesting();
+
             // make call without parameters
             brambljs
             .broadcastTx()
@@ -413,6 +460,8 @@ describe("Transactions", () => {
         it('should fail if no tx object provided', function(done) {
             // set "tx" as empty string to validate
             parameters.tx = "";
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .broadcastTx(parameters)
@@ -427,6 +476,8 @@ describe("Transactions", () => {
         it('should fail if no signature in tx object provided', function(done) {
             // set "tx.signatures" as empty obj to validate
             parameters.tx.signatures = {};
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .broadcastTx(parameters)
@@ -445,6 +496,8 @@ describe("Transactions", () => {
                     "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ": "oNvbqGatNR2aZTneYcF8JsmUDb1emh64FSvfN7Svf9t6edqGgEVYNLBebJrcCGXarr1HGUVQnLgVFysyyjU5wZa"
                 }
             }
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .broadcastTx(parameters)
@@ -457,6 +510,8 @@ describe("Transactions", () => {
             });
         });
     });
+
+    /* ---------------------------- Tx by id --------------------------------- */
     describe("get transaction by id", () => {
         beforeEach(() => {
             parameters = {
@@ -509,6 +564,9 @@ describe("Transactions", () => {
             assert.strictEqual(response.result.txHash, "6XHxhYxe4TWXaXP9QQZroHN1bKU5sCdRdFrXe1p2WToF");
         });
         it('should fail if no parameters present', function(done) {
+            // avoid server side calls
+            enforceLocalTesting();
+
             // make call without parameters
             brambljs
             .getTransactionById()
@@ -523,6 +581,8 @@ describe("Transactions", () => {
         it('should fail if no transactionId provided', function(done) {
             // set "tx" as empty string to validate
             parameters.transactionId = "";
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .getTransactionById(parameters)
@@ -535,6 +595,8 @@ describe("Transactions", () => {
             });
         });
     });
+
+    /* ------------------------- Tx from Mempool ----------------------------- */
     describe("get transaction from Mempool", () => {
         beforeEach(() => {
             parameters = {
@@ -585,6 +647,9 @@ describe("Transactions", () => {
             assert.strictEqual(response.result.txHash, "4GVrKSBM9WxMqtiFthia4cuZjWjSCT9idj3QpQjuRg58");
         });
         it('should fail if no parameters present', function(done) {
+            // avoid server side calls
+            enforceLocalTesting();
+
             // make call without parameters
             brambljs
             .getTransactionFromMempool()
@@ -599,6 +664,8 @@ describe("Transactions", () => {
         it('should fail if no transactionId provided', function(done) {
             // set "tx" as empty string to validate
             parameters.transactionId = "";
+            // avoid server side calls
+            enforceLocalTesting();
 
             brambljs
             .getTransactionFromMempool(parameters)
