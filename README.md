@@ -116,10 +116,12 @@ brambl.transaction('createAssetsPrototype', createParams)
 ```
 
 # Testing
-* Run only unit tests (uses mocha and chai): `npm run test:run`
-* Run both unit testing and linter: `npm run test`
 * Run linter before committing any code or creating a PR: `npm run lint`
 * You can easily apply some fixes (make sure you review them after): `npm run lint:fix`
+* Run only unit tests (uses mocha, chai and sinon): `npm run test:it`
+* Run only end to end (e2e) tests (uses mocha, chai): `npm run test:e2e`
+* Run both unit testing and linter: `npm run test`
+* Run all tests: `npm run test:all`
 
 # License
 BramblJS is licensed under the [Mozilla Public License version 2.0 (MPL 2.0)](https://www.mozilla.org/en-US/MPL/2.0). A copy of this license may be found [here](../LICENSE.md)
