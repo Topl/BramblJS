@@ -6,9 +6,10 @@
   "scripts": {
     "lint": "eslint src --ext .js",
     "lint:fix": "npm run lint -- --fix",
-    "test:it": "./node_modules/mocha/bin/mocha test/it --timeout 15000",
+    "test:it": "./node_modules/mocha/bin/mocha test/it",
     "test:e2e": "./node_modules/mocha/bin/mocha test/e2e --timeout 15000",
-    "test": "npm run lint && npm run test:run"
+    "test:all": "npm run lint && npm run test:it && npm run test:e2e",
+    "test": "npm run lint && npm run test:it"
   },
   "author": "topl",
   "license": "MPL-2.0",

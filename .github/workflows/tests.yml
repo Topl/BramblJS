@@ -16,6 +16,6 @@ jobs:
       with:
         node-version: '13.7.x'
     - run: npm install
-    - run: npm run lint
+    - run: npm run test
       env:
         CI: true
