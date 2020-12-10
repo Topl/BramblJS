@@ -102,6 +102,9 @@ class Requests {
    * @memberof Requests
    */
   async getBalancesByKey(params, id = "1") {
+    if (!params) {
+      throw new Error("A parameter object must be specified");
+    }
     if (!params.publicKeys || !Array.isArray(params.publicKeys)) {
       throw new Error("A list of publicKeys must be specified");
     }

@@ -1,6 +1,4 @@
 /** Unit testing for transaction type funtionality:
- * - create raw asset transfer
- * - create raw arbit transfer
  * - broadcast transaction
  * - lookup transaction by id
  * - lookup transaction in Mempool by id
@@ -12,7 +10,7 @@
  * and Sinon(https://sinonjs.org/).
  */
 
-const BramblJS = require("../../index");
+const Requests = require("../../src/Modules/Requests");
 const assert = require("assert");
 const sinon = require('sinon');
 const chai = require('chai');
@@ -34,7 +32,7 @@ describe("Transactions", () => {
 
     // run this before all tests
     before(() => {
-        brambljs = BramblJS.Requests();
+        brambljs = new Requests();
     });
 
     // run this before every test
@@ -42,335 +40,7 @@ describe("Transactions", () => {
         sinon.restore();
     });
 
-    /* ---------------------------- raw asset -------------------------------- */
-    describe("create raw asset transfer", () => {
-        beforeEach(() => {
-            parameters = {
-                "issuer": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                "recipient": "22222222222222222222222222222222222222222222",
-                "sender": ["6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ"],
-                "amount": 10,
-                "assetCode": "test",
-                "fee": 0,
-                "data": ""
-            };
-        });
-
-        it('should create raw asset', async () => {
-            // query params using params under beforeEach()
-            // mock response data
-            let jsonObject = {
-                "jsonrpc": "2.0",
-                "id": "1",
-                "result": {
-                    "formattedTx": {
-                        "txType": "AssetTransfer",
-                        "txHash": "2ChyrPLSdAXof49X2cd75PmT2Jz1xZdphHkf4WLzdfdW",
-                        "timestamp": 1586470624541,
-                        "signatures": {},
-                        "newBoxes": [
-                            "3gWhYUcC4FngBjJo31wMmytfNvodAQMuUcss5dkwTTpV",
-                            "k7KY9K9JczYFekMkHkBozs3y1VkasTP4Tgbzg3W49Qb"
-                        ],
-                        "data": "",
-                        "issuer": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                        "to": [
-                            [
-                                "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                                "90"
-                            ],
-                            [
-                                "22222222222222222222222222222222222222222222",
-                                "10"
-                            ]
-                        ],
-                        "assetCode": "test",
-                        "from": [
-                            [
-                                "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                                "-3898410089397904521"
-                            ]
-                        ],
-                        "boxesToRemove": [
-                            "HdXwi2FhUFtkRSgogEoazFQkTQ8qhgqTDBVmN8syyNL2"
-                        ],
-                        "fee": 0
-                    },
-                    "messageToSign": "2BLh7ZpAeCSgv9eiZWrh7ReW3ku2UXRkeYGYECodWja6fbAtYR5S8baZqtyzA4CXx2JgeBcf6zdiNBuHPa882UN7BrGPn9PGzzjr4DzGvrh3Xj8ai1yaYeCMwRzvJ14zfuomW1b6rPLasJEK3hpmbbx345uKHLLXFcmBMjbhhFX7ATkFHjqijGaHi389CeL9A5hWiAo8g4DojwpTum836GrD9z1DzeVmNpUgsZciGR2gxGTBgTBBFrcPQYXs17155QVP9KCqx7SD2EPx54K2vpvhXdQ9u8VuScMcVtKJc3V1usDpWGfRVvzzm2rfnSSQKmMN9hq6bZT6xxYyHtsb4Hu38oBya9cwcpoYdCEWL8YVgvHUpd34XYkhZawpuS2NzwhPYyqPigeGPmYvG2r8Qt883frMwp6hTWys8SvsLeebvQykpbjCyMu"
-                }
-            };
-
-            // creates the response obj
-            var responseObject = {"status":'200',json: () => { return jsonObject }};
-
-            // stub the promise response
-            sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
-
-            // make the call trying to test for
-            var response = await brambljs.createAssetsPrototype(parameters);
-
-            // do validation here
-            assert.strictEqual(response.result.formattedTx.txHash, "2ChyrPLSdAXof49X2cd75PmT2Jz1xZdphHkf4WLzdfdW");
-        });
-        it('should fail if no parameters present', function(done) {
-            // avoid server side calls
-            enforceLocalTesting();
-
-            // make call without parameters
-            brambljs
-            .createAssetsPrototype()
-            .then((response) => {
-                done(new Error("should not succeded"));
-            })
-            .catch((error) => {
-                expect(String(error)).to.equal('Error: A parameter object must be specified');
-                done();
-            });
-        });
-        it('should fail if no issuer provided', function(done) {
-            // set "issuer" as empty string to validate
-            parameters.issuer = "";
-            // avoid server side calls
-            enforceLocalTesting();
-
-            brambljs
-            .createAssetsPrototype(parameters)
-            .then((response) => {
-                done(new Error("should not succeded"));
-            })
-            .catch((error) => {
-                expect(String(error)).to.equal('Error: An asset issuer must be specified');
-                done();
-            });
-        });
-        it('should fail if no assetCode provided', function(done) {
-            // set "assetCode" as empty string to validate
-            parameters.assetCode = "";
-            // avoid server side calls
-            enforceLocalTesting();
-
-            brambljs
-            .createAssetsPrototype(parameters)
-            .then((response) => {
-                done(new Error("should not succeded"));
-            })
-            .catch((error) => {
-                expect(String(error)).to.equal('Error: An assetCode must be specified');
-                done();
-            });
-        });
-        it('should fail if no recipient provided', function(done) {
-            // set "assetCode" as empty string to validate
-            parameters.recipient = "";
-            // avoid server side calls
-            enforceLocalTesting();
-
-            brambljs
-            .createAssetsPrototype(parameters)
-            .then((response) => {
-                done(new Error("should not succeded"));
-            })
-            .catch((error) => {
-                expect(String(error)).to.equal('Error: A recipient must be specified');
-                done();
-            });
-        });
-        it('should fail if no amount provided', function(done) {
-            // set "assetCode" as empty string to validate
-            parameters.amount = "";
-            // avoid server side calls
-            enforceLocalTesting();
-
-            brambljs
-            .createAssetsPrototype(parameters)
-            .then((response) => {
-                done(new Error("should not succeded"));
-            })
-            .catch((error) => {
-                expect(String(error)).to.equal('Error: An amount must be specified');
-                done();
-            });
-        });
-        it('should fail if no fee provided', function(done) {
-            // set "fee" as empty string to validate
-            parameters.fee = "";
-            // avoid server side calls
-            enforceLocalTesting();
-
-            brambljs
-            .createAssetsPrototype(parameters)
-            .then((response) => {
-                done(new Error("should not succeded"));
-            })
-            .catch((error) => {
-                expect(String(error)).to.equal('Error: A fee must be specified');
-                done();
-            });
-        });
-        it('should fail if fee < 0', function(done) {
-            // set "fee" a value < 0
-            parameters.fee = -23;
-            // avoid server side calls
-            enforceLocalTesting();
-
-            brambljs
-            .createAssetsPrototype(parameters)
-            .then((response) => {
-                done(new Error("should not succeded"));
-            })
-            .catch((error) => {
-                expect(String(error)).to.equal('Error: Invalid fee, a fee must be greater or equal to zero');
-                done();
-            });
-        });
-    });
-
-    /* ---------------------------- raw arbit -------------------------------- */
-    describe("create raw arbit transfer", () => {
-        beforeEach(() => {
-            parameters = {
-                "recipient": "22222222222222222222222222222222222222222222",
-                "sender": ["6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ"],
-                "amount": 1,
-                "fee": 0,
-                "data": ""
-            };
-        });
-
-        it('should create raw asset', async () => {
-            // query params using params under beforeEach()
-            // mock response data
-            let jsonObject = {
-                "jsonrpc": "2.0",
-                "id": "1",
-                "result": {
-                    "txType": "ArbitTransfer",
-                    "txHash": "EeRwxuVuMsrud2xfd2zXaADkqsAJkH6ve1WRNEXu2f7T",
-                    "timestamp": 1586471049860,
-                    "signatures": [],
-                    "newBoxes": [
-                        "iDW8A5GdVcSP1P6VdmSAkRFHTrSZ63G2PTvQZx8zy9a",
-                        "5oMe9ybDBpBSr8nXYLNoAb2Lf4no81xoxLgcXWNf4UqA"
-                    ],
-                    "data": "",
-                    "to": [
-                        {
-                            "proposition": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                            "value": "99999999"
-                        },
-                        {
-                            "proposition": "22222222222222222222222222222222222222222222",
-                            "value": "1"
-                        }
-                    ],
-                    "from": [
-                        {
-                            "proposition": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                            "nonce": "-269532489367390959"
-                        }
-                    ],
-                    "boxesToRemove": [
-                        "852rQUseapF1mRUvN9Nu8Vt9Dt7ahj7X9aZ4s3xzeanj"
-                    ],
-                    "fee": 0
-                }
-            };
-
-            // creates the response obj
-            var responseObject = {"status":'200',json: () => { return jsonObject }};
-
-            // stub the promise response
-            sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
-
-            // make the call trying to test for
-            var response = await brambljs.transferArbits(parameters);
-
-            // do validation here
-            assert.strictEqual(response.result.txType, "ArbitTransfer");
-            assert.strictEqual(response.result.txHash, "EeRwxuVuMsrud2xfd2zXaADkqsAJkH6ve1WRNEXu2f7T");
-        });
-        it('should fail if no parameters present', function(done) {
-            // avoid server side calls
-            enforceLocalTesting();
-
-            // make call without parameters
-            brambljs
-            .transferArbits()
-            .then((response) => {
-                done(new Error("should not succeded"));
-            })
-            .catch((error) => {
-                expect(String(error)).to.equal('Error: A parameter object must be specified');
-                done();
-            });
-        });
-        it('should fail if no recipient provided', function(done) {
-            // set "assetCode" as empty string to validate
-            parameters.recipient = "";
-            // avoid server side calls
-            enforceLocalTesting();
-
-            brambljs
-            .transferArbits(parameters)
-            .then((response) => {
-                done(new Error("should not succeded"));
-            })
-            .catch((error) => {
-                expect(String(error)).to.equal('Error: A recipient must be specified');
-                done();
-            });
-        });
-        it('should fail if no amount provided', function(done) {
-            // set "assetCode" as empty string to validate
-            parameters.amount = "";
-            // avoid server side calls
-            enforceLocalTesting();
-
-            brambljs
-            .transferArbits(parameters)
-            .then((response) => {
-                done(new Error("should not succeded"));
-            })
-            .catch((error) => {
-                expect(String(error)).to.equal('Error: An amount must be specified');
-                done();
-            });
-        });
-        it('should fail if no fee provided', function(done) {
-            // set "fee" as empty string to validate
-            parameters.fee = "";
-            // avoid server side calls
-            enforceLocalTesting();
-
-            brambljs
-            .transferArbits(parameters)
-            .then((response) => {
-                done(new Error("should not succeded"));
-            })
-            .catch((error) => {
-                expect(String(error)).to.equal('Error: A fee must be specified');
-                done();
-            });
-        });
-        it('should fail if fee < 0', function(done) {
-            // set "fee" a value < 0
-            parameters.fee = -23;
-            // avoid server side calls
-            enforceLocalTesting();
-
-            brambljs
-            .transferArbits(parameters)
-            .then((response) => {
-                done(new Error("should not succeded"));
-            })
-            .catch((error) => {
-                expect(String(error)).to.equal('Error: Invalid fee, a fee must be greater or equal to zero');
-                done();
-            });
-        });
-    });
-
-    /* ---------------------------- broadcastTx ------------------------------ */
+    /* --------------------------- broadcast Tx ------------------------------ */
     describe("broadcast transaction", () => {
         beforeEach(() => {
             parameters = {
@@ -672,6 +342,194 @@ describe("Transactions", () => {
             })
             .catch((error) => {
                 expect(String(error)).to.equal('Error: A transactionId must be specified');
+                done();
+            });
+        });
+    });
+
+    /* ------------------------- Get Mempool ----------------------------- */
+    describe("get mempool", () => {
+        it('should get mempool', async () => {
+            // query params using params under beforeEach()
+            // mock response data
+            let jsonObject = {
+                "jsonrpc": "2.0",
+                "id": "1",
+                "result": [
+                    {
+                        "txType": "AssetCreation",
+                        "txHash": "6XHxhYxe4TWXaXP9QQZroHN1bKU5sCdRdFrXe1p2WToF",
+                        "timestamp": 1586479692408,
+                        "signatures": {
+                            "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ": "66TgRqmFbWVbZqMg7XRhkgD8mksucvt64anbZWHTYf1fABBKShaHZxW6BaUMQchxcChReDiQugRRMunAzzz2KAXx"
+                        },
+                        "newBoxes": [
+                            "8FCKnXM8FECtLCLMhQt1vqBzD59bxhkFD7kzhAfGqGVZ"
+                        ],
+                        "data": "",
+                        "issuer": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
+                        "to": [
+                            [
+                                "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
+                                "100"
+                            ]
+                        ],
+                        "assetCode": "test",
+                        "fee": 0
+                    }
+                ]
+            };
+
+            // creates the response obj
+            var responseObject = {"status":'200',json: () => { return jsonObject }};
+
+            // stub the promise response
+            sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
+
+            // make the call trying to test for
+            var response = await brambljs.getMempool(parameters);
+
+            // do validation here
+            assert.strictEqual(typeof response.result, "object");
+        });
+    });
+
+    /* ------------------------- Lookup Balances ----------------------------- */
+    describe("lookup balances", () => {
+        beforeEach(() => {
+            parameters =  {
+                "publicKeys": [
+                    "22222222222222222222222222222222222222222222",
+                    "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ"
+                ]
+            };
+        });
+
+        it('should get balances using PubKeysId list', async () => {
+            // query params using params under beforeEach()
+            // mock response data
+            let jsonObject = {
+                "jsonrpc": "2.0",
+                "id": "1",
+                "result": {
+                    "22222222222222222222222222222222222222222222": {
+                        "Balances": {
+                            "Polys": "0",
+                            "Arbits": "0"
+                        },
+                        "Boxes": {
+                            "Asset": [
+                                {
+                                    "nonce": "-4529498046359676742",
+                                    "data": "",
+                                    "issuer": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
+                                    "assetCode": "test",
+                                    "id": "9eKHfJzfWxZ1nw7HM9asUsKx3XnFT611uJBEWVgq1t1Q",
+                                    "type": "Asset",
+                                    "proposition": "22222222222222222222222222222222222222222222",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    },
+                    "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ": {
+                        "Balances": {
+                            "Polys": "100000000",
+                            "Arbits": "100000000"
+                        },
+                        "Boxes": {
+                            "Asset": [
+                                {
+                                    "nonce": "-3898410089397904521",
+                                    "data": "",
+                                    "issuer": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
+                                    "assetCode": "test",
+                                    "id": "HdXwi2FhUFtkRSgogEoazFQkTQ8qhgqTDBVmN8syyNL2",
+                                    "type": "Asset",
+                                    "proposition": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
+                                    "value": "100"
+                                }
+                            ],
+                            "Poly": [
+                                {
+                                    "nonce": "3596905697323859524",
+                                    "id": "39HNS5UbKV75Ysqejt8mARN2vbtthNK2Fh3NEeHbEmry",
+                                    "type": "Poly",
+                                    "proposition": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
+                                    "value": "100000000"
+                                }
+                            ],
+                            "Arbit": [
+                                {
+                                    "nonce": "-269532489367390959",
+                                    "id": "852rQUseapF1mRUvN9Nu8Vt9Dt7ahj7X9aZ4s3xzeanj",
+                                    "type": "Arbit",
+                                    "proposition": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
+                                    "value": "100000000"
+                                }
+                            ]
+                        }
+                    }
+                }
+            };
+
+            // creates the response obj
+            var responseObject = {"status":'200',json: () => { return jsonObject }};
+
+            // stub the promise response
+            sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
+
+            // make the call trying to test for
+            var response = await brambljs.getBalancesByKey(parameters);
+
+            // do validation here
+            assert.strictEqual(typeof response.result, "object");
+            expect(response.result).to.contain.keys('22222222222222222222222222222222222222222222','6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ');
+        });
+        it('should fail if no parameters present', function(done) {
+            // avoid server side calls
+            enforceLocalTesting();
+
+            // make call without parameters
+            brambljs
+            .getBalancesByKey()
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: A parameter object must be specified');
+                done();
+            });
+        });
+        it('should fail if no publicKeys provided', function(done) {
+            // set "tx" as empty string to validate
+            parameters.publicKeys = "";
+            // avoid server side calls
+            enforceLocalTesting();
+
+            brambljs
+            .getBalancesByKey(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: A list of publicKeys must be specified');
+                done();
+            });
+        });
+        it('should fail if publicKeys is not an array', function(done) {
+            // set "tx" as empty string to validate
+            parameters.publicKeys = {};
+            // avoid server side calls
+            enforceLocalTesting();
+
+            brambljs
+            .getBalancesByKey(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: A list of publicKeys must be specified');
                 done();
             });
         });

@@ -11,7 +11,7 @@
  * and Sinon(https://sinonjs.org/).
  */
 
-const BramblJS = require("../../index");
+const Requests = require("../../src/Modules/Requests");
 const assert = require("assert");
 const sinon = require('sinon');
 const chai = require('chai');
@@ -31,7 +31,7 @@ describe("Keyfiles", () => {
 
     // run this before all tests
     before(() => {
-        brambljs = BramblJS.Requests();
+        brambljs = new Requests();
     });
 
     // run this before every test
