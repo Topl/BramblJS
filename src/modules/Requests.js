@@ -324,47 +324,6 @@ class Requests {
   /*                           Asset Api Routes                                 */
   /* -------------------------------------------------------------------------- */
 
-  /* ---------------------------- createAssets -------------------------------- */
-  /**
-   * Create a new asset on chain
-   * @param {object} params - body parameters passed to the specified json-rpc method
-   * @param {string} params.issuer - Public key of the asset issuer
-   * @param {string} params.assetCode - Identifier of the asset
-   * @param {string} params.recipient - Public key of the asset recipient
-   * @param {number} params.amount - Amount of asset to send
-   * @param {number} params.fee - Fee to apply to the transaction
-   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty)
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async createAssets(params, id = "1") {
-    if (!params) {
-      throw new Error("A parameter object must be specified");
-    }
-    if (!params.issuer) {
-      throw new Error("An asset issuer must be specified");
-    }
-    if (!params.assetCode) {
-      throw new Error("An assetCode must be specified");
-    }
-    if (!params.recipient) {
-      throw new Error("A recipient must be specified");
-    }
-    if (!params.amount) {
-      throw new Error("An amount must be specified");
-    }
-    if (!params.fee && params.fee !== 0) {
-      throw new Error("A fee must be specified");
-    }
-    if (params.fee < 0) {
-      throw new Error("Invalid fee, a fee must be greater or equal to zero");
-    }
-    const route = "asset/";
-    const method = "createAssets";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
   /* ---------------------- createAssetsPrototype ------------------------ */
   /**
    * Create a new asset on chain
@@ -405,49 +364,6 @@ class Requests {
     }
     const route = "asset/";
     const method = "createAssetsPrototype";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-  /* -------------------------- transferAssets ------------------------------- */
-  /**
-   * Transfer an asset to a recipient
-   * @param {object} params - body parameters passed to the specified json-rpc method
-   * @param {string} params.issuer - Public key of the asset issuer
-   * @param {string} params.assetCode - Identifier of the asset
-   * @param {string} params.recipient - Public key of the asset recipient
-   * @param {number} params.amount - Amount of asset to send
-   * @param {number} params.fee - Fee to apply to the transaction
-   * @param {string|string[]} [params.sender] - Array of public keys which you can use to restrict sending from
-   * @param {string} [params.changeAddress] - Public key you wish to send change back to
-   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty)
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async transferAssets(params, id = "1") {
-    if (!params) {
-      throw new Error("A parameter object must be specified");
-    }
-    if (!params.issuer) {
-      throw new Error("An asset issuer must be specified");
-    }
-    if (!params.assetCode) {
-      throw new Error("An assetCode must be specified");
-    }
-    if (!params.recipient) {
-      throw new Error("A recipient must be specified");
-    }
-    if (!params.amount) {
-      throw new Error("An amount must be specified");
-    }
-    if (!params.fee && params.fee !== 0) {
-      throw new Error("A fee must be specified");
-    }
-    if (params.fee < 0) {
-      throw new Error("Invalid fee, a fee must be greater or equal to zero");
-    }
-    const route = "asset/";
-    const method = "transferAssets";
     return bramblRequest({route, method, id}, params, this);
   }
 
@@ -494,43 +410,6 @@ class Requests {
     }
     const route = "asset/";
     const method = "transferAssetsPrototype";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-  /* ------------------------------ transferTargetAssets -------------------------------- */
-  /**
-   * Transfer a specific asset box to a recipient
-   * @param {object} params - body parameters passed to the specified json-rpc method
-   * @param {string} params.recipient - Public key of the asset recipient
-   * @param {string} params.assetId - BoxId of the asset to target
-   * @param {number} params.amount - Amount of asset to send
-   * @param {number} params.fee - Fee to apply to the transaction
-   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty)
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async transferTargetAssets(params, id = "1") {
-    if (!params) {
-      throw new Error("A parameter object must be specified");
-    }
-    if (!params.recipient) {
-      throw new Error("A recipient must be specified");
-    }
-    if (!params.assetId) {
-      throw new Error("An assetId is required for this request");
-    }
-    if (!params.amount) {
-      throw new Error("An amount must be specified");
-    }
-    if (!params.fee && params.fee !== 0) {
-      throw new Error("A fee must be specified");
-    }
-    if (params.fee < 0) {
-      throw new Error("Invalid fee, a fee must be greater or equal to zero");
-    }
-    const route = "asset/";
-    const method = "transferTargetAssets";
     return bramblRequest({route, method, id}, params, this);
   }
 

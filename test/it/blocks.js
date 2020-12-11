@@ -24,7 +24,12 @@ describe("Blocks", () => {
             return {"test":"dummy data"}
         }};
 
-    // avoid server side calls and return dummy data
+    /**
+     * Every test will have a localTestObj returned
+     * as a succesfull call. This ensures the call
+     * doesn't leave our local environment and prevents
+     * tests from hanging until a timeout is reached.
+     */
     function enforceLocalTesting(){
         return sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(localTestObj));
     }
@@ -35,6 +40,12 @@ describe("Blocks", () => {
     });
 
     // run this before every test
+    beforeEach(() => {
+        // avoid server side calls and return dummy data
+        enforceLocalTesting();
+    });
+
+    // run this after every test
     afterEach(() => {
         sinon.restore();
     });
@@ -110,6 +121,7 @@ describe("Blocks", () => {
             var responseObject = {"status":'200',json: () => { return jsonObject }};
 
             // stub the promise response
+            sinon.restore(); // restore sinon to resolve promise with new obj
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
@@ -121,9 +133,6 @@ describe("Blocks", () => {
             assert.strictEqual(response.result.blockNumber, 1178);
         });
         it('should fail if no parameters present', function(done) {
-            // avoid server side calls
-            enforceLocalTesting();
-
             // make call without parameters
             brambljs
             .getBlockById()
@@ -138,8 +147,6 @@ describe("Blocks", () => {
         it('should fail if no blockId provided', function(done) {
             // set "recipient" as empty string to validate
             parameters.blockId = "";
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .getBlockById(parameters)
@@ -200,6 +207,7 @@ describe("Blocks", () => {
             var responseObject = {"status":'200',json: () => { return jsonObject }};
 
             // stub the promise response
+            sinon.restore(); // restore sinon to resolve promise with new obj
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for

@@ -25,7 +25,12 @@ describe("Transactions", () => {
             return {"test":"dummy data"}
         }};
 
-    // avoid server side calls and return dummy data
+    /**
+     * Every test will have a localTestObj returned
+     * as a succesfull call. This ensures the call
+     * doesn't leave our local environment and prevents
+     * tests from hanging until a timeout is reached.
+     */
     function enforceLocalTesting(){
         return sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(localTestObj));
     }
@@ -36,6 +41,12 @@ describe("Transactions", () => {
     });
 
     // run this before every test
+    beforeEach(() => {
+        // avoid server side calls and return dummy data
+        enforceLocalTesting();
+    });
+
+    // run this after every test
     afterEach(() => {
         sinon.restore();
     });
@@ -101,6 +112,7 @@ describe("Transactions", () => {
             var responseObject = {"status":'200',json: () => { return jsonObject }};
 
             // stub the promise response
+            sinon.restore(); // restore sinon to resolve promise with new obj
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
@@ -111,9 +123,6 @@ describe("Transactions", () => {
             assert.strictEqual(response.result.txHash, "3Z5SzHiCuHKPdn8wypN8GuhnWJkSL2ZtRVbJq4a1jLry");
         });
         it('should fail if no parameters present', function(done) {
-            // avoid server side calls
-            enforceLocalTesting();
-
             // make call without parameters
             brambljs
             .broadcastTx()
@@ -128,8 +137,6 @@ describe("Transactions", () => {
         it('should fail if no tx object provided', function(done) {
             // set "tx" as empty string to validate
             parameters.tx = "";
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .broadcastTx(parameters)
@@ -144,8 +151,6 @@ describe("Transactions", () => {
         it('should fail if no signature in tx object provided', function(done) {
             // set "tx.signatures" as empty obj to validate
             parameters.tx.signatures = {};
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .broadcastTx(parameters)
@@ -164,8 +169,6 @@ describe("Transactions", () => {
                     "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ": "oNvbqGatNR2aZTneYcF8JsmUDb1emh64FSvfN7Svf9t6edqGgEVYNLBebJrcCGXarr1HGUVQnLgVFysyyjU5wZa"
                 }
             }
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .broadcastTx(parameters)
@@ -222,6 +225,7 @@ describe("Transactions", () => {
             var responseObject = {"status":'200',json: () => { return jsonObject }};
 
             // stub the promise response
+            sinon.restore(); // restore sinon to resolve promise with new obj
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
@@ -232,9 +236,6 @@ describe("Transactions", () => {
             assert.strictEqual(response.result.txHash, "6XHxhYxe4TWXaXP9QQZroHN1bKU5sCdRdFrXe1p2WToF");
         });
         it('should fail if no parameters present', function(done) {
-            // avoid server side calls
-            enforceLocalTesting();
-
             // make call without parameters
             brambljs
             .getTransactionById()
@@ -249,8 +250,6 @@ describe("Transactions", () => {
         it('should fail if no transactionId provided', function(done) {
             // set "tx" as empty string to validate
             parameters.transactionId = "";
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .getTransactionById(parameters)
@@ -305,6 +304,7 @@ describe("Transactions", () => {
             var responseObject = {"status":'200',json: () => { return jsonObject }};
 
             // stub the promise response
+            sinon.restore(); // restore sinon to resolve promise with new obj
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
@@ -315,9 +315,6 @@ describe("Transactions", () => {
             assert.strictEqual(response.result.txHash, "4GVrKSBM9WxMqtiFthia4cuZjWjSCT9idj3QpQjuRg58");
         });
         it('should fail if no parameters present', function(done) {
-            // avoid server side calls
-            enforceLocalTesting();
-
             // make call without parameters
             brambljs
             .getTransactionFromMempool()
@@ -332,8 +329,6 @@ describe("Transactions", () => {
         it('should fail if no transactionId provided', function(done) {
             // set "tx" as empty string to validate
             parameters.transactionId = "";
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .getTransactionFromMempool(parameters)
@@ -384,6 +379,7 @@ describe("Transactions", () => {
             var responseObject = {"status":'200',json: () => { return jsonObject }};
 
             // stub the promise response
+            sinon.restore(); // restore sinon to resolve promise with new obj
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
@@ -477,6 +473,7 @@ describe("Transactions", () => {
             var responseObject = {"status":'200',json: () => { return jsonObject }};
 
             // stub the promise response
+            sinon.restore(); // restore sinon to resolve promise with new obj
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
@@ -487,9 +484,6 @@ describe("Transactions", () => {
             expect(response.result).to.contain.keys('22222222222222222222222222222222222222222222','6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ');
         });
         it('should fail if no parameters present', function(done) {
-            // avoid server side calls
-            enforceLocalTesting();
-
             // make call without parameters
             brambljs
             .getBalancesByKey()
@@ -504,8 +498,6 @@ describe("Transactions", () => {
         it('should fail if no publicKeys provided', function(done) {
             // set "tx" as empty string to validate
             parameters.publicKeys = "";
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .getBalancesByKey(parameters)
@@ -520,8 +512,6 @@ describe("Transactions", () => {
         it('should fail if publicKeys is not an array', function(done) {
             // set "tx" as empty string to validate
             parameters.publicKeys = {};
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .getBalancesByKey(parameters)

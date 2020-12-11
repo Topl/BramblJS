@@ -24,7 +24,12 @@ describe("Assets", () => {
             return {"test":"dummy data"}
         }};
 
-    // avoid server side calls and return dummy data
+    /**
+     * Every test will have a localTestObj returned
+     * as a succesfull call. This ensures the call
+     * doesn't leave our local environment and prevents
+     * tests from hanging until a timeout is reached.
+     */
     function enforceLocalTesting(){
         return sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(localTestObj));
     }
@@ -35,6 +40,12 @@ describe("Assets", () => {
     });
 
     // run this before every test
+    beforeEach(() => {
+        // avoid server side calls and return dummy data
+        enforceLocalTesting();
+    });
+
+    // run this after every test
     afterEach(() => {
         sinon.restore();
     });
@@ -101,6 +112,7 @@ describe("Assets", () => {
             var responseObject = {"status":'200',json: () => { return jsonObject }};
 
             // stub the promise response
+            sinon.restore(); // restore sinon to resolve promise with new obj
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
@@ -110,9 +122,6 @@ describe("Assets", () => {
             assert.strictEqual(response.result.formattedTx.txHash, "2ChyrPLSdAXof49X2cd75PmT2Jz1xZdphHkf4WLzdfdW");
         });
         it('should fail if no parameters present', function(done) {
-            // avoid server side calls
-            enforceLocalTesting();
-
             // make call without parameters
             brambljs
             .createAssetsPrototype()
@@ -127,8 +136,6 @@ describe("Assets", () => {
         it('should fail if no issuer provided', function(done) {
             // set "issuer" as empty string to validate
             parameters.issuer = "";
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .createAssetsPrototype(parameters)
@@ -143,8 +150,6 @@ describe("Assets", () => {
         it('should fail if no assetCode provided', function(done) {
             // set "assetCode" as empty string to validate
             parameters.assetCode = "";
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .createAssetsPrototype(parameters)
@@ -159,8 +164,6 @@ describe("Assets", () => {
         it('should fail if no recipient provided', function(done) {
             // set "recipient" as empty string to validate
             parameters.recipient = "";
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .createAssetsPrototype(parameters)
@@ -175,8 +178,6 @@ describe("Assets", () => {
         it('should fail if no amount provided', function(done) {
             // set "amount" as empty string to validate
             parameters.amount = "";
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .createAssetsPrototype(parameters)
@@ -191,8 +192,6 @@ describe("Assets", () => {
         it('should fail if no fee provided', function(done) {
             // set "fee" as empty string to validate
             parameters.fee = "";
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .createAssetsPrototype(parameters)
@@ -207,8 +206,6 @@ describe("Assets", () => {
         it('should fail if fee < 0', function(done) {
             // set "fee" a value < 0
             parameters.fee = -23;
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .createAssetsPrototype(parameters)

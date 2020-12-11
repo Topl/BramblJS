@@ -24,7 +24,12 @@ const nodeFetch = require('node-fetch');
 describe("Keyfiles", () => {
     const localTestObj = {"status":'200',json: () => { return {"test":"dummy data"} }};
 
-    // avoid server side calls and return dummy data
+    /**
+     * Every test will have a localTestObj returned
+     * as a succesfull call. This ensures the call
+     * doesn't leave our local environment and prevents
+     * tests from hanging until a timeout is reached.
+     */
     function enforceLocalTesting(){
         return sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(localTestObj));
     }
@@ -35,6 +40,12 @@ describe("Keyfiles", () => {
     });
 
     // run this before every test
+    beforeEach(() => {
+        // avoid server side calls and return dummy data
+        enforceLocalTesting();
+    });
+
+    // run this after every test
     afterEach(() => {
         sinon.restore();
     });
@@ -61,6 +72,7 @@ describe("Keyfiles", () => {
             var responseObject = {"status":'200',json: () => { return jsonObject }};
 
             // stub the promise response
+            sinon.restore(); // restore sinon to resolve promise with new obj
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
@@ -70,9 +82,6 @@ describe("Keyfiles", () => {
             assert.strictEqual(response.result.publicKey, "CACjU6PmX7RJRQ61BRkkMtwQyLqtYkapXSGwb13u2F4C");
         });
         it('should fail if no parameters present', function(done) {
-            // avoid server side calls
-            enforceLocalTesting();
-
             // make call without parameters
             brambljs
             .generateKeyfile()
@@ -87,8 +96,6 @@ describe("Keyfiles", () => {
         it('should fail if no password provided', function(done) {
             // set "password" as empty string to validate
             parameters.password = "";
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .generateKeyfile(parameters)
@@ -121,6 +128,7 @@ describe("Keyfiles", () => {
             }
 
             var responseObject = {"status":'200',json: () => { return jsonObject }};
+            sinon.restore(); // restore sinon to resolve promise with new obj
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             var response = await brambljs.listOpenKeyfiles();
@@ -151,6 +159,7 @@ describe("Keyfiles", () => {
             }
 
             var responseObject = {"status":'200',json: () => { return jsonObject }};
+            sinon.restore(); // restore sinon to resolve promise with new obj
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             var response = await brambljs.lockKeyfile(parameters);
@@ -162,9 +171,6 @@ describe("Keyfiles", () => {
             });
         });
         it('should fail if no parameters provided', function(done) {
-            // avoid server side calls
-            enforceLocalTesting();
-
             brambljs
             .lockKeyfile()
             .then((response) => {
@@ -178,8 +184,6 @@ describe("Keyfiles", () => {
         it('should fail if no pubKey provided', function(done) {
             // set "publicKey" as empty string to validate
             parameters.publicKey = "";
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .lockKeyfile(parameters)
@@ -194,8 +198,6 @@ describe("Keyfiles", () => {
         it('should fail if no password provided', function(done) {
             // set "password" as empty string to validate
             parameters.password = "";
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .lockKeyfile(parameters)
@@ -229,6 +231,7 @@ describe("Keyfiles", () => {
             }
 
             var responseObject = {"status":'200',json: () => { return jsonObject }};
+            sinon.restore(); // restore sinon to resolve promise with new obj
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             //expect(fetchSpy.args).toBe("a");
@@ -241,9 +244,6 @@ describe("Keyfiles", () => {
             });
         });
         it('should fail if no parameters provided', function(done) {
-            // avoid server side calls
-            enforceLocalTesting();
-
             // make call without parameters
             brambljs
             .lockKeyfile()
@@ -259,9 +259,6 @@ describe("Keyfiles", () => {
             // set "publicKey" as empty string to validate
             parameters.publicKey = "";
 
-            // avoid server side calls
-            enforceLocalTesting();
-
             brambljs
             .lockKeyfile(parameters)
             .then((response) => {
@@ -275,9 +272,6 @@ describe("Keyfiles", () => {
         it('should fail if no password provided', function(done) {
             // set "password" as empty string to validate
             parameters.password = "";
-
-            // avoid server side calls
-            enforceLocalTesting();
 
             brambljs
             .lockKeyfile(parameters)
