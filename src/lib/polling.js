@@ -1,14 +1,12 @@
 /**
  * @todo RA- Refactor this polling module
- * @todo RA- Simplify funcitonality & cleanup error handling
- * @todo RA- Add
+ * @todo RA- Simplify functionality & cleanup error handling
  *
  * Notes:
- * Polling checks for transaction in pool,
- *  if first time it fails then it will check entire mempool
- * if it fails then it will continue to try up to the maxFailedQueries... currently set at 10 by BrambleJS
- * whenever it is found it resolves.
- *
+ * - Polling checks for transaction in pool,
+ * - if first time it fails, then check entire mempool,
+ * - if it fails then it will continue to try up to the maxFailedQueries... currently set at 10 by BrambleJS,
+ * - whenever it is found it resolves.
  */
 
 module.exports = (requests, txId, options) => {
