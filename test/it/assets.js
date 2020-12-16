@@ -64,6 +64,23 @@ describe("Assets", () => {
             };
         });
 
+        it('should NOT fail if parameters are valid', function(done) {
+            const validParameters = ["amount", "assetCode", "data",
+            "fee", "issuer", "recipient", "sender"];
+            expect(parameters).to.contain.keys(validParameters);
+
+            brambljs
+            .createAssetsPrototype(parameters)
+            .then((response) => {
+                assert.strictEqual(typeof response, "object");
+                assert.strictEqual(response.test, "dummy data");
+                done();
+            })
+            .catch((error) => {
+                done(new Error("Parameters Error: " + error));
+            });
+        });
+
         it('should create raw asset', async () => {
             // query params using params under beforeEach()
             // mock response data
