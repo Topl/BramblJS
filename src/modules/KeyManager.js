@@ -7,6 +7,7 @@
  * https://github.com/Ethereumjs/keythereum
  */
 
+//TODO: RA- extract util functions into a Keymanager mdoule utilities. do not expose them to any other classes
 "use strict";
 
 // Dependencies
@@ -242,6 +243,8 @@ function marshal(derivedKey, keyObject, salt, iv, algo) {
  * @returns {Object} keyStorage for use with exportToFile
  */
 function dump(password, keyObject, options, cb) {
+  // RA: why is this taking .5 secodns?
+  // RA: why do we need str2buf
   const kdfParams = options.kdfParams || options.scrypt;
   const iv = str2buf(keyObject.iv);
   const salt = str2buf(keyObject.salt);
@@ -335,7 +338,7 @@ class KeyManager {
      */
     constructor(params) {
       // enforce that a password must be provided
-      if (params.constructor !== String && !params.password) throw new Error("A password must be provided at initialization");
+      if (!params || (params.constructor !== String && !params.password)) throw new Error("A password must be provided at initialization");
 
       // Initialize a key manager object with a key storage object
       const initKeyStorage = (keyStorage, password) => {
@@ -343,7 +346,8 @@ class KeyManager {
         this.#isLocked = false;
         this.#password = password;
         this.#keyStorage = keyStorage;
-
+        // RA: do we need to exec recover() at this point?
+        // RA; try testing using diff constants "params.constants" i.e 2^12
         if (this.pk) this.#sk = recover(password, keyStorage, this.constants.scrypt);
       };
 
@@ -406,7 +410,7 @@ class KeyManager {
     /**
      * Getter function to retrieve key storage in the Bifrost compatible format
      * @memberof KeyManager
-     * @returns {any} #keyStorage
+     * @returns {object} returns value of private var keyStorage
      */
     getKeyStorage() {
       if (this.#isLocked) throw new Error("Key manager is currently locked. Please unlock and try again.");
@@ -421,6 +425,25 @@ class KeyManager {
      */
     lockKey() {
       this.#isLocked = true;
+    }
+
+    /**
+     * Getter for private property #isLocked
+     * @memberof KeyManager
+     * @returns {boolean} value of #isLocked
+     */
+    get isLocked() {
+      return this.#isLocked;
+    }
+
+    /**
+     * Setter for private property #isLocked
+     * @memberof KeyManager
+     * @param {any} args ignored ,only necessary for setter
+     * @returns {void} Error is thrown to protect private variable
+     */
+    set isLocked(args) {
+      throw new Error("Invalid private variable access, use lockKey() instead.");
     }
 
     /**
@@ -439,28 +462,42 @@ class KeyManager {
      * Generate the signature of a message using the provided private key
      * @param {string} message Message to sign (utf-8 encoded)
      * @memberof KeyManager
-     * @returns {Buffer} signature
+     * @returns {Uint8Array} signature
      */
     sign(message) {
       if (this.#isLocked) throw new Error("The key is currently locked. Please unlock and try again.");
+      if (!this.#sk) throw new Error("A key must be initialized before using this key manager");
+      if (!message || message.constructor !== String) throw new Error("Invalid message provided as argument.");
+
       // curve25519sign using this.#sk as private key and provided message
       return curve25519.sign(str2buf(this.#sk), str2buf(message, "utf8"), crypto.randomBytes(64));
     }
 
     /**
      * Export formatted JSON to keystore file.
-     * @param {string=} _keyPath Path to keystore folder (default: "keystore").
+     * @param {string=} _keyPath Path to keystore folder (default: "keyfiles").
      * @returns {string} JSON filename
      * @memberof KeyManager
      */
     exportToFile(_keyPath) {
-      const keyPath = _keyPath || "keyfiles";
+      //RA: should I be able to use this if the key is locked? NO, ensure this is not locked before proceeeding.
+      if (this.#isLocked) throw new Error("The key is currently locked. Please unlock and try again.");
+      if (!this.pk) throw new Error("A key must be initialized before using this key manager");
+      if (_keyPath && _keyPath.constructor !== String) throw new Error("Invalid keypath provided as argument.");
 
+      const keyPath = _keyPath || "keyfiles";
       const outfile = generateKeystoreFilename(this.pk);
       const json = JSON.stringify(this.getKeyStorage());
       const outpath = path.join(keyPath, outfile);
 
-      fs.writeFileSync(outpath, json);
+      // write file and return outpath if sucessful or throw error
+      try {
+        fs.writeFileSync(outpath, json);
+      } catch (error) {
+        console.log(error);
+        throw new Error("Error exporting to file." + error);
+      }
+
       return outpath;
     }
 };

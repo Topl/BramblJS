@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint src --ext .js",
     "lint:fix": "npm run lint -- --fix",
-    "test:it": "./node_modules/mocha/bin/mocha test/it",
+    "test:it": "./node_modules/mocha/bin/mocha test/it/keymanager_tests",
     "test:e2e": "./node_modules/mocha/bin/mocha test/e2e --timeout 15000",
     "test:all": "npm run lint && npm run test:it && npm run test:e2e",
     "test": "npm run lint && npm run test:it"
