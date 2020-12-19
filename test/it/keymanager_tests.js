@@ -10,6 +10,7 @@ const KeyManager = require("../../src/modules/KeyManager");
 const assert = require("assert");
 const chai = require('chai');
 const expect = chai.expect;
+const fs = require("fs");
 
 /* -------------------------------------------------------------------------- */
 /*                          KeyManager unit tests                             */
@@ -31,13 +32,19 @@ describe("KeyManager", () => {
 
     /* ---------------------------- KeyManager Constructor Tests -------------------------------- */
     describe('new keymanager()', function() {
+        //test passing optional params to new keymanager constructor
+        //todo: remove utils from keymanager module
+        //todo: remove callbacks from utils
+        //
+
         /* ---------------------------- invalid passwords -------------------------------- */
-        function testInvalidPasswords(test) {
-            it('should fail if password is ' + test.it, async () => {
-                assert.throws(function() { new KeyManager(test.value) }, Error, 'Error: A password must be provided at initialization');
-            });
-        }
         describe('invalid passwords', function() {
+            function testInvalidPasswords(test) {
+                it('should fail if password is ' + test.it, async () => {
+                    assert.throws(function() { new KeyManager(test.value) }, Error, 'Error: A password must be provided at initialization');
+                });
+            }
+
             let testCasess = [
                 {"it":"123", "value":123},
                 {"it":"[]", "value":[]},
@@ -57,17 +64,14 @@ describe("KeyManager", () => {
         });
 
         /* ---------------------------- valid passwords -------------------------------- */
-        function testGenerateKey(test) {
-            it('should generate key using password ' + test.it, async () => {
-                let keyMan = new KeyManager(test.value);
-                expect(keyMan).to.have.property('pk');
-                console.log(keyMan.pk);
-                //assert.isNotNull(keyMan.pk, 'great, time for tea!');
-                //assert.typeOf(keyMan.pk, 'string', 'we have a string');
-                //expect(keyMan).to.have.own.property('pk');
-            });
-        }
         describe('generate key w/ valid password', function() {
+            function testGenerateKey(test) {
+                it('should generate key using password ' + test.it, async () => {
+                    let keyMan = new KeyManager(test.value);
+                    expect(keyMan).to.have.property('pk');
+                });
+            }
+
             let testCasess = [
                 {"it":"passwordtest", "value":"passwordtest"},
                 {"it":"this_is_a_password", "value":"this_is_a_password"},
@@ -75,7 +79,7 @@ describe("KeyManager", () => {
             ];
 
             testCasess.forEach((test) => {
-                //testGenerateKey(test);
+                testGenerateKey(test);
             });
         });
         describe('generate key w/ keypath', function() {
@@ -88,6 +92,7 @@ describe("KeyManager", () => {
         });
     });
 
+    /* ---------------------------- lock key -------------------------------- */
     describe('lockKey()', function() {
         it('should pass if lockKey getter returns boolean', async () => {
             assert.strictEqual(typeof keyMan.isLocked, "boolean", "lockKey getter returns boolean");
@@ -142,6 +147,7 @@ describe("KeyManager", () => {
         });
     });
 
+    /* ---------------------------- get key storage -------------------------------- */
     describe('getKeyStorage()', function() {
         it('should pass if key is unlocked', async () => {
             // key is unlocked by default
@@ -195,6 +201,7 @@ describe("KeyManager", () => {
         });
     });
 
+    /* ---------------------------- sign -------------------------------- */
     describe('sign()', function() {
         it('should fail if key is locked', async () => {
             // lock key
@@ -238,14 +245,24 @@ describe("KeyManager", () => {
         });
     });
 
+    /* ---------------------------- export to file -------------------------------- */
     describe('exportToFile()', function() {
-        // before(() => {
-        //     //keymanager = new KeyManager();
-            
-        // });
         let keyMan = new KeyManager('password_test');
 
+        it('should fail if key is locked', async () => {
+            // ensure key is properly unlocked
+            //keyMan.unlockKey("password_test");
+            keyMan.lockKey();
+
+            // attempt to sign when key is locked
+            assert.throws(function() {
+                keyMan.exportToFile();
+            }, Error, 'The key is currently locked. Please unlock and try again.');
+        });
         it('should fail if keypath param is []', async () => {
+            // ensure key is properly unlocked
+            keyMan.unlockKey("password_test");
+
             // export using an invalid keypath
             assert.throws(function() {
                 keyMan.exportToFile([]);
@@ -257,55 +274,93 @@ describe("KeyManager", () => {
                 keyMan.exportToFile({"keyPath":"invalid key"});
             }, Error, 'Error: Key manager is currently locked. Please unlock and try again.');
         });
-        it('should pass if keypath param not provided', async () => {
-            console.log(keyMan.pk)
-            // export using an invalid keypath
-            //let keyMan = new KeyManager("testing");
-            let test = keyMan.exportToFile();
-            console.log(test)
+        it('should pass if keypath param not provided', async (done) => {
+            // export key to file using default "keyfiles/ dir"
+            let keyfilePath = keyMan.exportToFile();
+            assert.strictEqual(keyfilePath.constructor, String, "Key file path is a String");
+
+            // verify file was stored properly by accessing it
+            fs.access(keyfilePath, fs.F_OK, (err) => {
+                if(err){
+                    done(new Error("Error in file creation: " + err));
+                }
+            });
+
+            // cleanup exported keyfiles as tests
+            fs.unlinkSync(keyfilePath);
+            done();
         });
-        // it('should pass with valid keypath', async () => {
-        //     // export using an invalid keypath
-            
-        //     let keyMan = new KeyManager("testing");
-        //     let test = keyMan.exportToFile('');
-        //     console.log(test)
-        // });
+        it('should pass if dir .keypath exists', (done) => {
+            // create testing_dir
+            const path = ".keyfiles/.keyfiles_" + new Date().toISOString();
+            fs.mkdirSync(path); // client must create dir
 
+            // export key to file using the path above
+            let keyfilePath = keyMan.exportToFile(path);
+            assert.strictEqual(keyfilePath.constructor, String, "Key file path is a String");
 
-
-
-
-        it('should fail if message is empty', async () => {
-            // ensure key is properly unlocked
-            keyMan.lockKey();
-            keyMan.unlockKey("password_test");
-
-            // attempt to sign with invalid message
-            assert.throws(function() {
-                keyMan.sign("");
-            }, Error, 'Error: Key manager is currently locked. Please unlock and try again.');
+            // verify file was stored properly by accessing it
+            fs.access(keyfilePath, fs.F_OK, (err) => {
+                if(err){
+                    done(new Error("Error in file creation: " + err));
+                } else {
+                    // test cleanup
+                    fs.rmdirSync(path, { recursive: true });
+                    done();
+                }
+            });
         });
-        it('should fail if message is not a string', async () => {
-            // ensure key is properly unlocked
-            keyMan.lockKey();
-            keyMan.unlockKey("password_test");
+        it('should pass if dir .keypath exists', (done) => {
+            // create testing_dir
+            const path = ".keyfiles/.keyfiles_" + new Date().toISOString();
+            fs.mkdirSync(path); // client must create dir
 
-            // attempt to sign with invalid message
-            assert.throws(function() {
-                keyMan.sign([]);
-            }, Error, 'Error: Key manager is currently locked. Please unlock and try again.');
+            // export key to file using the path above
+            let keyfilePath = keyMan.exportToFile(path);
+            assert.strictEqual(keyfilePath.constructor, String, "Key file path is a String");
+
+            // verify file was stored properly by accessing it
+            fs.access(keyfilePath, fs.F_OK, (err) => {
+                if(err){
+                    done(new Error("Error in file creation: " + err));
+                } else {
+                    // test cleanup
+                    fs.rmdirSync(path, { recursive: true });
+                    done();
+                }
+            });
         });
-        it('should padd if message is a string', async () => {
-            // ensure key is properly unlocked
-            keyMan.lockKey();
-            keyMan.unlockKey("password_test");
 
-            // sign with invalid message
-            let signedKey = keyMan.sign("topl_valid_msg");
-            assert.strictEqual(typeof signedKey, "object");
-            assert.strictEqual(signedKey.constructor, Uint8Array);
-            assert.strictEqual(signedKey.length, 64);
+        /* ------------------------- export to file success tests ----------------------------- */
+        let counter = 0;
+        let path = ".keyfiles/.keyfiles_" + new Date().toISOString();
+        let testCasess = [
+            path + counter++,
+            path + counter++,
+            path + counter++,
+            path + counter++,
+            path + counter++
+        ];
+        function testExportKeyfiles(exportPath) {
+            it('should pass with path' + exportPath, () => {
+                // export key to file using the path above
+                let keyfilePath = keyMan.exportToFile(exportPath);
+                assert.strictEqual(keyfilePath.constructor, String, "Key file path is a String");
+
+                fs.access(keyfilePath, fs.F_OK, (err) => {
+                    if(err){
+                        throw new Error("Error in file creation: " + err);
+                    } else {
+                        // test cleanup
+                        fs.rmdirSync(exportPath, { recursive: true });
+                    }
+                });
+            });
+        }
+
+        testCasess.forEach((test) => {
+            fs.mkdirSync(test); // client must create dir
+            testExportKeyfiles(test);
         });
     });
 });

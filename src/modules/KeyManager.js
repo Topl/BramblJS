@@ -475,26 +475,29 @@ class KeyManager {
 
     /**
      * Export formatted JSON to keystore file.
-     * @param {string=} _keyPath Path to keystore folder (default: "keyfiles").
+     * @param {string=} _keyPath Path to keystore folder (default: ".keyfiles")
      * @returns {string} JSON filename
      * @memberof KeyManager
      */
     exportToFile(_keyPath) {
-      //RA: should I be able to use this if the key is locked? NO, ensure this is not locked before proceeeding.
       if (this.#isLocked) throw new Error("The key is currently locked. Please unlock and try again.");
       if (!this.pk) throw new Error("A key must be initialized before using this key manager");
       if (_keyPath && _keyPath.constructor !== String) throw new Error("Invalid keypath provided as argument.");
 
-      const keyPath = _keyPath || "keyfiles";
+      const keyPath = _keyPath || ".keyfiles";
       const outfile = generateKeystoreFilename(this.pk);
       const json = JSON.stringify(this.getKeyStorage());
       const outpath = path.join(keyPath, outfile);
 
-      // write file and return outpath if sucessful or throw error
+      // write file and return outpath if successful or throw error
       try {
+        // create default directory if it doesn't exist
+        if (keyPath === ".keyfiles" && !fs.existsSync(keyPath)){
+          fs.mkdirSync(keyPath);
+        }
+        // write file
         fs.writeFileSync(outpath, json);
       } catch (error) {
-        console.log(error);
         throw new Error("Error exporting to file." + error);
       }
 
