@@ -74,7 +74,6 @@ class KeyManager {
         this.#password = password;
         this.#keyStorage = keyStorage;
 
-        // RA; try testing using diff constants "params.constants" i.e 2^12
         if (this.#pk) this.#sk = recover(password, keyStorage, this.constants.scrypt);
       };
 
