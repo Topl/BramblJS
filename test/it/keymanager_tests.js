@@ -1,4 +1,5 @@
-/** Unit testing for KeyManager Module
+/**
+ * @fileOverview Unit testing for KeyManager Module
  *
  * @author Raul Aragonez (r.aragonez@topl.me)
  * @date 2020.12.14
@@ -18,7 +19,6 @@ const fs = require("fs");
 describe("KeyManager", () => {
     // run this before all tests
     before(() => {
-        //keymanager = new KeyManager();
         keyMan = new KeyManager('password_test');
     });
 
@@ -152,7 +152,6 @@ describe("KeyManager", () => {
         it('should pass if key is unlocked', async () => {
             // key is unlocked by default
             let keyStorage = keyMan.getKeyStorage();
-            //console.log(keyMan.getKeyStorage());
 
             assert.strictEqual(typeof keyStorage, "object");
             expect(keyStorage).to.have.property('publicKeyId');
@@ -166,28 +165,6 @@ describe("KeyManager", () => {
             assert.throws(function() {
                 keyMan.getKeyStorage();
             }, Error, 'Error: Key manager is currently locked. Please unlock and try again.');
-
-            //assert.isNotNull(keyMan.pk, 'great, time for tea!');
-            //assert.typeOf(keyMan.pk, 'string', 'we have a string');
-            //expect(keyMan).to.have.own.property('pk');
-        });
-        it('should fail if Key not initialized properly', async () => {
-            // manipulate pk? Should we protect it?
-            keyMan.pk = "";
-
-            //instead this initialization should block us
-            //let keyStorage = keyMan.getKeyStorage();
-            assert.throws(function() {
-                keyMan.getKeyStorage();
-            }, Error, 'Error: A password must be provided at initialization');
-            //console.log(keyMan.getKeyStorage());
-
-            //assert.isNotNull(keyMan.pk, 'great, time for tea!');
-            //assert.typeOf(keyStorage, 'object', 'key storage is an obj');
-            // assert.strictEqual(typeof keyStorage, "object");
-            // expect(keyStorage).to.have.property('publicKeyId');
-            // expect(keyStorage).to.have.property('crypto');
-            //expect(keyMan).to.have.own.property('pk');
         });
         it('should fail if Key not initialized properly', async () => {
             // manipulate pk? Should we protect it?
@@ -251,7 +228,6 @@ describe("KeyManager", () => {
 
         it('should fail if key is locked', async () => {
             // ensure key is properly unlocked
-            //keyMan.unlockKey("password_test");
             keyMan.lockKey();
 
             // attempt to sign when key is locked
