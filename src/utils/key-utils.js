@@ -247,4 +247,4 @@ function generateKeystoreFilename(publicKey) {
   return filename.split(":").join("-");
 }
 
-module.exports = { create, dump, recover, str2buf, generateKeystoreFilename };
+module.exports = {create, dump, recover, str2buf, generateKeystoreFilename};

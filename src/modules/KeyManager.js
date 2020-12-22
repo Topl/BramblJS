@@ -58,8 +58,7 @@ class KeyManager {
     /* ------------------------------ Instance constructor ------------------------------ */
     /**
      * @constructor
-     * @param {object} params constructor object for key manager
-     * @param {string} params as string password for encrypting (decrypting) the keyfile
+     * @param {object} params constructor object for key manager or as a string password
      * @param {string} [params.password] password for encrypting (decrypting) the keyfile
      * @param {string} [params.path] path to import keyfile
      * @param {object} [params.constants] default encryption options for storing keyfiles
@@ -232,7 +231,7 @@ class KeyManager {
       // write file and return outpath if successful or throw error
       try {
         // create default directory if it doesn't exist
-        if (keyPath === ".keyfiles" && !fs.existsSync(keyPath)){
+        if (keyPath === ".keyfiles" && !fs.existsSync(keyPath)) {
           fs.mkdirSync(keyPath);
         }
         // write file
