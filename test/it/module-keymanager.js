@@ -51,10 +51,6 @@ describe("KeyManager", () => {
 
     /* ---------------------------- KeyManager Constructor Tests -------------------------------- */
     describe('new keymanager()', function() {
-        //test passing optional params to new keymanager constructor
-        //todo: remove utils from keymanager module
-        //todo: remove callbacks from utils
-        //
 
         /* ---------------------------- invalid passwords -------------------------------- */
         describe('invalid passwords', function() {
