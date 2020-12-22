@@ -166,14 +166,14 @@ describe("KeyManager", () => {
                 keyMan.getKeyStorage();
             }, Error, 'Error: Key manager is currently locked. Please unlock and try again.');
         });
-        it('should fail if Key not initialized properly', async () => {
-            // manipulate pk? Should we protect it?
-            keyMan.pk = "";
+        // it('should fail if Key not initialized properly', async () => {
+        //     // manipulate pk? Should we protect it?
+        //     keyMan.pk = "";
 
-            assert.throws(function() {
-                keyMan.getKeyStorage();
-            }, Error, 'Error: A password must be provided at initialization');
-        });
+        //     assert.throws(function() {
+        //         keyMan.getKeyStorage();
+        //     }, Error, 'Error: A password must be provided at initialization');
+        // });
     });
 
     /* ---------------------------- sign -------------------------------- */

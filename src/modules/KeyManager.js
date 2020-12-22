@@ -53,6 +53,8 @@ class KeyManager {
     #isLocked;
     #password;
     #keyStorage;
+    #pk;
+
     /* ------------------------------ Instance constructor ------------------------------ */
     /**
      * @constructor
@@ -67,13 +69,13 @@ class KeyManager {
 
       // Initialize a key manager object with a key storage object
       const initKeyStorage = (keyStorage, password) => {
-        this.pk = keyStorage.publicKeyId;
+        this.#pk = keyStorage.publicKeyId;
         this.#isLocked = false;
         this.#password = password;
         this.#keyStorage = keyStorage;
 
         // RA; try testing using diff constants "params.constants" i.e 2^12
-        if (this.pk) this.#sk = recover(password, keyStorage, this.constants.scrypt);
+        if (this.#pk) this.#sk = recover(password, keyStorage, this.constants.scrypt);
       };
 
       const generateKey = (password) => {
@@ -132,7 +134,7 @@ class KeyManager {
      */
     getKeyStorage() {
       if (this.#isLocked) throw new Error("Key manager is currently locked. Please unlock and try again.");
-      if (!this.pk) throw new Error("A key must be initialized before using this key manager");
+      if (!this.#pk) throw new Error("A key must be initialized before using this key manager");
       return this.#keyStorage;
     }
 
@@ -162,6 +164,25 @@ class KeyManager {
      */
     set isLocked(args) {
       throw new Error("Invalid private variable access, use lockKey() instead.");
+    }
+
+    /**
+     * Getter for private property #pk
+     * @memberof KeyManager
+     * @returns {string} value of #pk (public key string)
+     */
+    get pk() {
+      return this.#pk;
+    }
+
+    /**
+     * Setter for private property #pk
+     * @memberof KeyManager
+     * @param {any} args ignored, only necessary for setter
+     * @returns {void} Error is thrown to protect private variable
+     */
+    set pk(args) {
+      throw new Error("Invalid private variable access, instantiate a new KeyManager instead.");
     }
 
     /**
@@ -199,11 +220,11 @@ class KeyManager {
      */
     exportToFile(_keyPath) {
       if (this.#isLocked) throw new Error("The key is currently locked. Please unlock and try again.");
-      if (!this.pk) throw new Error("A key must be initialized before using this key manager");
+      if (!this.#pk) throw new Error("A key must be initialized before using this key manager");
       if (_keyPath && _keyPath.constructor !== String) throw new Error("Invalid keypath provided as argument.");
 
       const keyPath = _keyPath || ".keyfiles";
-      const outfile = generateKeystoreFilename(this.pk);
+      const outfile = generateKeystoreFilename(this.#pk);
       const json = JSON.stringify(this.getKeyStorage());
       const outpath = path.join(keyPath, outfile);
 
