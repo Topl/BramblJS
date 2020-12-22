@@ -59,7 +59,8 @@ class KeyManager {
     /**
      * @constructor
      * @param {object} params constructor object for key manager
-     * @param {string} params.password password for encrypting (decrypting) the keyfile
+     * @param {string} params as string password for encrypting (decrypting) the keyfile
+     * @param {string} [params.password] password for encrypting (decrypting) the keyfile
      * @param {string} [params.path] path to import keyfile
      * @param {object} [params.constants] default encryption options for storing keyfiles
      */
