@@ -193,8 +193,6 @@ function marshal(derivedKey, keyObject, salt, iv, algo) {
  * @returns {Object} keyStorage for use with exportToFile
  */
 function dump(password, keyObject, options) {
-  // RA: why is this taking .5 secodns?
-  // RA: why do we need str2buf
   const kdfParams = options.kdfParams || options.scrypt;
   const iv = str2buf(keyObject.iv);
   const salt = str2buf(keyObject.salt);

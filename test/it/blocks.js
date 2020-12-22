@@ -144,7 +144,7 @@ describe("Blocks", () => {
                 done();
             });
         });
-        it('should fail if no blockId provided', async (done) => {
+        it('should fail if no blockId provided', (done) => {
             // set "recipient" as empty string to validate
             parameters.blockId = "";
 

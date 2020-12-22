@@ -170,8 +170,6 @@ describe("KeyManager", () => {
             // manipulate pk? Should we protect it?
             keyMan.pk = "";
 
-            //instead this initialization should block us
-            //let keyStorage = keyMan.getKeyStorage();
             assert.throws(function() {
                 keyMan.getKeyStorage();
             }, Error, 'Error: A password must be provided at initialization');
