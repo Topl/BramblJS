@@ -20,7 +20,6 @@ describe("KeyManager", () => {
     before(() => {
         keyMan = new KeyManager('password_test');
 
-        // decrease scrypt.n to 2^12 to speed up the tests
         defaultTestOptions = {
             // Symmetric cipher for private key encryption
             cipher: "aes-256-ctr",
@@ -33,12 +32,12 @@ describe("KeyManager", () => {
 
             // Key derivation function parameters
             scrypt: {
-              dkLen: 32,
-              n: Math.pow(2, 12), // cost (as given in bifrost)
-              r: 8, // blocksize
-              p: 1 // parallelization
+                dkLen: 32,
+                n: Math.pow(2, 12), // decrease n to 2^12 to speed up the tests
+                r: 8, // blocksize
+                p: 1 // parallelization
             }
-          };
+        };
     });
 
     // run this before every test
