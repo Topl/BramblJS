@@ -1,18 +1,12 @@
 const assert = require("assert");
-const BramblJS = require("../../src/Modules/Requests");
-
-/**
- * TODO: RA - include all these unit tests
- * Console logs are commented to have a clean result output.
- * Need to have a logging mechanisms with a level toggle when debugging.
- */
+const Requests = require("../../src/modules/Requests");
 
 describe("Keyfile", () => {
   const password = "encryption_password";
   let publicKey = "";
 
   before(() => {
-    brambljs = new BramblJS();
+    brambljs = new Requests();
   });
 
   it("should return ERR if no password is provided to generate keyfile", (done) => {

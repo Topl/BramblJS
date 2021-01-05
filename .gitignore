@@ -111,7 +111,7 @@ dist
 .vscode-test
 
 # Project specific directories & files
-keyfiles/
+.keyfiles/
 keystore/
 local/
 local-test/

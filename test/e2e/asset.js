@@ -1,5 +1,5 @@
 const assert = require("assert");
-const Requests = require("../../src/Modules/Requests");
+const Requests = require("../../src/modules/Requests");
 
 describe("Asset", () => {
   before(() => {

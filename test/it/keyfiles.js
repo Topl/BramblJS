@@ -1,4 +1,4 @@
-/** Unit testing for transaction type funtionality:
+/** Unit testing for keyfiles type funtionality:
  * - generate keyfile
  * - list open keyfiles
  * - lock keyfile
