@@ -88,7 +88,7 @@ class KeyManager {
         initKeyStorage(keyStorage, password);
       };
 
-      // initialize vatiables
+      // initialize variables
       this.constants = params.constants || defaultOptions;
       initKeyStorage({publicKeyId: "", crypto: {}}, "");
 

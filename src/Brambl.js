@@ -43,6 +43,7 @@ class Brambl {
   /**
     * @constructor
     * @param {object|string} params Constructor parameters object
+    * @param {string} params.network Network Prefix
     * @param {object} params.KeyManager KeyManager object (may be either an instance or config parameters)
     * @param {string} params.KeyManager.password The password used to encrpt the keyfile
     * @param {object} [params.KeyManager.instance] A previously initialized instance of KeyManager
@@ -61,7 +62,19 @@ class Brambl {
     // Therefore, target a local chain provider and make a new key
     if (params.constructor === String) keyManagerVar.password = params;
 
-    // Setup reqeusts object
+    // validate network prefix
+    // * Toplnet - Hex: 0x01, Decimal: 1
+    // * Valhalla - Hex: 0x10, Decimal: 16
+    // * Hel - Hex: 0x20, Decimal: 32
+    // * Local - Hex: 0x30, Decimal: 48
+    // * Private - Hex: 0x40: Decimal: 64
+    const validNetworks = ['local', 'private', 'toplnet', 'valhalla', 'hel'];
+
+    if(!params.network || !validNetworks.includes(params.network)){
+      throw new Error(`Invalid Network Prefix. Must be one of: ${validNetworks}`);
+    }
+
+    // Setup Requests object
     if (requestsVar.instance) {
       this.requests = requestsVar.instance;
     } else if (requestsVar.url) {
