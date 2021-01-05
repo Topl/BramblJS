@@ -3,7 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Hash - Documentation</title>
+    <title>KeyManager
+
+Based on the keythereum library from Jack Peterson
+https://github.com/Ethereumjs/keythereum - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,7 +35,10 @@ https://github.com/Ethereumjs/keythereum</a></span></li><li class="nav-heading">
 
 <div id="main">
     
-    <h1 class="page-title">Hash</h1>
+    <h1 class="page-title">KeyManager
+
+Based on the keythereum library from Jack Peterson
+https://github.com/Ethereumjs/keythereum</h1>
     
 
     
@@ -44,33 +50,17 @@ https://github.com/Ethereumjs/keythereum</a></span></li><li class="nav-heading">
 
 <header>
     
-        <h2>
-        Hash
-        </h2>
-        
-            <div class="class-description">Static only class to hash an input message and produce an output that matches the output of Bifrost FastCrytographicHash</div>
-        
-    
 </header>
 
 <article>
     <div class="container-overview">
     
         
-<div class="section-method">
+            <div class="description">Create, import, and export Topl Bifrost keys.
+Also allows for signing of transactions.</div>
+        
 
-    
-    <h2>Constructor</h2>
-    
-
-    <h4 class="name" id="Hash"><span class="type-signature"></span>new Hash<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-
+        
 
 
 <dl class="details">
@@ -92,6 +82,15 @@ https://github.com/Ethereumjs/keythereum</a></span></li><li class="nav-heading">
     
 
     
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>James Aman (j.aman@topl.me)</li>
+        
+            <li>Raul Aragonez (r.aragonez@topl.me)</li>
+        </ul>
+    </dd>
+    
 
     
 
@@ -102,7 +101,7 @@ https://github.com/Ethereumjs/keythereum</a></span></li><li class="nav-heading">
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_Hash.js.html">utils/Hash.js</a>, <a href="utils_Hash.js.html#line46">line 46</a>
+        <a href="modules_KeyManager.js.html">modules/KeyManager.js</a>, <a href="modules_KeyManager.js.html#line1">line 1</a>
     </li></ul></dd>
     
 
@@ -114,28 +113,7 @@ https://github.com/Ethereumjs/keythereum</a></span></li><li class="nav-heading">
 </dl>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
+        
     
     </div>
 
@@ -144,6 +122,13 @@ https://github.com/Ethereumjs/keythereum</a></span></li><li class="nav-heading">
     
 
     
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="KeyManager%250A%250ABased%2520on%2520the%2520keythereum%2520library%2520from%2520Jack%2520Peterson%250Ahttps___github.com_Ethereumjs_keythereummodule_-KeyManager.html">KeyManager</a></dt>
+            <dd></dd>
+        </dl>
+    
 
      
 
@@ -151,569 +136,6 @@ https://github.com/Ethereumjs/keythereum</a></span></li><li class="nav-heading">
 
     
 
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".any"><span class="type-signature">(static) </span>any<span class="signature">(message, encoding)</span><span class="type-signature"> &rarr; {function}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the Blake2b-256 hash of an arbitrary input. This function will apply JSON canonicalization to the given message.
-Further information regarding JON canonicalization may be found at <a href="https://github.com/cyberphone/json-canonicalization">https://github.com/cyberphone/json-canonicalization</a>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_Hash.js.html">utils/Hash.js</a>, <a href="utils_Hash.js.html#line55">line 55</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>message</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                input message to create the hash digest of
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>encoding</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                output encoding
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>function</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    digestAndEncode returns Blake2b-256 hash digest
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".file"><span class="type-signature">(static) </span>file<span class="signature">(filePath, encoding)</span><span class="type-signature"> &rarr; {promise}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Reads the file from disk and calculates the Blake2b-256
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_Hash.js.html">utils/Hash.js</a>, <a href="utils_Hash.js.html#line81">line 81</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>filePath</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                path to the input file
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>encoding</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                output encoding
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>promise</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    on "finish" -> Blake2b-256 hash digest
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".string"><span class="type-signature">(static) </span>string<span class="signature">(message, encoding)</span><span class="type-signature"> &rarr; {function}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the Blake2b-256 of a string input
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_Hash.js.html">utils/Hash.js</a>, <a href="utils_Hash.js.html#line68">line 68</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>message</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                input string message to create the hash digest of
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>encoding</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                output encoding
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>function</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    digestAndEncode returns Blake2b-256 hash digest
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
     
 
     
