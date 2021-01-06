@@ -26,6 +26,8 @@ const validTxMethods = [
   "transferTargetAssetsPrototype"
 ];
 
+const validNetworks = ['local', 'private', 'toplnet', 'valhalla', 'hel'];
+
 /**
  * Each sub-module may be initialized in one of three ways
  * 1. Providing a separetly initialized {@link Requests} and {@link KeyManager} instance. Each of these instances may be initialized using the
@@ -43,7 +45,7 @@ class Brambl {
   /**
     * @constructor
     * @param {object|string} params Constructor parameters object
-    * @param {string} params.network Network Prefix
+    * @param {string} params.networkPrefix Network Prefix
     * @param {object} params.KeyManager KeyManager object (may be either an instance or config parameters)
     * @param {string} params.KeyManager.password The password used to encrpt the keyfile
     * @param {object} [params.KeyManager.instance] A previously initialized instance of KeyManager
@@ -62,17 +64,18 @@ class Brambl {
     // Therefore, target a local chain provider and make a new key
     if (params.constructor === String) keyManagerVar.password = params;
 
-    // validate network prefix
+    // add this to a service, to verify addresses
     // * Toplnet - Hex: 0x01, Decimal: 1
     // * Valhalla - Hex: 0x10, Decimal: 16
     // * Hel - Hex: 0x20, Decimal: 32
     // * Local - Hex: 0x30, Decimal: 48
     // * Private - Hex: 0x40: Decimal: 64
-    const validNetworks = ['local', 'private', 'toplnet', 'valhalla', 'hel'];
-
-    if(!params.network || !validNetworks.includes(params.network)){
+    
+    // validate network prefix
+    if(!params.networkPrefix || !validNetworks.includes(params.networkPrefix)){
       throw new Error(`Invalid Network Prefix. Must be one of: ${validNetworks}`);
     }
+    //pass params.network to keymanager and requests
 
     // Setup Requests object
     if (requestsVar.instance) {
