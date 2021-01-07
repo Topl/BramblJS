@@ -8,6 +8,14 @@
  * Based on the original work of Yamir Tainwala - 2019
  */
 
+//TODO: add network prefix here... as optional, specially when coming from Brambl
+// add util script to check for prefix in all addresses.
+// network prefix should map url to be used... as defaults
+// users have the option to include different urls
+// check addresses on all operations which have recipients, sender, changeaddress and consolidaitonadddress
+
+
+
 "use strict";
 
 // Dependencies
@@ -59,10 +67,19 @@ async function bramblRequest(routeInfo, params, self) {
 class Requests {
   /**
    * @constructor
+   * @param {string} [networkPrefix="local"] Network Prefix
    * @param {string} [url="http://localhost:9085/"] Chain provider location
    * @param {string} [apiKey="topl_the_world!"] Access key for authorizing requests to the client API ["x-api-key"]
    */
-  constructor(url = "http://localhost:9085/", apiKey = "topl_the_world!") {
+  constructor(networkPrefix = "local", url = "http://localhost:9085/", apiKey = "topl_the_world!") {
+    this.networkPrefix = networkPrefix;
+
+    if(this.networkPrefix === "private" && !url){
+      throw new Error("A url must be provided for Private networks.");
+    }
+    
+    // if url present then set it to that
+    // otherwise get it from the default mapping network prefixes
     this.url = url;
     this.headers = {
       "Content-Type": "application/json",

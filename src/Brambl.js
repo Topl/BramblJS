@@ -26,7 +26,40 @@ const validTxMethods = [
   "transferTargetAssetsPrototype"
 ];
 
+// add this to a service, to verify addresses
+// * Local - Hex: 0x30, Decimal: 48
+// * Private - Hex: 0x40: Decimal: 64
+// * Toplnet - Hex: 0x01, Decimal: 1
+// * Valhalla - Hex: 0x10, Decimal: 16
+// * Hel - Hex: 0x20, Decimal: 32
 const validNetworks = ['local', 'private', 'toplnet', 'valhalla', 'hel'];
+const networksDefaults = {
+  'local': {
+    hex: "0x30",
+    decimanl: "48",
+    url: "http://localhost:9085/"
+  },
+  'private': {
+    hex: "0x40",
+    decimanl: "64",
+    url: "http://localhost:9085/"
+  },
+  'toplnet': {
+    hex: "0x01",
+    decimanl: "1",
+    url: "http://localhost:9085/"
+  },
+  'valhalla': {
+    hex: "0x10",
+    decimanl: "16",
+    url: "http://localhost:9085/"
+  },
+  'hel': {
+    hex: "0x20",
+    decimanl: "32",
+    url: "http://localhost:9085/"
+  }
+}
 
 /**
  * Each sub-module may be initialized in one of three ways
@@ -46,11 +79,13 @@ class Brambl {
     * @constructor
     * @param {object|string} params Constructor parameters object
     * @param {string} params.networkPrefix Network Prefix
+    
     * @param {object} params.KeyManager KeyManager object (may be either an instance or config parameters)
     * @param {string} params.KeyManager.password The password used to encrpt the keyfile
     * @param {object} [params.KeyManager.instance] A previously initialized instance of KeyManager
     * @param {string} [params.KeyManager.keyPath] Path to a keyfile
     * @param {string} [params.KeyManager.constants] Parameters for encrypting the user's keyfile
+    
     * @param {object} params.Requests Request object (may be either an instance or config parameters)
     * @param {string} [params.Requests.url] The chain provider to send requests to
     * @param {string} [params.Requests.apikey] Api key for authorizing access to the chain provider
@@ -59,31 +94,39 @@ class Brambl {
     // default values for the constructor arguement
     const keyManagerVar = params.KeyManager || {};
     const requestsVar = params.Requests || {};
+    this.networkPrefix = params.networkPrefix || "local";
 
     // if only a string is given in the constructor, assume it is the password.
     // Therefore, target a local chain provider and make a new key
-    if (params.constructor === String) keyManagerVar.password = params;
+    if (params.constructor === String){
+      keyManagerVar.password = params;
+    }
 
-    // add this to a service, to verify addresses
-    // * Toplnet - Hex: 0x01, Decimal: 1
-    // * Valhalla - Hex: 0x10, Decimal: 16
-    // * Hel - Hex: 0x20, Decimal: 32
-    // * Local - Hex: 0x30, Decimal: 48
-    // * Private - Hex: 0x40: Decimal: 64
-    
     // validate network prefix
-    if(!params.networkPrefix || !validNetworks.includes(params.networkPrefix)){
+    if(this.networkPrefix && !validNetworks.includes(params.networkPrefix)){
       throw new Error(`Invalid Network Prefix. Must be one of: ${validNetworks}`);
     }
-    //pass params.network to keymanager and requests
 
     // Setup Requests object
     if (requestsVar.instance) {
+      // Request instance provided, reuse it
       this.requests = requestsVar.instance;
-    } else if (requestsVar.url) {
-      this.requests = new Requests(requestsVar.url, requestsVar.apiKey);
-    } else {
+    } else if(this.networkPrefix === "local"){
+      // networkPrefix is the default
       this.requests = new Requests();
+    } else if(!requestsVar.apiKey){
+      // network is valid and not the default, an apiKey must be provided
+      throw new Error("A valid apiKey must be provided if an optional url is set.");
+    } else if(!requestsVar.url && this.networkPrefix !== "private"){
+      // if(this.networkPrefix === "private"){
+      //   throw new Error("A url must be provided for Private networks.");
+      // }
+      // use the url per the networks prefixes mapping
+      let url = networksDefaults[this.networkPrefix].url;
+      this.requests = new Requests(this.networkPrefix, url, requestsVar.apiKey);
+    } else {
+      // previous checks passed, create new instance
+      this.requests = new Requests(this.networkPrefix, requestsVar.url, requestsVar.apiKey);
     }
 
     // Setup KeyManager object
