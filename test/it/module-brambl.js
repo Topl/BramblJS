@@ -16,7 +16,7 @@ const fs = require("fs");
 /* -------------------------------------------------------------------------- */
 /*                          Brambl unit tests                             */
 /* -------------------------------------------------------------------------- */
-describe("KeyManager", () => {
+describe("Brambl", () => {
     // run this before all tests
     before(() => {
     });
@@ -33,9 +33,12 @@ describe("KeyManager", () => {
     describe('new brambl()', function() {
 
         /* ---------------------------- network prefixes -------------------------------- */
+        it('should pass with empty params obj', async () => {
+            const brambl = new BrabmlJS("test");
+        });
         it('should fail with empty network prefix', async () => {
             assert.throws(function() {
-                const brambl = new BrabmlJS();
+                const brambl = new BrabmlJS({networkPrefix:""});
             }, Error, 'Error: Invalid Network Prefix');
         });
         it('should fail with invalid network prefix', async () => {
@@ -43,9 +46,10 @@ describe("KeyManager", () => {
                 const brambl = new BrabmlJS({networkPrefix:"local-test"});
             }, Error, 'Error: Invalid Network Prefix');
         });
+
         //RA: TODO - reduce the time for keymanager encryptions during testing...
-        describe('invalid passwords', function() {
-            function testInvalidPasswords(test) {
+        describe('valid network prefixes', function() {
+            function testValidNetworks(test) {
                 it('should pass if network prefix is ' + test.it, async () => {
                     const brambl = new BrabmlJS({
                         networkPrefix : test.value,
@@ -66,7 +70,7 @@ describe("KeyManager", () => {
             ];
 
             testCasess.forEach((test) => {
-                testInvalidPasswords(test);
+                testValidNetworks(test);
             });
         });
 

@@ -15,6 +15,7 @@ const KeyManager = require("./modules/KeyManager");
 
 // Utilities
 const Hash = require("./utils/Hash");
+const addressUtils = require("./utils/address-utils.js");
 
 // Libraries
 const pollTx = require("./lib/polling");
@@ -33,33 +34,6 @@ const validTxMethods = [
 // * Valhalla - Hex: 0x10, Decimal: 16
 // * Hel - Hex: 0x20, Decimal: 32
 const validNetworks = ['local', 'private', 'toplnet', 'valhalla', 'hel'];
-const networksDefaults = {
-  'local': {
-    hex: "0x30",
-    decimanl: "48",
-    url: "http://localhost:9085/"
-  },
-  'private': {
-    hex: "0x40",
-    decimanl: "64",
-    url: "http://localhost:9085/"
-  },
-  'toplnet': {
-    hex: "0x01",
-    decimanl: "1",
-    url: "http://localhost:9085/"
-  },
-  'valhalla': {
-    hex: "0x10",
-    decimanl: "16",
-    url: "http://localhost:9085/"
-  },
-  'hel': {
-    hex: "0x20",
-    decimanl: "32",
-    url: "http://localhost:9085/"
-  }
-}
 
 /**
  * Each sub-module may be initialized in one of three ways
@@ -94,40 +68,34 @@ class Brambl {
     // default values for the constructor arguement
     const keyManagerVar = params.KeyManager || {};
     const requestsVar = params.Requests || {};
-    this.networkPrefix = params.networkPrefix || "local";
+    let networkPrefix = params.networkPrefix || "local";
 
-    // if only a string is given in the constructor, assume it is the password.
+    // If only a string is given in the constructor, assume it is the password.
     // Therefore, target a local chain provider and make a new key
     if (params.constructor === String){
       keyManagerVar.password = params;
     }
 
     // validate network prefix
-    if(this.networkPrefix && !validNetworks.includes(params.networkPrefix)){
-      throw new Error(`Invalid Network Prefix. Must be one of: ${validNetworks}`);
+    if(!addressUtils.isValidNetwork(networkPrefix)){
+      throw new Error(`Invalid Network Prefix. Must be one of: ${addressUtils.getValidNetworksList()}`);
     }
-
+    //networkPrefix = "post";
+    //this.requests = new Requests(networkPrefix);
     // Setup Requests object
     if (requestsVar.instance) {
       // Request instance provided, reuse it
       this.requests = requestsVar.instance;
-    } else if(this.networkPrefix === "local"){
-      // networkPrefix is the default
-      this.requests = new Requests();
-    } else if(!requestsVar.apiKey){
-      // network is valid and not the default, an apiKey must be provided
-      throw new Error("A valid apiKey must be provided if an optional url is set.");
-    } else if(!requestsVar.url && this.networkPrefix !== "private"){
-      // if(this.networkPrefix === "private"){
-      //   throw new Error("A url must be provided for Private networks.");
-      // }
-      // use the url per the networks prefixes mapping
-      let url = networksDefaults[this.networkPrefix].url;
-      this.requests = new Requests(this.networkPrefix, url, requestsVar.apiKey);
     } else {
-      // previous checks passed, create new instance
-      this.requests = new Requests(this.networkPrefix, requestsVar.url, requestsVar.apiKey);
+      // create new instance and pass parameters
+      this.requests = new Requests(networkPrefix, requestsVar.url, requestsVar.apiKey);
     }
+
+    // else if(networkPrefix === "local" && (requestsVar.url || requestsVar.apiKey)){
+    //   // custom url or apiKey provided
+    //   console.log("with params");
+    //   this.requests = new Requests(networkPrefix, requestsVar.url, requestsVar.apiKey);
+    // }
 
     // Setup KeyManager object
     if (!keyManagerVar.password) throw new Error("An encryption password is required to open a keyfile");

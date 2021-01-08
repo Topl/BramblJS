@@ -8,10 +8,11 @@
  * Based on the original work of Yamir Tainwala - 2019
  */
 
-//TODO: add network prefix here... as optional, specially when coming from Brambl
+//TODO: 
+// DONE add network prefix here... as optional, specially when coming from Brambl
+// DONE network prefix should map url to be used... as defaults
+// DONE users have the option to include different urls
 // add util script to check for prefix in all addresses.
-// network prefix should map url to be used... as defaults
-// users have the option to include different urls
 // check addresses on all operations which have recipients, sender, changeaddress and consolidaitonadddress
 
 
@@ -20,6 +21,7 @@
 
 // Dependencies
 const fetch = require("node-fetch");
+const utils = require("../utils/address-utils.js");
 
 /**
  * General builder function for formatting API request
@@ -72,15 +74,27 @@ class Requests {
    * @param {string} [apiKey="topl_the_world!"] Access key for authorizing requests to the client API ["x-api-key"]
    */
   constructor(networkPrefix = "local", url = "http://localhost:9085/", apiKey = "topl_the_world!") {
-    this.networkPrefix = networkPrefix;
-
-    if(this.networkPrefix === "private" && !url){
-      throw new Error("A url must be provided for Private networks.");
+    // validate network prefix
+    if(!utils.isValidNetwork(networkPrefix)){
+      throw new Error(`Invalid Network Prefix. Must be one of: ${utils.getValidNetworksList()}`);
     }
-    
-    // if url present then set it to that
-    // otherwise get it from the default mapping network prefixes
-    this.url = url;
+
+    // network is valid and not the default, an apiKey must be provided
+    // if((networkPrefix !== "local" || networkPrefix !== "private") && !apiKey){
+    //   throw new Error("A valid apiKey must be provided if an optional url is set.");
+    // }
+
+    this.networkPrefix = networkPrefix;
+    if(networkPrefix !== "local" || networkPrefix !== "private"){
+      this.url = utils.getUrlByNetwork(networkPrefix);
+    } else {
+      this.url = url;
+    }
+
+    // console.log("this is net:" + this.networkPrefix);
+    // console.log("this is url:" + this.url);
+    // console.log("this is apiKey:" + apiKey);
+
     this.headers = {
       "Content-Type": "application/json",
       "x-api-key": apiKey

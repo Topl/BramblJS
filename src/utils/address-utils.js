@@ -15,6 +15,73 @@ const Base58 = require("base-58");
 const keccakHash = require("keccak");
 const curve25519 = require("curve25519-js");
 
+const validNetworks = ['local', 'private', 'toplnet', 'valhalla', 'hel'];
+/**
+Mainnet - https:\\torus.topl.services
+Valhalla - https:\\valhalla.torus.topl.services
+Hel - https:\\hel.torus.topl.services
+Local\Private - http:\\localhost:9085
+ */
+const networksDefaults = {
+  'local': {
+    hex: "0x30",
+    decimal: "48",
+    url: "http://localhost:9085/"
+  },
+  'private': {
+    hex: "0x40",
+    decimal: "64",
+    url: "http://localhost:9085/"
+  },
+  'toplnet': {
+    hex: "0x01",
+    decimal: "1",
+    url: "https:\\torus.topl.services"
+  },
+  'valhalla': {
+    hex: "0x10",
+    decimal: "16",
+    url: "https:\\valhalla.torus.topl.services"
+  },
+  'hel': {
+    hex: "0x20",
+    decimal: "32",
+    url: "https:\\hel.torus.topl.services"
+  }
+}
+
+function isValidNetwork(networkPrefix) {
+  return networkPrefix && validNetworks.includes(networkPrefix);
+}
+
+function getUrlByNetwork(networkPrefix) {
+  return networksDefaults[networkPrefix].url;
+}
+
+function getHexByNetwork(networkPrefix) {
+  return networksDefaults[networkPrefix].hex;
+}
+
+function getDecimalByNetwork(networkPrefix) {
+  return networksDefaults[networkPrefix].decimal;
+}
+function getValidNetworksList(networkPrefix) {
+  return validNetworks;
+}
+
+// module.exports = {
+//   isValidNetwork = function(networkPrefix) {
+//     return networkPrefix && !validNetworks.includes(params.networkPrefix);
+//   },
+//   getUrlByNetwork = function(networkPrefix) {
+//     return networksDefaults[networkPrefix].url;
+//   },
+//   getHexByNetwork = function(networkPrefix) {
+//     return networksDefaults[networkPrefix].hex;
+//   }
+// };
+
+module.exports = {isValidNetwork, getUrlByNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList};
 /* ------------------------------ Generic key utils  ------------------------------ */
 
 /**
@@ -246,4 +313,3 @@ function generateKeystoreFilename(publicKey) {
   return filename.split(":").join("-");
 }
 
-module.exports = {create, dump, recover, str2buf, generateKeystoreFilename};
