@@ -20,6 +20,9 @@ const crypto = require("crypto");
 const curve25519 = require("curve25519-js");
 const {create, dump, recover, str2buf, generateKeystoreFilename} = require("../utils/key-utils.js");
 
+// utils
+const utils = require("../utils/address-utils.js");
+
 // Default options for key generation as of 2020.01.25
 const defaultOptions = {
   // Symmetric cipher for private key encryption
@@ -54,6 +57,7 @@ class KeyManager {
     #password;
     #keyStorage;
     #pk;
+    #networkPrefix;
 
     /* ------------------------------ Instance constructor ------------------------------ */
     /**
@@ -62,6 +66,7 @@ class KeyManager {
      * @param {string} [params.password] password for encrypting (decrypting) the keyfile
      * @param {string} [params.path] path to import keyfile
      * @param {object} [params.constants] default encryption options for storing keyfiles
+     * @param {string} [params.networkPrefix] Network Prefix, defaults to "local"
      */
     constructor(params) {
       // enforce that a password must be provided
@@ -90,12 +95,20 @@ class KeyManager {
 
       // initialize variables
       this.constants = params.constants || defaultOptions;
+
+      // set networkPrefix and validate
+      this.#networkPrefix = params.networkPrefix || "local";
+      if(this.#networkPrefix !== "local" && !utils.isValidNetwork(this.#networkPrefix)){
+        throw new Error(`Invalid Network Prefix. Must be one of: ${utils.getValidNetworksList()}`);
+      }
+
       initKeyStorage({publicKeyId: "", crypto: {}}, "");
 
       // load in keyfile if a path was given, or default to generating a new key
       if (params.keyPath) {
         try {
           importFromFile(params.keyPath, params.password);
+          //deteermine the network and set it...
         } catch (err) {
           throw new Error("Error importing keyfile - " + err);
         }
@@ -182,6 +195,25 @@ class KeyManager {
      */
     set pk(args) {
       throw new Error("Invalid private variable access, instantiate a new KeyManager instead.");
+    }
+
+    /**
+     * Getter for private property #networkPrefix
+     * @memberof KeyManager
+     * @returns {string} value of #networkPrefix
+     */
+    get networkPrefix() {
+      return this.#networkPrefix;
+    }
+
+    /**
+     * Setter for private property #isLocked
+     * @memberof KeyManager
+     * @param {any} args ignored, only necessary for setter
+     * @returns {void} Error is thrown to protect private variable
+     */
+    set networkPrefix(args) {
+      throw new Error("Invalid private variable access.");
     }
 
     /**

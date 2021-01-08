@@ -27,14 +27,6 @@ const validTxMethods = [
   "transferTargetAssetsPrototype"
 ];
 
-// add this to a service, to verify addresses
-// * Local - Hex: 0x30, Decimal: 48
-// * Private - Hex: 0x40: Decimal: 64
-// * Toplnet - Hex: 0x01, Decimal: 1
-// * Valhalla - Hex: 0x10, Decimal: 16
-// * Hel - Hex: 0x20, Decimal: 32
-const validNetworks = ['local', 'private', 'toplnet', 'valhalla', 'hel'];
-
 /**
  * Each sub-module may be initialized in one of three ways
  * 1. Providing a separetly initialized {@link Requests} and {@link KeyManager} instance. Each of these instances may be initialized using the
@@ -53,13 +45,10 @@ class Brambl {
     * @constructor
     * @param {object|string} params Constructor parameters object
     * @param {string} params.networkPrefix Network Prefix
-    
     * @param {object} params.KeyManager KeyManager object (may be either an instance or config parameters)
-    * @param {string} params.KeyManager.password The password used to encrpt the keyfile
-    * @param {object} [params.KeyManager.instance] A previously initialized instance of KeyManager
+    * @param {string} [params.KeyManager.password] The password used to encrpt the keyfile
     * @param {string} [params.KeyManager.keyPath] Path to a keyfile
     * @param {string} [params.KeyManager.constants] Parameters for encrypting the user's keyfile
-    
     * @param {object} params.Requests Request object (may be either an instance or config parameters)
     * @param {string} [params.Requests.url] The chain provider to send requests to
     * @param {string} [params.Requests.apikey] Api key for authorizing access to the chain provider
@@ -80,32 +69,42 @@ class Brambl {
     if(!addressUtils.isValidNetwork(networkPrefix)){
       throw new Error(`Invalid Network Prefix. Must be one of: ${addressUtils.getValidNetworksList()}`);
     }
-    //networkPrefix = "post";
-    //this.requests = new Requests(networkPrefix);
-    // Setup Requests object
-    if (requestsVar.instance) {
+
+    if (requestsVar instanceof Requests) {
       // Request instance provided, reuse it
-      this.requests = requestsVar.instance;
+      this.requests = requestsVar;
     } else {
       // create new instance and pass parameters
       this.requests = new Requests(networkPrefix, requestsVar.url, requestsVar.apiKey);
     }
 
-    // else if(networkPrefix === "local" && (requestsVar.url || requestsVar.apiKey)){
-    //   // custom url or apiKey provided
-    //   console.log("with params");
-    //   this.requests = new Requests(networkPrefix, requestsVar.url, requestsVar.apiKey);
-    // }
-
     // Setup KeyManager object
-    if (!keyManagerVar.password) throw new Error("An encryption password is required to open a keyfile");
-    if (keyManagerVar.instance) {
-      this.keyManager = keyManagerVar.instance;
-    } else if (keyManagerVar.keyPath) {
-      this.keyManager = new KeyManager({password: keyManagerVar.password, keyPath: keyManagerVar.keyPath, constants: keyManagerVar.constants});
+    if (keyManagerVar instanceof KeyManager) {
+      this.keyManager = keyManagerVar;
     } else {
-      this.keyManager = new KeyManager({password: keyManagerVar.password});
+      if (!keyManagerVar.password) throw new Error("An encryption password is required to open a keyfile");
+      // create new KeyManager
+      this.keyManager = new KeyManager({
+        password: keyManagerVar.password,
+        keyPath: keyManagerVar.keyPath,
+        constants: keyManagerVar.constants,
+        networkPrefix: networkPrefix
+      });
     }
+
+
+    // If KeyManager and Requests instances were not created by Brambl class
+    // then verify that both have a matching NetworkPrefix
+    console.log(networkPrefix + "  " + this.requests.networkPrefix + "  " + this.keyManager.networkPrefix);
+    if (networkPrefix !== this.requests.networkPrefix || networkPrefix !== this.keyManager.networkPrefix){
+      throw new Error("Incompatible network prefixes set for Requests and KeyManager Instances.");
+    }
+
+    // else if (keyManagerVar.keyPath) {
+    //   this.keyManager = new KeyManager({password: keyManagerVar.password, keyPath: keyManagerVar.keyPath, constants: keyManagerVar.constants});
+    // } else {
+    //   this.keyManager = new KeyManager({password: keyManagerVar.password});
+    // }
 
     // Import utilities
     this.utils = {Hash};
