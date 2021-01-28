@@ -95,7 +95,7 @@ function str2buf(str, enc) {
    * 2. verify the base58 is 38 bytes long
    * 3. verify that it matches the network
    * 4. verify that hash matches the last 4 bytes?
-   * 5. verify that address is multi-sig vs uni-sig?
+   * 5. verify that address is multi-sig vs uni-sig? NO
    *
    * return an object
    * {
@@ -153,9 +153,7 @@ function validateAddressesByNetwork(networkPrefix, addresses){
   // get decimal of the network prefix
   const networkDecimal = getDecimalByNetwork(networkPrefix);
 
-  // 2. get all addresses from object
-  //  a. if arr[] - then use this
-  //  b. if its a jsonObj then parse this obj
+  // addresses can be passed as an array or extracted from an json obj
   result.addresses = addresses.constructor === Array ? addresses : extractAddressesFromObj(addresses);
 
   // check if addresses were obtained
@@ -164,14 +162,26 @@ function validateAddressesByNetwork(networkPrefix, addresses){
     return result;
   }
 
-  // run validation on addresses
+  // run validation on addresses, if address is not valid then add it to invalidAddresses array
   result.addresses.forEach(address => {
     // decode base58 address
     const decodedAddress = Base58.decode(address);
 
     //validation: base58 38 byte obj that matches networkPrefix decimal
-    if(!decodedAddress || decodedAddress.length !== 38 || decodedAddress[0] !== networkDecimal){
+    if(decodedAddress.length !== 38 || decodedAddress[0] !== networkDecimal){
       result.invalidAddresses.push(address);
+    } else {
+      // address has correct length and matches the network, now validate the chacksum
+      const checksumBuffer = Buffer.from(decodedAddress.slice(34));
+
+      // encrypt message (bytes 1-34)
+      const msgBuffer = Buffer.from(decodedAddress.slice(0,34));
+      const hashChecksumBuffer = blake.createHash("blake2b", {digestLength:32}).update(msgBuffer).end().read().slice(0, 4);
+
+      // verify checksum bytes match
+      if(!checksumBuffer.equals(hashChecksumBuffer)){
+        result.invalidAddresses.push(address);
+      }
     }
   });
 
@@ -271,7 +281,7 @@ let paramObj =
 ;
 
 //extractAddressesFromObj(paramObj);
-let addValidationRes = validateAddressesByNetwork('local', paramObj);
+//let addValidationRes = validateAddressesByNetwork('local', paramObj);
 //console.log(addValidationRes);
 
 
