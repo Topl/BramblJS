@@ -87,9 +87,9 @@ class Requests {
     // set apiKey or set default
     this.apiKey = apiKey || "topl_the_world!";
 
-    console.log("this is net:" + this.networkPrefix);
-    console.log("this is url:" + this.url);
-    console.log("this is apiKey:" + this.apiKey);
+    // console.log("this is net:" + this.networkPrefix);
+    // console.log("this is url:" + this.url);
+    // console.log("this is apiKey:" + this.apiKey);
 
     this.headers = {
       "Content-Type": "application/json",
@@ -389,8 +389,112 @@ class Requests {
     if (params.fee < 0) {
       throw new Error("Invalid fee, a fee must be greater or equal to zero");
     }
-    const route = "asset/";
-    const method = "createAssetsPrototype";
+
+    const route = "/";
+    const method = "topl_rawAssetTransfer";
+    return bramblRequest({route, method, id}, params, this);
+  }
+
+  /* ---------------------- Create Raw Asset Trasfer ------------------------ */
+  /**
+   * TODO: add explanation here
+   * Create a new asset on chain
+   * @param {object} params - body parameters passed to the specified json-rpc method
+   * @param {string} params.issuer - Public key of the asset issuer
+   * @param {string} params.assetCode - Identifier of the asset
+   * @param {string} params.recipient - Public key of the asset recipient
+   * @param {number} params.amount - Amount of asset to send
+   * @param {number} params.fee - Fee to apply to the transaction
+   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty)
+   * @param {string} [id="1"] - identifying number for the json-rpc request
+   * @returns {object} json-rpc response from the chain
+   * @memberof Requests
+   */
+  async createRawAssetTransfer(params, id = "1") {
+
+    /**
+     * BEFORE
+     * "issuer": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ", 
+			"recipient": "22222222222222222222222222222222222222222222", 
+			"sender": ["6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ"],
+			"amount": 1, 
+			"assetCode": "test", 
+			"fee": 0, 
+      "data": ""
+      
+     * {
+	"params": [
+        {
+            "propositionType": "PublicKeyCurve25519",
+            "recipients": [
+                    [
+                        "86sdac1yU3HNtgpWoUkFxjPBdmK6kSqUcxaar9hmEXXRTUP12tHP", {
+                            "type": "Asset",
+                            "quantity": 10,
+                            "assetCode": "4Y7EsNHVwiZ488s2uvePrtNBpCFAsK132H7AUq2rxsBkJSJv7oda9yyZgb2"
+                        }
+                    ]
+                ],
+            "sender": ["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz"],
+            "changeAddress": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
+            "minting": true,
+            "fee": 1
+        }
+	]
+}
+
+
+proposition
+  check for valid types
+  is this required?
+check for all recipients... is an array so extra validation will be needed.
+  each recipient has an object that can only include {type, quantity and assetCode}
+
+sender
+  valid array,
+  valid address
+
+changeAddress
+  who is going to receive this change? the rest of the cash...
+
+minting
+  vaild boolean, true or false
+
+fee
+  integer and must be 
+
+     */
+
+
+
+
+    if (!params) {
+      throw new Error("A parameter object must be specified");
+    }
+    if (!params.sender) {
+      throw new Error("An asset issuer must be specified");
+    }
+    if (!params.assetCode) {
+      throw new Error("An assetCode must be specified");
+    }
+    if (!params.recipients) {
+      throw new Error("A recipient must be specified");
+    }
+    if (!params.amount) {
+      throw new Error("An amount must be specified");
+    }
+    // 0 fee value is accepted
+    if (!params.fee && params.fee !== 0) {
+      throw new Error("A fee must be specified");
+    }
+    // fee must be >= 0
+    if (params.fee < 0) {
+      throw new Error("Invalid fee, a fee must be greater or equal to zero");
+    }
+    //const route = "asset/";
+    //const method = "createAssetsPrototype";
+    const route = "/";
+    const method = "topl_rawAssetTransfer";
     return bramblRequest({route, method, id}, params, this);
   }
 

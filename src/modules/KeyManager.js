@@ -127,7 +127,7 @@ class KeyManager {
      * @param {string} message Message to sign (utf-8 encoded)
      * @param {Buffer|string} signature Signature to verify (if string, must be base-58 encoded)
      * @param {function=} cb Callback function (optional).
-     * @returns {function} returns function Verify or includes fuinction verify if callback provided
+     * @returns {function} returns function Verify
      * @memberof KeyManager
      */
     static verify(publicKey, message, signature) {

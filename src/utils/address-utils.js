@@ -16,39 +16,242 @@ const keccakHash = require("keccak");
 const curve25519 = require("curve25519-js");
 
 const validNetworks = ['local', 'private', 'toplnet', 'valhalla', 'hel'];
-/**
-Mainnet - https:\\torus.topl.services
-Valhalla - https:\\valhalla.torus.topl.services
-Hel - https:\\hel.torus.topl.services
-Local\Private - http:\\localhost:9085
- */
+
 const networksDefaults = {
   'local': {
     hex: "0x30",
-    decimal: "48",
+    decimal: 48,
     url: "http://localhost:9085/"
   },
   'private': {
     hex: "0x40",
-    decimal: "64",
+    decimal: 64,
     url: "http://localhost:9085/"
   },
   'toplnet': {
     hex: "0x01",
-    decimal: "1",
+    decimal: 1,
     url: "https:\\torus.topl.services"
   },
   'valhalla': {
     hex: "0x10",
-    decimal: "16",
+    decimal: 16,
     url: "https:\\valhalla.torus.topl.services"
   },
   'hel': {
     hex: "0x20",
-    decimal: "32",
+    decimal: 32,
     url: "https:\\hel.torus.topl.services"
   }
 }
+
+/**
+ * 
+ * construction of address
+ * prefix 1 byte | type 1 byte | hash output 32 bytes | 4 bytes of 1-34 hash
+ * 30 01 1122334455667788991011121314151617181920212223242526272829303132 2a748359
+ * 
+ * * prefix 1 byte | type 1 byte | hash output 32 bytes | 4 bytes of 1-34 hash
+ * 10 01 1122334455667788991011121314151617181920212223242526272829303132 2a748359
+ * 
+ * 
+ * to base58 => 25wchEp4nQ25HZ5MFTatCQP1SHrtnMmLa7SKmndRjhCJnv5
+ * 25wchE base 58 gives me => 4 bytes in hex (2a748359)
+ * 
+ * 300111223344556677889910111213141516171819202122232425262728293031322a748359
+ * 
+ * 
+ * end result of base 58: 86sLjaVytZKzuyCbaYQ7eh3kH56ojmXuYZE94M8GbZpU5uvFAutL
+ * 
+ * 25wchE
+ * 
+ * convert from base58 to hex
+ * 
+ * 
+ * Add validator...
+ * 
+ * 
+ * test:
+ * this base58 to hex: 86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz
+ * 30 01 a0d5cbeefe5b936f6e684f81527079e31656c2f3345f5fe2ba5d2166e5fa97c8 feb8842d
+ * 
+ * checksum: feb8842d
+ * 
+ */
+
+function str2buf(str, enc) {
+  if (!str || str.constructor !== String) return str;
+  return enc ? Buffer.from(str, enc) : Buffer.from(Base58.decode(str));
+}
+
+/**
+ * Check if addresses are valid by verifying these belong to the same network.
+ * @param {String} networkPrefix
+ * @param {Object} params
+ * @param {Array} addresses
+ */
+/**
+   * 1. verify the address is not null
+   * 2. verify the base58 is 38 bytes long
+   * 3. verify that it matches the network
+   * 4. verify that hash matches the last 4 bytes?
+   * 5. verify that address is multi-sig vs uni-sig?
+   *
+   * return an object
+   * {
+   *  success: true,
+   *  errorMsg: "",
+   *  networkPrefix: "local",
+   *  addresses:
+   *  [
+  *     {
+            "address": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
+            "network": "local"
+        },
+        {
+            "address": "77tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
+            "network": "valhalla"
+        }
+   *  ]
+   * }
+   */
+function validateAddressesByNetwork(networkPrefix, params, addresses){
+  let result = {
+    success: false,
+    errorMsg: "",
+    networkPrefix: networkPrefix,
+    addresses: [],
+    invalidAddresses: []
+  };
+
+  // check if network is valid first
+  if(!isValidNetwork(networkPrefix)){
+    result.errorMsg = "Invalid network provided";
+    return result;
+  }
+
+  const networkDecimal = getDecimalByNetwork(networkPrefix);
+
+  // if(params){
+  //   result.addresses = extractAddressesFromObj(params);
+  // } else {
+  //   result.addresses = addresses;
+  // }
+
+  // get all addresses in params
+  result.addresses = addresses || extractAddressesFromObj(params);
+
+  // check if addresses were obtained
+  if(!result.addresses || result.addresses.length < 1){
+    result.errorMsg = "Addresses cannot be empty";
+    return result;
+  }
+
+  // run validation on addresses
+  result.addresses.forEach(address => {
+    // decode base58 address
+    const decodedAddress = Base58.decode(address);
+
+    //validation: base58 38 byte obj that matches networkPrefix decimal
+    if(!decodedAddress || decodedAddress.length !== 38 || decodedAddress[0] !== networkDecimal){
+      result.invalidAddresses.push(address);
+    }
+  });
+
+  // check if any invalid addresses were found
+  if(result.invalidAddresses.length > 0){
+    result.errorMsg = "Invalid addresses for network: " + networkPrefix
+  } else {
+    result.success = true;
+  }
+
+  return result;
+}
+
+function extractAddressesFromObj(obj){
+  /**
+   params = [
+    {
+        "propositionType": "PublicKeyCurve25519",
+        "changeAddress": "899tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
+        "consolidationAdddress": "899tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
+        "recipients": [["899tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz", 10]],
+        "sender": ["899tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz"],
+        "addresses": ["899tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz"],
+        "fee": 1,
+        "data": ""
+    }
+  ];
+   */
+
+   // only push unique items in array, so that validation is faster
+
+  let addresses = [];
+  if (obj.constructor === String){
+    return obj;
+  }
+  if(obj.constructor === Array){
+    obj = obj[0];
+  }
+
+  // make this parser a bit faster, use strings or array logic
+  var keys = ["recipients", "sender", "changeAddress", "consolidationAdddress", "addresses"]
+
+
+  if(obj['changeAddress']){
+   addresses.push(obj["changeAddress"]);
+  }
+  if(obj["consolidationAdddress"]){
+    addresses.push(obj["consolidationAdddress"]);
+  }
+
+  if(obj["recipients"] && obj["recipients"].length > 0){
+    obj["recipients"].forEach(address => {
+      addresses.push(address[0]);
+    });
+  }
+  if(obj["sender"] && obj["sender"].length > 0){
+    obj["sender"].forEach(address => {
+      addresses.push(address);
+    });
+  }
+  if(obj["addresses"] && obj["addresses"].length > 0){
+    obj["addresses"].forEach(address => {
+      addresses.push(address);
+    });
+  }
+  //console.log("addresses list: "+ addresses);
+  return addresses;
+  
+}
+
+let paramObj = [
+  {
+      "propositionType": "PublicKeyCurve25519",
+      "changeAddress": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
+      "consolidationAdddress": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
+      "recipients": [["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz", 10]],
+      "sender": ["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz"],
+      "addresses": ["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz"],
+      "fee": 1,
+      "data": ""
+  }
+];
+
+let arrExample = [
+  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
+  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
+  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
+  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
+  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz'
+];
+
+//extractAddressesFromObj(paramObj);
+let addValidationRes = validateAddressesByNetwork('local', paramObj);
+console.log(addValidationRes);
+
+let addValidationRes2 = validateAddressesByNetwork('local',{} ,arrExample);
+console.log(addValidationRes2);
 
 function isValidNetwork(networkPrefix) {
   return networkPrefix && validNetworks.includes(networkPrefix);

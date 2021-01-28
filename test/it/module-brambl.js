@@ -58,27 +58,35 @@ describe("Brambl", () => {
     describe('new brambl()', function() {
 
         /* ---------------------------- network prefixes -------------------------------- */
-        // it('should pass with empty params obj', async () => {
-        //     const brambl = new BrabmlJS({
-        //         //networkPrefix : "", // pass empty string
-        //         KeyManager: {
-        //           instance: keyMan // use instance in before block
-        //         }
-        //     });
+        // it('should pass by passing only password', async () => {
+        //     const brambl = new BrabmlJS("this_is_a_test_password");
+        //     assert.strictEqual(brambl.networkPrefix, "local", "network prefix is local");
         // });
+        it('should pass by passing password and networkPrefix', async () => {
+            const brambl = new BrabmlJS({
+                networkPrefix: "valhalla",
+                password: "this_is_a_test_password",
+                KeyManager: {
+                    'constants': defaultTestOptions // reduce the exec time
+                }
+            });
+            assert.strictEqual(brambl.networkPrefix, "valhalla", "network prefix is valhalla");
+        });
         it('should default empty network prefix to local', async () => {
             const brambl = new BrabmlJS({
-                //networkPrefix : "", // pass empty string
+                KeyManager: keyMan // use instance in before block due to faster scrypt alg
+            });
+
+            assert.strictEqual(brambl.networkPrefix, "local", "network prefix is local");
+        });
+        it('should fail is trying to set network prefix outside of constructor', async () => {
+            const brambl = new BrabmlJS({
                 KeyManager: keyMan // use instance in before block
             });
-            // assert.throws(function() {
-            //     const brambl = new BrabmlJS({
-            //         networkPrefix : "", // pass empty string
-            //         KeyManager: {
-            //           instance: keyMan // use instance in before block
-            //         }
-            //     });
-            // }, Error, 'Error: Invalid Network Prefix');
+
+            assert.throws(function() {
+                brambl.networkPrefix = "testingNetwork";
+            }, Error, 'Error: Invalid private variable access.');
         });
         it('should fail with invalid network prefix', async () => {
             assert.throws(function() {
@@ -86,11 +94,31 @@ describe("Brambl", () => {
             }, Error, 'Error: Invalid Network Prefix');
         });
 
+        it("should fail if Requests and KeyManager instances NetworkPrefixes don't match", async () => {
+            // create KeyManager with 'local' network prefix
+            keyManLocal = new KeyManager({
+                'password': 'topl_the_world',
+                'constants': defaultTestOptions,
+                'networkPrefix': "local"
+            });
+
+            // create Requests with 'valhalla' network prefix
+            requestsValhalla = new Requests("valhalla");
+
+            // blambl should trhow error due to incompatible networks
+            assert.throws(function() {
+                const brambl = new BrabmlJS({
+                    Requests: requestsValhalla,
+                    KeyManager: keyManLocal
+                });
+            }, Error, 'Incompatible network prefixes set for Requests and KeyManager Instances.');
+        });
+
         describe('valid network prefixes', function() {
             function testValidNetworks(test) {
                 it('should pass if network prefix is ' + test.name, async () => {
                     const brambl = new BrabmlJS({
-                        networkPrefix : test.network,
+                        networkPrefix: test.network,
                         Requests: {
                             url: test.url,
                             apiKey: test.apiKey
@@ -103,7 +131,7 @@ describe("Brambl", () => {
                 });
             }
             const validNetworks = ['local', 'private', 'toplnet', 'valhalla', 'hel'];
-            let testCasess = [
+            let testCases = [
                 {"name":"local", "network":"local", "url":"", "apiKey":""},
                 {"name":"local | diff url", "network":"local", "url":"http://localhost:9084/", "apiKey":""},
                 {"name":"local | diff url | diff apiKey", "network":"local", "url":"http://localhost:9083/", "apiKey":"topl_the_wOOrld"},
@@ -125,7 +153,7 @@ describe("Brambl", () => {
                 {"name":"hel | diff url | diff apiKey", "network":"hel", "url":"http://localhost:9083/", "apiKey":"topl_the_wOOrld"},
             ];
 
-            testCasess.forEach((test) => {
+            testCases.forEach((test) => {
                 testValidNetworks(test);
             });
         });

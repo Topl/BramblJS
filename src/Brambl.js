@@ -41,10 +41,14 @@ const validTxMethods = [
  * @requires KeyManager
  */
 class Brambl {
+  // Private variables
+  #networkPrefix;
+
   /**
     * @constructor
     * @param {object|string} params Constructor parameters object
     * @param {string} params.networkPrefix Network Prefix
+    * @param {string} params.password The password used to encrpt the keyfile, same as [params.KeyManager.password]
     * @param {object} params.KeyManager KeyManager object (may be either an instance or config parameters)
     * @param {string} [params.KeyManager.password] The password used to encrpt the keyfile
     * @param {string} [params.KeyManager.keyPath] Path to a keyfile
@@ -57,7 +61,7 @@ class Brambl {
     // default values for the constructor arguement
     const keyManagerVar = params.KeyManager || {};
     const requestsVar = params.Requests || {};
-    let networkPrefix = params.networkPrefix || "local";
+    this.#networkPrefix = params.networkPrefix || "local";
 
     // If only a string is given in the constructor, assume it is the password.
     // Therefore, target a local chain provider and make a new key
@@ -65,8 +69,12 @@ class Brambl {
       keyManagerVar.password = params;
     }
 
+    if (params.password && params.password.constructor === String){
+      keyManagerVar.password = params.password;
+    }
+
     // validate network prefix
-    if(!addressUtils.isValidNetwork(networkPrefix)){
+    if(!addressUtils.isValidNetwork(this.#networkPrefix)){
       throw new Error(`Invalid Network Prefix. Must be one of: ${addressUtils.getValidNetworksList()}`);
     }
 
@@ -75,7 +83,7 @@ class Brambl {
       this.requests = requestsVar;
     } else {
       // create new instance and pass parameters
-      this.requests = new Requests(networkPrefix, requestsVar.url, requestsVar.apiKey);
+      this.requests = new Requests(this.#networkPrefix, requestsVar.url, requestsVar.apiKey);
     }
 
     // Setup KeyManager object
@@ -88,26 +96,37 @@ class Brambl {
         password: keyManagerVar.password,
         keyPath: keyManagerVar.keyPath,
         constants: keyManagerVar.constants,
-        networkPrefix: networkPrefix
+        networkPrefix: this.#networkPrefix
       });
     }
 
-
     // If KeyManager and Requests instances were not created by Brambl class
     // then verify that both have a matching NetworkPrefix
-    console.log(networkPrefix + "  " + this.requests.networkPrefix + "  " + this.keyManager.networkPrefix);
-    if (networkPrefix !== this.requests.networkPrefix || networkPrefix !== this.keyManager.networkPrefix){
+    if (this.#networkPrefix !== this.requests.networkPrefix || this.#networkPrefix !== this.keyManager.networkPrefix){
       throw new Error("Incompatible network prefixes set for Requests and KeyManager Instances.");
     }
 
-    // else if (keyManagerVar.keyPath) {
-    //   this.keyManager = new KeyManager({password: keyManagerVar.password, keyPath: keyManagerVar.keyPath, constants: keyManagerVar.constants});
-    // } else {
-    //   this.keyManager = new KeyManager({password: keyManagerVar.password});
-    // }
-
     // Import utilities
     this.utils = {Hash};
+  }
+
+  /**
+   * Getter for private property #networkPrefix
+   * @memberof Brambl
+   * @returns {string} value of #networkPrefix
+   */
+  get networkPrefix() {
+    return this.#networkPrefix;
+  }
+
+  /**
+   * Setter for private property #isLocked
+   * @memberof Brambl
+   * @param {any} args ignored, only necessary for setter
+   * @returns {void} Error is thrown to protect private variable
+   */
+  set networkPrefix(args) {
+    throw new Error("Invalid private variable access.");
   }
 
   /**
