@@ -43,7 +43,7 @@ const networksDefaults = {
     decimal: 32,
     url: "https:\\hel.torus.topl.services"
   }
-}
+};
 
 /**
  * 
@@ -91,7 +91,7 @@ function str2buf(str, enc) {
  * @param {Array} addresses
  */
 /**
-   * 1. verify the address is not null
+   * 1. verify the address is not null - DONE
    * 2. verify the base58 is 38 bytes long
    * 3. verify that it matches the network
    * 4. verify that hash matches the last 4 bytes?
@@ -115,7 +115,22 @@ function str2buf(str, enc) {
    *  ]
    * }
    */
-function validateAddressesByNetwork(networkPrefix, params, addresses){
+
+/**
+ * 
+ * @param {*} networkPrefix 
+ * @param {*} params 
+ * @param {*} addresses 
+ */
+/**
+ * 1. verify network
+ * 2. get all addresses from object
+ *  a. if arr[] - then use this
+ *  b. if its a jsonObj then parse this obj
+ * 3. 
+ */
+function validateAddressesByNetwork(networkPrefix, addresses){
+  // this is the response we are providing upon the completion of the validation
   let result = {
     success: false,
     errorMsg: "",
@@ -130,20 +145,22 @@ function validateAddressesByNetwork(networkPrefix, params, addresses){
     return result;
   }
 
+  if(!addresses){
+    result.errorMsg = "No addresses provided";
+    return result;
+  }
+
+  // get decimal of the network prefix
   const networkDecimal = getDecimalByNetwork(networkPrefix);
 
-  // if(params){
-  //   result.addresses = extractAddressesFromObj(params);
-  // } else {
-  //   result.addresses = addresses;
-  // }
-
-  // get all addresses in params
-  result.addresses = addresses || extractAddressesFromObj(params);
+  // 2. get all addresses from object
+  //  a. if arr[] - then use this
+  //  b. if its a jsonObj then parse this obj
+  result.addresses = addresses.constructor === Array ? addresses : extractAddressesFromObj(addresses);
 
   // check if addresses were obtained
   if(!result.addresses || result.addresses.length < 1){
-    result.errorMsg = "Addresses cannot be empty";
+    result.errorMsg = "No addresses found";
     return result;
   }
 
@@ -170,7 +187,7 @@ function validateAddressesByNetwork(networkPrefix, params, addresses){
 
 function extractAddressesFromObj(obj){
   /**
-   params = [
+   params =
     {
         "propositionType": "PublicKeyCurve25519",
         "changeAddress": "899tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
@@ -180,8 +197,7 @@ function extractAddressesFromObj(obj){
         "addresses": ["899tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz"],
         "fee": 1,
         "data": ""
-    }
-  ];
+    };
    */
 
    // only push unique items in array, so that validation is faster
@@ -190,9 +206,10 @@ function extractAddressesFromObj(obj){
   if (obj.constructor === String){
     return obj;
   }
-  if(obj.constructor === Array){
-    obj = obj[0];
-  }
+  //obj = obj;
+  // if(obj.constructor === Array){
+  //   obj = obj[0];
+  // }
 
   // make this parser a bit faster, use strings or array logic
   var keys = ["recipients", "sender", "changeAddress", "consolidationAdddress", "addresses"]
@@ -224,8 +241,23 @@ function extractAddressesFromObj(obj){
   return addresses;
   
 }
+/*** ------  TESTING FOR RAUL -------*/
 
-let paramObj = [
+let arrExample = [
+  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
+  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
+  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
+  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
+  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz'
+];
+//let addValidationRes2 = validateAddressesByNetwork('local', arrExample);
+
+let arrSingle = ['86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz'];
+let addValidationRes2 = validateAddressesByNetwork('local', arrSingle);
+console.log(addValidationRes2);
+
+
+let paramObj =
   {
       "propositionType": "PublicKeyCurve25519",
       "changeAddress": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
@@ -236,22 +268,18 @@ let paramObj = [
       "fee": 1,
       "data": ""
   }
-];
-
-let arrExample = [
-  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
-  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
-  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
-  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
-  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz'
-];
+;
 
 //extractAddressesFromObj(paramObj);
 let addValidationRes = validateAddressesByNetwork('local', paramObj);
-console.log(addValidationRes);
+//console.log(addValidationRes);
 
-let addValidationRes2 = validateAddressesByNetwork('local',{} ,arrExample);
-console.log(addValidationRes2);
+
+
+
+
+
+
 
 function isValidNetwork(networkPrefix) {
   return networkPrefix && validNetworks.includes(networkPrefix);
