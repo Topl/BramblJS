@@ -24,7 +24,11 @@ const pollTx = require("./lib/polling");
 const validTxMethods = [
   "createAssetsPrototype",
   "transferAssetsPrototype",
-  "transferTargetAssetsPrototype"
+  "transferTargetAssetsPrototype",
+
+  "createRawArbitTransfer",
+  "createRawAssetTransfer",
+  "createRawPolyTransfer"
 ];
 
 /**

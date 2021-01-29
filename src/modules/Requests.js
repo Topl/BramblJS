@@ -51,6 +51,7 @@ async function bramblRequest(routeInfo, params, self) {
       headers: self.headers,
       body: JSON.stringify(body)
     };
+    console.log(payload)
     const response = await (await fetch(self.url + route, payload)).json();
     if (response.error) {
       throw response;
@@ -86,10 +87,6 @@ class Requests {
 
     // set apiKey or set default
     this.apiKey = apiKey || "topl_the_world!";
-
-    // console.log("this is net:" + this.networkPrefix);
-    // console.log("this is url:" + this.url);
-    // console.log("this is apiKey:" + this.apiKey);
 
     this.headers = {
       "Content-Type": "application/json",
@@ -353,6 +350,10 @@ class Requests {
 
   /* ---------------------- createAssetsPrototype ------------------------ */
   /**
+   * 
+   * TODO: RA - Remove this and replace it in test scripts and unit testing
+   * 
+   * 
    * Create a new asset on chain
    * @param {object} params - body parameters passed to the specified json-rpc method
    * @param {string} params.issuer - Public key of the asset issuer
@@ -397,79 +398,27 @@ class Requests {
 
   /* ---------------------- Create Raw Asset Trasfer ------------------------ */
   /**
-   * TODO: add explanation here
    * Create a new asset on chain
    * @param {object} params - body parameters passed to the specified json-rpc method
-   * @param {string} params.issuer - Public key of the asset issuer
+   * @param {string} params.propositionType - Proposition Type -> PublicKeyCurve25519 || TheresholdCurve25519
+   * @param {string} params.recipients - 2-dimensional array (array of tuples) -> [["publicKey of asset recipient", quantity]]
    * @param {string} params.assetCode - Identifier of the asset
-   * @param {string} params.recipient - Public key of the asset recipient
-   * @param {number} params.amount - Amount of asset to send
+   * @param {string} params.sender - Public key of the asset issuer
+   * @param {string} params.changeAddress - Public key of the change recipient
+   * @param {boolean} params.minting - Minting boolean
    * @param {number} params.fee - Fee to apply to the transaction
-   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty)
    * @param {string} [id="1"] - identifying number for the json-rpc request
    * @returns {object} json-rpc response from the chain
    * @memberof Requests
    */
   async createRawAssetTransfer(params, id = "1") {
-
-    /**
-     * BEFORE
-     * "issuer": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ", 
-			"recipient": "22222222222222222222222222222222222222222222", 
-			"sender": ["6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ"],
-			"amount": 1, 
-			"assetCode": "test", 
-			"fee": 0, 
-      "data": ""
-      
-     * {
-	"params": [
-        {
-            "propositionType": "PublicKeyCurve25519",
-            "recipients": [
-                    [
-                        "86sdac1yU3HNtgpWoUkFxjPBdmK6kSqUcxaar9hmEXXRTUP12tHP", {
-                            "type": "Asset",
-                            "quantity": 10,
-                            "assetCode": "4Y7EsNHVwiZ488s2uvePrtNBpCFAsK132H7AUq2rxsBkJSJv7oda9yyZgb2"
-                        }
-                    ]
-                ],
-            "sender": ["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz"],
-            "changeAddress": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
-            "minting": true,
-            "fee": 1
-        }
-	]
-}
-
-
-proposition
-  check for valid types
-  is this required?
-check for all recipients... is an array so extra validation will be needed.
-  each recipient has an object that can only include {type, quantity and assetCode}
-
-sender
-  valid array,
-  valid address
-
-changeAddress
-  who is going to receive this change? the rest of the cash...
-
-minting
-  vaild boolean, true or false
-
-fee
-  integer and must be 
-
-     */
-
-
-
+    const validPropositions = ["PublicKeyCurve25519", "TheresholdCurve25519"];
 
     if (!params) {
       throw new Error("A parameter object must be specified");
+    }
+    if (!params.propositionType || !validPropositions.includes(params.propositionType)) {
+      throw new Error("A propositionTYpe must be specified: <PublicKeyCurve25519, TheresholdCurve25519>");
     }
     if (!params.sender) {
       throw new Error("An asset issuer must be specified");
@@ -477,11 +426,14 @@ fee
     if (!params.assetCode) {
       throw new Error("An assetCode must be specified");
     }
-    if (!params.recipients) {
-      throw new Error("A recipient must be specified");
+    if (!params.recipients || params.recipients.length < 1) {
+      throw new Error("At least one recipient must be specified");
     }
-    if (!params.amount) {
-      throw new Error("An amount must be specified");
+    if (!params.changeAddress) {
+      throw new Error("A changeAddress must be specified");
+    }
+    if (typeof params.minting !== "boolean") {
+      throw new Error("Minting boolean value must be specified");
     }
     // 0 fee value is accepted
     if (!params.fee && params.fee !== 0) {
@@ -491,10 +443,162 @@ fee
     if (params.fee < 0) {
       throw new Error("Invalid fee, a fee must be greater or equal to zero");
     }
-    //const route = "asset/";
-    //const method = "createAssetsPrototype";
-    const route = "/";
+
+    // validate all addresses
+    let validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params);
+    if(!validationResult.success){
+      throw new Error("Invalid Addresses::"
+        + " Network Type: <" + this.networkPrefix + ">"
+        + " Addresses: <" + validationResult.invalidAddresses + ">");
+    }
+
+    // transform recipients ["address", quantity] to correct tuples
+    for (let i = 0; i < params.recipients.length; i++) {
+      // destructuring assingment syntax
+      let [address, quantity] = params.recipients[i];
+
+      // ensure quantitiy is part of the tuple ["address", 10]
+      if (!quantity) {
+        throw new Error("Recipient quantity must be specified");
+      }
+      params.recipients[i] = [
+        address,
+        {
+          "type": "Asset",
+          "quantity": quantity,
+          "assetCode": params.assetCode
+        }
+      ];
+    }
+
+    const route = "";
     const method = "topl_rawAssetTransfer";
+    return bramblRequest({route, method, id}, params, this);
+  }
+
+  /* ---------------------- Create Raw Poly Trasfer ------------------------ */
+  /**
+   * Create a new poly on chain
+   * @param {object} params - body parameters passed to the specified json-rpc method
+   * @param {string} params.propositionType - Proposition Type -> PublicKeyCurve25519 || TheresholdCurve25519
+   * @param {string} params.recipients - 2-dimensional array (array of tuples) -> [["publicKey of asset recipient", quantity]]
+   * @param {array} params.sender - List of senders addresses
+   * @param {string} params.changeAddress - Address of the change recipient
+   * @param {number} params.fee - Fee to apply to the transaction
+   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty)
+   * @param {string} [id="1"] - identifying number for the json-rpc request
+   * @returns {object} json-rpc response from the chain
+   * @memberof Requests
+   */
+  async createRawPolyTransfer(params, id = "1") {
+    const validPropositions = ["PublicKeyCurve25519", "TheresholdCurve25519"];
+
+    if (!params) {
+      throw new Error("A parameter object must be specified");
+    }
+    if (!params.propositionType || !validPropositions.includes(params.propositionType)) {
+      throw new Error("A propositionTYpe must be specified: <PublicKeyCurve25519, TheresholdCurve25519>");
+    }
+    if (!params.sender) {
+      throw new Error("An asset issuer must be specified");
+    }
+    if (!params.recipients || params.recipients.length < 1) {
+      throw new Error("At least one recipient must be specified");
+    }
+    if (!params.changeAddress) {
+      throw new Error("A changeAddress must be specified");
+    }
+    // 0 fee value is accepted
+    if (!params.fee && params.fee !== 0) {
+      throw new Error("A fee must be specified");
+    }
+    // fee must be >= 0
+    if (params.fee < 0) {
+      throw new Error("Invalid fee, a fee must be greater or equal to zero");
+    }
+
+    // validate all addresses
+    let validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params);
+    if(!validationResult.success){
+      throw new Error("Invalid Addresses::"
+        + " Network Type: <" + this.networkPrefix + ">"
+        + " Addresses: <" + validationResult.invalidAddresses + ">");
+    }
+
+    params.recipients.forEach(recipient => {
+      // ensure quantitiy is part of the tuple ["address", 10]
+      if (!recipient[1]) {
+        throw new Error("Recipient quantity must be specified");
+      }
+    });
+
+    const route = "";
+    const method = "topl_rawPolyTransfer";
+    return bramblRequest({route, method, id}, params, this);
+  }
+
+  /* ---------------------- Create Raw Arbit Trasfer ------------------------ */
+  /**
+   * Create a new arbit on chain
+   * @param {object} params - body parameters passed to the specified json-rpc method
+   * @param {string} params.propositionType - Proposition Type -> PublicKeyCurve25519 || TheresholdCurve25519
+   * @param {string} params.recipients - 2-dimensional array (array of tuples) -> [["publicKey of asset recipient", quantity]]
+   * @param {array} params.sender - List of senders addresses
+   * @param {string} params.changeAddress - Address of the change recipient
+   * @param {string} params.consolidationAddress - Address of the change recipient
+   * @param {number} params.fee - Fee to apply to the transaction
+   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty)
+   * @param {string} [id="1"] - identifying number for the json-rpc request
+   * @returns {object} json-rpc response from the chain
+   * @memberof Requests
+   */
+  async createRawArbitTransfer(params, id = "1") {
+    const validPropositions = ["PublicKeyCurve25519", "TheresholdCurve25519"];
+
+    if (!params) {
+      throw new Error("A parameter object must be specified");
+    }
+    if (!params.propositionType || !validPropositions.includes(params.propositionType)) {
+      throw new Error("A propositionTYpe must be specified: <PublicKeyCurve25519, TheresholdCurve25519>");
+    }
+    if (!params.sender) {
+      throw new Error("An asset issuer must be specified");
+    }
+    if (!params.recipients || params.recipients.length < 1) {
+      throw new Error("At least one recipient must be specified");
+    }
+    if (!params.changeAddress) {
+      throw new Error("A changeAddress must be specified");
+    }
+    if (!params.consolidationAddress) {
+      throw new Error("A consolidationAddress must be specified");
+    }
+    // 0 fee value is accepted
+    if (!params.fee && params.fee !== 0) {
+      throw new Error("A fee must be specified");
+    }
+    // fee must be >= 0
+    if (params.fee < 0) {
+      throw new Error("Invalid fee, a fee must be greater or equal to zero");
+    }
+
+    // validate all addresses
+    let validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params);
+    if(!validationResult.success){
+      throw new Error("Invalid Addresses::"
+        + " Network Type: <" + this.networkPrefix + ">"
+        + " Addresses: <" + validationResult.invalidAddresses + ">");
+    }
+
+    params.recipients.forEach(recipient => {
+      // ensure quantitiy is part of the tuple ["address", 10]
+      if (!recipient[1]) {
+        throw new Error("Recipient quantity must be specified");
+      }
+    });
+
+    const route = "";
+    const method = "topl_rawArbitTransfer";
     return bramblRequest({route, method, id}, params, this);
   }
 
@@ -721,6 +825,19 @@ fee
     const route = "debug/";
     const method = "myBlocks";
     return bramblRequest({route, method, id}, params, this);
+  }
+
+  async testAddressCheck(id = "1") {
+    let params = {
+      "address": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
+      "network": "local"
+    };
+    const route = "";
+    const method = "util_checkValidAddress";
+    return bramblRequest({route, method, id}, {
+      "address": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
+      "network": "local"
+    }, this);
   }
 
   /* --------------------- Map block geneators to blocks --------------------------- */
