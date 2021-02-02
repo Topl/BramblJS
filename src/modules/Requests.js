@@ -51,7 +51,7 @@ async function bramblRequest(routeInfo, params, self) {
       headers: self.headers,
       body: JSON.stringify(body)
     };
-    console.log(payload)
+    //console.log(payload)
     const response = await (await fetch(self.url + route, payload)).json();
     if (response.error) {
       throw response;
@@ -134,6 +134,26 @@ class Requests {
     }
     const route = "wallet/";
     const method = "balances";
+    return bramblRequest({route, method, id}, params, this);
+  }
+
+  /**
+   * Get the balances of a specified public key in the keyfiles directory of the node
+   * @param {Object} params - body parameters passed to the specified json-rpc method
+   * @param {string[]} params.addresses - An array of public keys to query the balance for
+   * @param {string} [id="1"] - identifying number for the json-rpc request
+   * @returns {object} json-rpc response from the chain
+   * @memberof Requests
+   */
+  async lookupBalancesByKey(params, id = "1") {
+    if (!params) {
+      throw new Error("A parameter object must be specified");
+    }
+    if (!params.addresses || !Array.isArray(params.addresses)) {
+      throw new Error("A list of publicKeys must be specified");
+    }
+    const route = "";
+    const method = "topl_balances";
     return bramblRequest({route, method, id}, params, this);
   }
 
@@ -269,8 +289,8 @@ class Requests {
     if (Object.keys(params.tx).length < 10 && params.tx.constructor === Object) {
       throw new Error("Invalid tx object, one or more tx keys not specified");
     }
-    const route = "wallet/";
-    const method = "broadcastTx";
+    const route = "";
+    const method = "topl_broadcastTx";
     return bramblRequest({route, method, id}, params, this);
   }
 
@@ -451,7 +471,9 @@ class Requests {
         + " Network Type: <" + this.networkPrefix + ">"
         + " Addresses: <" + validationResult.invalidAddresses + ">");
     }
+    //[[addres, quantity], [addres, quantity], [addres, quantity], [addres, quantity]]
 
+    //[[addres, quantity, securityRoot, metadata], [addres, quantity], [addres, quantity], [addres, quantity]]
     // transform recipients ["address", quantity] to correct tuples
     for (let i = 0; i < params.recipients.length; i++) {
       // destructuring assingment syntax
@@ -853,7 +875,24 @@ class Requests {
     const method = "generators";
     return bramblRequest({route, method, id}, params, this);
   }
+
+
+  /**
+   * Return the chain information
+   * @param {string} [id="1"] - identifying number for the json-rpc request
+   * @returns {object} json-rpc response from the chain
+   * @memberof Requests
+   */
+  async getLatestBlock(id = "1") {
+    const params = {};
+    const route = "";
+    const method = "topl_head";
+    return bramblRequest({route, method, id}, params, this);
+  }
 }
+
+
+
 
 /* -------------------------------------------------------------------------- */
 

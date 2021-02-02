@@ -167,10 +167,14 @@ function deriveKey(password, salt, kdfParams) {
  */
 function marshal(derivedKey, keyObject, salt, iv, algo) {
   // encrypt using last 16 bytes of derived key (this matches Bifrost)
-  const ciphertext = encrypt(keyObject.privateKey, derivedKey, iv, algo);
+  // TODO: RA - ensure this is doing the correct concat.
+  const concatKeys = keyObject.privateKey.concat(keyObject.publicKey);
+  const ciphertext = encrypt(concatKeys, derivedKey, iv, algo);
 
   const keyStorage = {
-    publicKeyId: Base58.encode(keyObject.publicKey),
+    //for cipher: encruption of public + private key
+//    publicKeyId: Base58.encode(keyObject.publicKey),
+    address: Base58.encode(keyObject.publicKey),//specify network to be used at (RA: create address using address-utils)
     crypto: {
       cipher: algo,
       cipherText: Base58.encode(ciphertext),

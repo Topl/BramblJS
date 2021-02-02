@@ -41,11 +41,12 @@ const rawPolyParams = {
 //   .then((res) => console.log(res))
 //   .catch((e) => console.error(e));
 
+//86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz
 
 const rawArbitParams = {
   "propositionType": "PublicKeyCurve25519",
   "recipients": [["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE", 10]],
-  "sender": ["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE"],
+  "sender": ["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLos"],
   "changeAddress": "AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE",
   "consolidationAddress": "AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE",
   "fee": 1,
@@ -55,3 +56,13 @@ const rawArbitParams = {
 requests.createRawArbitTransfer(rawArbitParams)
   .then((res) => console.log(res))
   .catch((e) => console.error(e));
+
+
+
+
+//for 
+  //securityRoot : base58 enconded string  [32 bytes]   hash output of blake2b
+  //metadata : 128 byte string UTF8
+
+//make asset and tag asset
+// metadata is an davanced feature

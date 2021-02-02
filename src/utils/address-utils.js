@@ -118,7 +118,7 @@ function validateAddressesByNetwork(networkPrefix, addresses){
   result.addresses.forEach(address => {
     // decode base58 address
     const decodedAddress = Base58.decode(address);
-    console.log(decodedAddress)
+    //console.log(decodedAddress)
 
     //validation: base58 38 byte obj that matches networkPrefix decimal
     if(decodedAddress.length !== 38 || decodedAddress[0] !== networkDecimal){
@@ -145,6 +145,7 @@ function validateAddressesByNetwork(networkPrefix, addresses){
     result.success = true;
   }
 
+  console.log(result);
   return result;
 }
 
@@ -215,9 +216,9 @@ let arrExample = [
 ];
 //let addValidationRes2 = validateAddressesByNetwork('local', arrExample);
 
-let arrSingle = ['AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE'];
-let addValidationRes2 = validateAddressesByNetwork('private', arrSingle);
-console.log(addValidationRes2);
+// let arrSingle = ['AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE'];
+// let addValidationRes2 = validateAddressesByNetwork('private', arrSingle);
+// console.log(addValidationRes2);
 
 
 let paramObj =
