@@ -112,13 +112,13 @@ const rawAssetParams = {
   "fee": 1
 };
 
-// requests.createRawAssetTransfer(rawAssetParams)
-//   .then((res) => signAndBroadcastPromise(res.result))
-//   .then((res) => console.log(res))
-//   .catch((e) => console.error(e));
+requests.createRawAssetTransfer(rawAssetParams)
+  .then((res) => signAndBroadcastPromise(res.result))
+  .then((res) => console.log(res))
+  .catch((e) => console.error(e));
 
-
-brambl.keyManager.exportToFile();
+/* ---------------------- Export Key to File ------------------------ */
+//brambl.keyManager.exportToFile();
 
 
   /**

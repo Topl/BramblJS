@@ -188,8 +188,7 @@ class Brambl {
 Brambl.prototype.addSigToTx = async function(prototypeTx, userKeys) {
   // function for generating a signature in the correct format
   const genSig = (keys, txMsgToSign) => {
-    //TODO: do I need to encode the key.pk?
-    return Object.fromEntries( keys.map( (key) => [base58.encode(key.pk), base58.encode(key.sign(txMsgToSign))]));
+    return Object.fromEntries( keys.map( (key) => [key.pk, base58.encode(key.sign(txMsgToSign))]));
   };
 
   // list of Key Managers
