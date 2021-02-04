@@ -169,8 +169,10 @@ function deriveKey(password, salt, kdfParams) {
  * @returns {Object} key data object in secret-storage format
  */
 function marshal(derivedKey, keyObject, salt, iv, algo, network) {
-  // encrypt using last 16 bytes of derived key (this matches Bifrost)
+  // for cipherText: encryption of public + private key
   const concatKeys = Buffer.concat([keyObject.privateKey, keyObject.publicKey], 64);
+
+  // encrypt using last 16 bytes of derived key (this matches Bifrost)
   const ciphertext = encrypt(concatKeys, derivedKey, iv, algo);
 
   // generate address
@@ -178,10 +180,8 @@ function marshal(derivedKey, keyObject, salt, iv, algo, network) {
   if(createAddress && !createAddress.success){
     throw new Error(createAddress.errorMsg);
   }
+
   const keyStorage = {
-    //for cipher: encryption of public + private key
-    //publicKeyId: Base58.encode(keyObject.publicKey),
-    //address: Base58.encode(keyObject.publicKey),//TODO: specify network to be used at (RA: create address using address-utils)
     address: createAddress.address,
     crypto: {
       mac: Base58.encode(getMAC(derivedKey, ciphertext)),
@@ -234,7 +234,7 @@ function recover(password, keyStorage, kdfParams) {
     if (!getMAC(derivedKey, ciphertext).equals(mac)) {
       throw new Error("message authentication code mismatch");
     }
-    return decrypt(ciphertext, derivedKey, iv, algo); //TODO: [(0,32), (33)]
+    return decrypt(ciphertext, derivedKey, iv, algo); //TODO: [(0,32), (32)] - what was this??
     //return decrypt(ciphertext, derivedKey, iv, algo);
   }
 

@@ -112,17 +112,28 @@ const rawAssetParams = {
   "fee": 1
 };
 
-requests.createRawAssetTransfer(rawAssetParams)
-  .then((res) => signAndBroadcastPromise(res.result))
-  .then((res) => console.log(res))
-  .catch((e) => console.error(e));
+// requests.createRawAssetTransfer(rawAssetParams)
+//   .then((res) => signAndBroadcastPromise(res.result))
+//   .then((res) => console.log(res))
+//   .catch((e) => console.error(e));
 
 /* ---------------------- Export Key to File ------------------------ */
 //brambl.keyManager.exportToFile();
 
 
+/* ---------------------- Get Block by Id ------------------------ */
+// brambl.requests.getBlockById({blockId: "wL12me5cR4imXjssQsB47sKfaAgciYvYrHZCF6JN8v1o"})
+//   .then((res) => console.log(res))
+//   .catch((e) => console.error(e));
+
+/* ---------------------- Get Block by Height ------------------------ */
+brambl.requests.getBlockByHeight({"height": 3})
+.then((res) => console.log(res))
+.catch((e) => console.error(e));
+
+
   /**
-   * 
+   *
    * sample using Bifrost key
    * {
   "crypto" : {
@@ -141,7 +152,6 @@ requests.createRawAssetTransfer(rawAssetParams)
 
    /**
     * {
-    
     "crypto": {
       "mac": "9wGhRwvBmnjMNe9wEuzDarg2ftDJUDNjeMtWagqtdTLJ",
       "kdf": "scrypt",

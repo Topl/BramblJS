@@ -514,12 +514,12 @@ class Requests {
 
     // ensure it is an integer
     params.height = parseInt(params.height, 10);
-    if (params.height > 0) {
-      throw new Error("Height must be a number >= 0");
+    if (params.height < 1) {
+      throw new Error("Height must be a number >= 1");
     }
 
     const route = "";
-    const method = "topl_blockById";
+    const method = "topl_blockByHeight";
     return bramblRequest({route, method, id}, params, this);
   }
 
