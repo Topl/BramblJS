@@ -273,9 +273,6 @@ let paramObj =
 //let addValidationRes = validateAddressesByNetwork('local', paramObj);
 //console.log(addValidationRes);
 
-
-
-
 function isValidNetwork(networkPrefix) {
   return networkPrefix && validNetworks.includes(networkPrefix);
 }
@@ -291,21 +288,8 @@ function getHexByNetwork(networkPrefix) {
 function getDecimalByNetwork(networkPrefix) {
   return networksDefaults[networkPrefix].decimal;
 }
-function getValidNetworksList(networkPrefix) {
+function getValidNetworksList() {
   return validNetworks;
 }
-
-
-// module.exports = {
-//   isValidNetwork = function(networkPrefix) {
-//     return networkPrefix && !validNetworks.includes(params.networkPrefix);
-//   },
-//   getUrlByNetwork = function(networkPrefix) {
-//     return networksDefaults[networkPrefix].url;
-//   },
-//   getHexByNetwork = function(networkPrefix) {
-//     return networksDefaults[networkPrefix].hex;
-//   }
-// };
 
 module.exports = {isValidNetwork, getUrlByNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList, validateAddressesByNetwork, generateAddress};

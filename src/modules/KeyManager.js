@@ -79,21 +79,15 @@ class KeyManager {
 
       // Initialize a key manager object with a key storage object
       const initKeyStorage = (keyStorage, password) => {
-        // RA: I dont think the below is an issue since keystorage.address is the encoding of the pk... verify.
-        this.#address = keyStorage.address; //TODO: check this, must be a bug  g- get public key from cipher
+        this.#address = keyStorage.address;
         this.#isLocked = false;
         this.#password = password;
         this.#keyStorage = keyStorage;
+
         if (this.#address){
-          const temp = recover(password, keyStorage, this.constants.scrypt);//TODO: look for a way to avoid having this in mem
-          //[this.#sk, this.#pk] = recover(password, keyStorage, this.constants.scrypt);
-          console.log(temp);
-          this.#sk = Base58.encode(temp.slice(0, 32));
-          this.#pk = Base58.encode(temp.slice(32));
-          // this.#sk = temp.slice(0,32);
-          // this.#pk = temp.slice(32);
-          // console.log(this.#sk.length);
-          // console.log(this.#pk.length);
+          [this.#sk, this.#pk] = recover(password, keyStorage, this.constants.scrypt);
+          // console.log(this.#sk);
+          // console.log(this.#pk);
         }
       };
 

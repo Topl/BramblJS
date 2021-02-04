@@ -244,7 +244,20 @@ function recover(password, keyStorage, kdfParams) {
   const mac = str2buf(keyStorage.crypto.mac);
   const algo = keyStorage.crypto.cipher;
 
-  return verifyAndDecrypt(deriveKey(password, salt, kdfParams), iv, ciphertext, mac, algo);
+  return keysEncodedFormat(verifyAndDecrypt(deriveKey(password, salt, kdfParams), iv, ciphertext, mac, algo));
+}
+
+/**
+ * Parse KeysBuffer and split into [secretKey, publicKey]
+ * @param {Buffer} keysBuffer Buffer containing both keys
+ * @returns {Array} Array with format [sk, pk]
+ */
+function keysEncodedFormat(keysBuffer) {
+  if(keysBuffer.length !== 64){
+    throw new Error("Invalid keysBuffer.");
+  }
+  // [sk, pk]
+  return [Base58.encode(keysBuffer.slice(0, 32)), Base58.encode(keysBuffer.slice(32))];
 }
 
 /**
