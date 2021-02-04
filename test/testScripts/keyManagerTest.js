@@ -8,7 +8,7 @@ console.log(h);
 sig = gjal.sign("this is a msg", Buffer.from);
 console.log(sig);
 
-ver = KeyMan.verify(h.publicKeyId, "this is a msg", sig);
+ver = KeyMan.verify(h.address, "this is a msg", sig);
 console.log(ver);
 
 gjal.exportToFile("keystore/");

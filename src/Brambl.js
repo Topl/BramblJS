@@ -187,17 +187,43 @@ class Brambl {
  */
 Brambl.prototype.addSigToTx = async function(prototypeTx, userKeys) {
   // function for generating a signature in the correct format
-  const genSig = (keys, txBytes) => {
-    return Object.fromEntries( keys.map( (key) => [key.pk, base58.encode(key.sign(txBytes))]));
+  // console.log("prototypeTx ----------")
+  // console.log(prototypeTx)
+
+  // console.log("userKeys")
+  // console.log(userKeys)
+  
+  // const genSig = (keys, txBytes) => {
+  //   console.log(keys)
+  //   console.log("---------- bytes?")
+  //   console.log(txBytes)
+  //   return Object.fromEntries( keys.map( (key) => [key.pk, base58.encode(key.sign(txBytes))]));
+  // };
+
+  const genSig = (keys, txMsgToSign) => {
+    // console.log("---------- keys")
+    // console.log(keys)
+    // console.log(keys[0].constructor)
+    // const test =keys[0].sign(txMsgToSign);
+    // console.log(test)
+
+    //TODO: do I need to encode the key.pk?
+    return Object.fromEntries( keys.map( (key) => [base58.encode(key.pk), base58.encode(key.sign(txMsgToSign))]));
   };
 
   // in case a single given is given not as an array
   const keys = Array.isArray(userKeys) ? userKeys : [userKeys];
+  //array of Key Manager instances...
 
   // add signatures of all given key files to the formatted transaction
+  // return {
+  //   ...prototypeTx.formattedTx,
+  //   signatures: genSig(keys, base58.decode(prototypeTx.messageToSign))
+  // };
+
   return {
-    ...prototypeTx.formattedTx,
-    signatures: genSig(keys, base58.decode(prototypeTx.messageToSign))
+    ...prototypeTx.rawTx, //...prototypeTx.formattedTx,
+    signatures: genSig(keys, prototypeTx.messageToSign)
   };
 };
 
@@ -209,6 +235,7 @@ Brambl.prototype.addSigToTx = async function(prototypeTx, userKeys) {
   */
 Brambl.prototype.signAndBroadcast = async function(prototypeTx) {
   const formattedTx = await this.addSigToTx(prototypeTx, this.keyManager);
+  //console.log(formattedTx);
   return this.requests.broadcastTx({tx: formattedTx}).catch((e) => {
     console.error(e); throw e;
   });

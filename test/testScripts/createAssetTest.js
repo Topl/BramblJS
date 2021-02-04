@@ -22,7 +22,6 @@ const createParams = {
   fee: 0
 };
 
-
 bramblLayer.createAssetsPrototype(createParams)
     .then((res) => signAndBroadcastPromise(res.result))
     .then((res) => console.log(res));

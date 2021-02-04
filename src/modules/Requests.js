@@ -3,25 +3,25 @@
  * Documentation for Brambl-layer is available at https://Requests.docs.topl.co
  *
  * @author James Aman (j.aman@topl.me)
+ * @author Raul Aragonez (r.aragonez@topl.me)
  * @date 2020.0.29
  *
  * Based on the original work of Yamir Tainwala - 2019
  */
 
-//TODO: 
+//TODO:
 // DONE add network prefix here... as optional, specially when coming from Brambl
 // DONE network prefix should map url to be used... as defaults
 // DONE users have the option to include different urls
-// add util script to check for prefix in all addresses.
-// check addresses on all operations which have recipients, sender, changeaddress and consolidaitonadddress
-
-
+// DONE add util script to check for prefix in all addresses.
+// DONE check addresses on all operations which have recipients, sender, changeaddress and consolidaitonadddress
 
 "use strict";
 
 // Dependencies
 const fetch = require("node-fetch");
 const utils = require("../utils/address-utils.js");
+const Base58 = require("base-58");
 
 /**
  * General builder function for formatting API request
@@ -49,9 +49,15 @@ async function bramblRequest(routeInfo, params, self) {
       url: self.url + route,
       method: "POST",
       headers: self.headers,
+      //body: body
       body: JSON.stringify(body)
     };
-    //console.log(payload)
+    console.log("-------body and payload ---------");
+    console.log(body.params[0].tx);
+    console.log(payload);
+    console.log("---------------------------------");
+
+
     const response = await (await fetch(self.url + route, payload)).json();
     if (response.error) {
       throw response;
@@ -140,11 +146,19 @@ class Requests {
       throw new Error("A propositionTYpe must be specified: <PublicKeyCurve25519, TheresholdCurve25519>");
     }
     if (!params.sender) {
-      throw new Error("An asset issuer must be specified");
+      throw new Error("An asset sender must be specified");
     }
+
+    
     if (!params.assetCode) {
       throw new Error("An assetCode must be specified");
-    }
+    } 
+    //TODO: add validation - 47 bytes MAX ( 1 version, 38 issuer address, and up to 8 for a name) = 94 chars
+    //TODO: add validation - 40 bytes MIN ( 1 version, 38 issuer address, and up to 1 for a name) = 80 chars
+    // else if (params.assetCode.length < 80 || params.assetCode.length > 94) {
+    //   throw new Error("Invalid byte length for assetCode");
+    // }
+
     if (!params.recipients || params.recipients.length < 1) {
       throw new Error("At least one recipient must be specified");
     }
@@ -170,26 +184,43 @@ class Requests {
         + " Network Type: <" + this.networkPrefix + ">"
         + " Addresses: <" + validationResult.invalidAddresses + ">");
     }
-    //[[addres, quantity], [addres, quantity], [addres, quantity], [addres, quantity]]
 
-    //[[addres, quantity, securityRoot, metadata], [addres, quantity], [addres, quantity], [addres, quantity]]
-    // transform recipients ["address", quantity] to correct tuples
+    // Include token value holder as tuple format
     for (let i = 0; i < params.recipients.length; i++) {
       // destructuring assingment syntax
-      let [address, quantity] = params.recipients[i];
+      // basic: [address, quantity]
+      // advance: [address, quantity, securityRoot, metadata]
+      let [address, quantity, securityRoot, metadata] = params.recipients[i];
 
       // ensure quantitiy is part of the tuple ["address", 10]
-      if (!quantity) {
-        throw new Error("Recipient quantity must be specified");
+      if (!quantity || quantity < 1) {
+        throw new Error(`Invalid quantity in Recipient: ${params.recipients[i]}`);
       }
-      params.recipients[i] = [
-        address,
-        {
-          "type": "Asset",
-          "quantity": quantity,
-          "assetCode": params.assetCode
+
+      // required fields
+      let tokenValueHolder = {
+        "type": "Asset",
+        "quantity": quantity,
+        "assetCode": params.assetCode
+      };
+
+      // advance option - securityRoot: base58 enconded string [32 bytes]
+      if(securityRoot !== undefined){
+        if (Base58.decode(securityRoot).length !== 32) {
+          throw new Error(`Invalid securityRoot in Recipient: ${params.recipients[i]}`);
         }
-      ];
+        tokenValueHolder.securityRoot = securityRoot;
+      }
+
+      // advance option - metadata: 128 byte string UTF8
+      if(metadata !== undefined){
+        if (metadata.length < 2 || metadata.length > 127 ) {
+          throw new Error(`Invalid metadata in Recipient: ${params.recipients[i]}`);
+        }
+        tokenValueHolder.metadata = metadata;
+      }
+
+      params.recipients[i] = [address, tokenValueHolder];
     }
 
     const route = "";
@@ -339,9 +370,11 @@ class Requests {
     if (!params.tx) {
       throw new Error("A tx object must be specified");
     }
+    console.log(params.tx)
     if (!params.tx.signatures || !Object.keys(params.tx.signatures)[0]) {
       throw new Error("Tx must include signatures");
     }
+    //this is not valid since also a signature is being sent, not a full Tx ???
     if (Object.keys(params.tx).length < 10 && params.tx.constructor === Object) {
       throw new Error("Invalid tx object, one or more tx keys not specified");
     }
@@ -490,427 +523,7 @@ class Requests {
     return bramblRequest({route, method, id}, params, this);
   }
 
-
-  /* ------------------------------------------------------------------------------------------------------------------------------------------ */
-
-
-
-
-
-  /* ------------------------------ generateKeyfile ------------------------------------- */
-  /**
-   * Generate a new keyfile in the node keyfile directory
-   * @param {Object} params - body parameters passed to the specified json-rpc method
-   * @param {string} params.password - Password for encrypting the new keyfile
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async generateKeyfile(params, id = "1") {
-    if (!params) {
-      throw new Error("A parameter object must be specified");
-    }
-    if (!params.password) {
-      throw new Error("A password must be provided to encrypt the keyfile");
-    }
-    const route = "wallet/";
-    const method = "generateKeyfile";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-  /* -------------------------------- unlockKeyfile ------------------------------------- */
-  /**
-   * Unlock a keyfile in the node's keyfile directory
-   * @param {object} params - body parameters passed to the specified json-rpc method
-   * @param {string} params.publicKey - Base58 encoded public key to get the balance of
-   * @param {string} params.password - Password used to encrypt the keyfile
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async unlockKeyfile(params, id = "1") {
-    if (!params) {
-      throw new Error("A parameter object must be specified");
-    }
-    if (!params.publicKey) {
-      throw new Error("A publicKey field must be specified");
-    }
-    if (!params.password) {
-      throw new Error("A password must be provided to encrypt the keyfile");
-    }
-    const route = "wallet/";
-    const method = "unlockKeyfile";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-  /* --------------------------------- lockKeyfile -------------------------------------- */
-  /**
-   * Lock an open keyfile
-   * @param {object} params - body parameters passed to the specified json-rpc method
-   * @param {string} params.publicKey - Base58 encoded public key to get the balance of
-   * @param {string} params.password - Password used to encrypt the keyfile
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async lockKeyfile(params, id = "1") {
-    if (!params) {
-      throw new Error("A parameter object must be specified");
-    }
-    if (!params.publicKey) {
-      throw new Error("A publicKey field must be specified");
-    }
-    if (!params.password) {
-      throw new Error("A password must be provided to encrypt the keyfile");
-    }
-    const route = "wallet/";
-    const method = "lockKeyfile";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-  /* ------------------------------ listOpenKeyfiles ------------------------------------ */
-  /**
-   * Get a list of all open keyfiles
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async listOpenKeyfiles(id = "1") {
-    const params = {};
-    const route = "wallet/";
-    const method = "listOpenKeyfiles";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-
-  
-  /* ------------------------------ signTransaction --------------------------------------- */
-  /**
-   * Have the node sign a JSON formatted prototype transaction
-   * @param {object} params - body parameters passed to the specified json-rpc method
-   * @param {string} params.publicKey - Base58 encoded public key to get the balance of
-   * @param {string} params.tx - a JSON formatted prototype transaction
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async signTransaction(params, id = "1") {
-    if (!params) {
-      throw new Error("A parameter object must be specified");
-    }
-    if (!params.publicKey) {
-      throw new Error("A publicKey field must be specified");
-    }
-    if (!params.tx) {
-      throw new Error("A tx object must be specified");
-    }
-    const route = "wallet/";
-    const method = "signTx";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-  
-
-  /* ------------------------------ transferPolys --------------------------------------- */
-  /**
-   * Transfer Polys to a specified public key.
-   * @param {object} params - body parameters passed to the specified json-rpc method
-   * @param {string} params.recipient - Public key of the transfer recipient
-   * @param {number} params.amount - Amount of asset to send
-   * @param {number} params.fee - Fee to apply to the transaction
-   * @param {string|string[]} [params.sender] - Array of public keys which you can use to restrict sending from
-   * @param {string} [params.changeAddress] - Public key you wish to send change back to
-   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty)
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async transferPolys(params, id = "1") {
-    if (!params) {
-      throw new Error("A parameter object must be specified");
-    }
-    if (!params.recipient) {
-      throw new Error("A recipient must be specified");
-    }
-    if (!params.amount) {
-      throw new Error("An amount must be specified");
-    }
-    if (!params.fee && params.fee !== 0) {
-      throw new Error("A fee must be specified");
-    }
-    if (params.fee < 0) {
-      throw new Error("Invalid fee, a fee must be greater or equal to zero");
-    }
-    const route = "wallet/";
-    const method = "transferPolys";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-  /* ------------------------------ transferArbits --------------------------------------- */
-  /**
-   * Transfer Arbits to a specified public key.
-   * @param {object} params - body parameters passed to the specified json-rpc method
-   * @param {string} params.recipient - Public key of the transfer recipient
-   * @param {number} params.amount - Amount of asset to send
-   * @param {number} params.fee - Fee to apply to the transaction
-   * @param {string|string[]} [params.sender] - Array of public keys which you can use to restrict sending from
-   * @param {string} [params.changeAddress] - Public key you wish to send change back to
-   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty)
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async transferArbits(params, id = "1") {
-    if (!params) {
-      throw new Error("A parameter object must be specified");
-    }
-    if (!params.recipient) {
-      throw new Error("A recipient must be specified");
-    }
-    if (!params.amount) {
-      throw new Error("An amount must be specified");
-    }
-    if (!params.fee && params.fee !== 0) {
-      throw new Error("A fee must be specified");
-    }
-    if (params.fee < 0) {
-      throw new Error("Invalid fee, a fee must be greater or equal to zero");
-    }
-    const route = "wallet/";
-    const method = "transferArbits";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-  /* -------------------------------------------------------------------------- */
-  /*                           Asset Api Routes                                 */
-  /* -------------------------------------------------------------------------- */
-
-  /* ---------------------- createAssetsPrototype ------------------------ */
-  /**
-   * 
-   * TODO: RA - Remove this and replace it in test scripts and unit testing
-   * 
-   * 
-   * Create a new asset on chain
-   * @param {object} params - body parameters passed to the specified json-rpc method
-   * @param {string} params.issuer - Public key of the asset issuer
-   * @param {string} params.assetCode - Identifier of the asset
-   * @param {string} params.recipient - Public key of the asset recipient
-   * @param {number} params.amount - Amount of asset to send
-   * @param {number} params.fee - Fee to apply to the transaction
-   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty)
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async createAssetsPrototype(params, id = "1") {
-    if (!params) {
-      throw new Error("A parameter object must be specified");
-    }
-    if (!params.issuer) {
-      throw new Error("An asset issuer must be specified");
-    }
-    if (!params.assetCode) {
-      throw new Error("An assetCode must be specified");
-    }
-    if (!params.recipient) {
-      throw new Error("A recipient must be specified");
-    }
-    if (!params.amount) {
-      throw new Error("An amount must be specified");
-    }
-    // 0 fee value is accepted
-    if (!params.fee && params.fee !== 0) {
-      throw new Error("A fee must be specified");
-    }
-    // fee must be >= 0
-    if (params.fee < 0) {
-      throw new Error("Invalid fee, a fee must be greater or equal to zero");
-    }
-
-    const route = "/";
-    const method = "topl_rawAssetTransfer";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-
-  /* --------------------------- transferAssetsPrototype ------------------------------ */
-  /**
-   * Transfer an asset to a recipient
-   * @param {object} params - body parameters passed to the specified json-rpc method
-   * @param {string} params.issuer - Public key of the asset issuer
-   * @param {string} params.assetCode - Identifier of the asset
-   * @param {string} params.recipient - Public key of the asset recipient
-   * @param {string|string[]} params.sender - Array of public keys which you can use to restrict sending from
-   * @param {number} params.amount - Amount of asset to send
-   * @param {number} params.fee - Fee to apply to the transaction
-   * @param {string} [params.changeAddress] - Public key you wish to send change back to
-   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty)
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async transferAssetsPrototype(params, id = "1") {
-    if (!params) {
-      throw new Error("A parameter object must be specified");
-    }
-    if (!params.issuer) {
-      throw new Error("An asset issuer must be specified");
-    }
-    if (!params.assetCode) {
-      throw new Error("An assetCode must be specified");
-    }
-    if (!params.recipient) {
-      throw new Error("A recipient must be specified");
-    }
-    if (!params.sender) {
-      throw new Error("A sender must be specified");
-    }
-    if (!params.amount) {
-      throw new Error("An amount must be specified");
-    }
-    if (!params.fee && params.fee !== 0) {
-      throw new Error("A fee must be specified");
-    }
-    if (params.fee < 0) {
-      throw new Error("Invalid fee, a fee must be greater or equal to zero");
-    }
-    const route = "asset/";
-    const method = "transferAssetsPrototype";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-  /* -------------------------- transferTargetAssetsPrototype ----------------------------- */
-  /**
-   * Get an unsigned targeted transfer transaction
-   * @param {object} params - body parameters passed to the specified json-rpc method
-   * @param {string} params.recipient - Public key of the asset recipient
-   * @param {array} params.sender - Array of public keys of the asset senders
-   * @param {string} params.assetId - BoxId of the asset to target
-   * @param {number} params.amount - Amount of asset to send
-   * @param {number} params.fee - Fee to apply to the transaction
-   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty)
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async transferTargetAssetsPrototype(params, id = "1") {
-    if (!params) {
-      throw new Error("A parameter object must be specified");
-    }
-    if (!params.recipient) {
-      throw new Error("A recipient must be specified");
-    }
-    if (!params.sender) {
-      throw new Error("A sender must be specified");
-    }
-    if (!params.assetId) {
-      throw new Error("An assetId is required for this request");
-    }
-    if (!params.amount) {
-      throw new Error("An amount must be specified");
-    }
-    if (!params.fee && params.fee !== 0) {
-      throw new Error("A fee must be specified");
-    }
-    if (params.fee < 0) {
-      throw new Error("Invalid fee, a fee must be greater or equal to zero");
-    }
-    const route = "asset/";
-    const method = "transferTargetAssetsPrototype";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-
-  /* -------------------------------------------------------------------------- */
-  /*                            Debug Api Routes                                */
-  /* -------------------------------------------------------------------------- */
-
-  /* ------------------------- Get chain information -------------------------- */
-  /**
-   * Return the chain information
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async chainInfo(id = "1") {
-    const params = {};
-    const route = "debug/";
-    const method = "info";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-  /* ------------------------- Calculate block delay --------------------------- */
-  /**
-   * Get the average delay between blocks
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @param {object} params - body parameters passed to the specified json-rpc method
-   * @param {string} params.blockId - Unique identifier of a block
-   * @param {string} params.numBlocks - Number of blocks to consider behind the specified block
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async calcDelay(id = "1", params) {
-    if (!params) {
-      throw new Error("A parameter object must be specified");
-    }
-    if (!params.blockId) {
-      throw new Error("A blockId must be specified");
-    }
-    if (!params.numBlocks) {
-      throw new Error("A number of blocks must be specified");
-    }
-    const route = "debug/";
-    const method = "delay";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-  /* -------------------- Blocks generated by node's keys ------------------------- */
-  /**
-   * Return the number of blocks forged by keys held by this node
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async myBlocks(id = "1") {
-    const params = {};
-    const route = "debug/";
-    const method = "myBlocks";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-  async testAddressCheck(id = "1") {
-    let params = {
-      "address": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
-      "network": "local"
-    };
-    const route = "";
-    const method = "util_checkValidAddress";
-    return bramblRequest({route, method, id}, {
-      "address": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
-      "network": "local"
-    }, this);
-  }
-
-  /* --------------------- Map block geneators to blocks --------------------------- */
-  /**
-   * Return the blockIds that each accessible key has forged
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async blockGenerators(id = "1") {
-    const params = {};
-    const route = "debug/";
-    const method = "generators";
-    return bramblRequest({route, method, id}, params, this);
-  }
-
-
 }
-
-
-
 
 /* -------------------------------------------------------------------------- */
 

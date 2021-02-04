@@ -54,6 +54,7 @@ function encrypt(plaintext, key, iv, algo) {
   if (!isCipherAvailable(algo)) throw new Error(algo + " is not available");
   const cipher = crypto.createCipheriv(algo, str2buf(key), str2buf(iv));
   const ciphertext = cipher.update(str2buf(plaintext));
+
   return Buffer.concat([ciphertext, cipher.final()]);
 }
 
@@ -167,14 +168,13 @@ function deriveKey(password, salt, kdfParams) {
  */
 function marshal(derivedKey, keyObject, salt, iv, algo) {
   // encrypt using last 16 bytes of derived key (this matches Bifrost)
-  // TODO: RA - ensure this is doing the correct concat.
-  const concatKeys = keyObject.privateKey.concat(keyObject.publicKey);
+  const concatKeys = Buffer.concat([keyObject.privateKey, keyObject.publicKey], 64);
   const ciphertext = encrypt(concatKeys, derivedKey, iv, algo);
 
   const keyStorage = {
-    //for cipher: encruption of public + private key
-//    publicKeyId: Base58.encode(keyObject.publicKey),
-    address: Base58.encode(keyObject.publicKey),//specify network to be used at (RA: create address using address-utils)
+    //for cipher: encryption of public + private key
+    //publicKeyId: Base58.encode(keyObject.publicKey),
+    address: Base58.encode(keyObject.publicKey),//TODO: specify network to be used at (RA: create address using address-utils)
     crypto: {
       cipher: algo,
       cipherText: Base58.encode(ciphertext),
@@ -183,6 +183,7 @@ function marshal(derivedKey, keyObject, salt, iv, algo) {
     }
   };
 
+  //TODO is this needed? Add them to the json body in :181
   keyStorage.crypto.kdf = "scrypt";
   keyStorage.crypto.kdfSalt = Base58.encode(salt);
 
@@ -227,7 +228,8 @@ function recover(password, keyStorage, kdfParams) {
     if (!getMAC(derivedKey, ciphertext).equals(mac)) {
       throw new Error("message authentication code mismatch");
     }
-    return decrypt(ciphertext, derivedKey, iv, algo);
+    return decrypt(ciphertext, derivedKey, iv, algo); //TODO: [(0,32), (33)]
+    //return decrypt(ciphertext, derivedKey, iv, algo);
   }
 
   const iv = str2buf(keyStorage.crypto.cipherParams.iv);

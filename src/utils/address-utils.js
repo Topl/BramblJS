@@ -145,6 +145,7 @@ function validateAddressesByNetwork(networkPrefix, addresses){
     result.success = true;
   }
 
+  console.log("Addresses validation result: ");
   console.log(result);
   return result;
 }

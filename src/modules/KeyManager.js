@@ -58,6 +58,7 @@ class KeyManager {
     #keyStorage;
     #pk;
     #networkPrefix;
+    #address;
 
     /* ------------------------------ Instance constructor ------------------------------ */
     /**
@@ -74,12 +75,19 @@ class KeyManager {
 
       // Initialize a key manager object with a key storage object
       const initKeyStorage = (keyStorage, password) => {
-        this.#pk = keyStorage.publicKeyId;
+        // RA: I dont think the below is an issue since keystorage.address is the encoding of the pk... verify.
+        this.#address = keyStorage.address; //TODO: check this, must be a bug  g- get public key from cipher
         this.#isLocked = false;
         this.#password = password;
         this.#keyStorage = keyStorage;
-
-        if (this.#pk) this.#sk = recover(password, keyStorage, this.constants.scrypt);
+        if (this.#address){
+          const temp = recover(password, keyStorage, this.constants.scrypt);//TODO: look for a way to avoid having this in mem
+          [this.#sk, this.#pk] = recover(password, keyStorage, this.constants.scrypt);
+          this.#sk = temp.slice(0,32);
+          this.#pk = temp.slice(33);
+          console.log(this.#sk);
+          console.log(this.#pk);
+        }
       };
 
       const generateKey = (password) => {
@@ -102,7 +110,7 @@ class KeyManager {
         throw new Error(`Invalid Network Prefix. Must be one of: ${utils.getValidNetworksList()}`);
       }
 
-      initKeyStorage({publicKeyId: "", crypto: {}}, "");
+      initKeyStorage({address: "", crypto: {}}, "");
 
       // load in keyfile if a path was given, or default to generating a new key
       if (params.keyPath) {
@@ -239,7 +247,6 @@ class KeyManager {
       if (!this.#sk) throw new Error("A key must be initialized before using this key manager");
       if (!message || message.constructor !== String) throw new Error("Invalid message provided as argument.");
 
-      // curve25519sign using this.#sk as private key and provided message
       return curve25519.sign(str2buf(this.#sk), str2buf(message, "utf8"), crypto.randomBytes(64));
     }
 

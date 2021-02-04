@@ -213,7 +213,7 @@ describe("KeyManager", () => {
             let keyStorage = keyMan.getKeyStorage();
 
             assert.strictEqual(typeof keyStorage, "object");
-            expect(keyStorage).to.have.property('publicKeyId');
+            expect(keyStorage).to.have.property('address');
             expect(keyStorage).to.have.property('crypto');
         });
         it('should fail if key is locked', async () => {
