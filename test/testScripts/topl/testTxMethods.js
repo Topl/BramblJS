@@ -112,7 +112,46 @@ const rawAssetParams = {
   "fee": 1
 };
 
-requests.createRawAssetTransfer(rawAssetParams)
-  .then((res) => signAndBroadcastPromise(res.result))
-  .then((res) => console.log(res))
-  .catch((e) => console.error(e));
+// requests.createRawAssetTransfer(rawAssetParams)
+//   .then((res) => signAndBroadcastPromise(res.result))
+//   .then((res) => console.log(res))
+//   .catch((e) => console.error(e));
+
+
+brambl.keyManager.exportToFile();
+
+
+  /**
+   * 
+   * sample using Bifrost key
+   * {
+  "crypto" : {
+    "mac" : "BWce2BZsgD37xXWJrHcBD27sNea3RoFDbAqjEP6tZdmj",
+    "kdf" : "scrypt",
+    "cipherText" : "3tMNiXDwD8ScHEkLSvPJLE3VBajba8HaFf3QH9VJXFoS94EeEota2XTpYNjCHhFigEHUuXeST8Caz2UC1MXVrpdw",
+    "kdfSalt" : "FaDyEtCtrCWnGhdYCA6R4nCtvweitzkNqLXegiv61gaZ",
+    "cipher" : "aes-128-ctr",
+    "cipherParams" : {
+      "iv" : "9Mh54cxRL6V3WW8dUEmuCg"
+    }
+  },
+  "address" : "AUA49tgkkwbEQmp9BKZKr9feYrR1aHYRuy3PgRbKcPhWSKPYkoqB"
+}
+   */
+
+   /**
+    * {
+    
+    "crypto": {
+      "mac": "9wGhRwvBmnjMNe9wEuzDarg2ftDJUDNjeMtWagqtdTLJ",
+      "kdf": "scrypt",
+      "kdfSalt": "BNLif6w9SKbwmxGKqY1MxZg7jAWn2TFQ9MLTzx4wZXo6"
+      "cipher": "aes-256-ctr",
+      "cipherText": "32bYotD2m2tR9BLjSQUG6NVGkYVTm3LKmBHPzHMKKpnmVAtyG5mrHAWNR8VDfyvnw8bZvfL3ipKuxKtNcgS6A2La",
+      "cipherParams": {
+        "iv": "9P334YkqeegQ1AGx41XjdL"
+      }
+    },
+    "address": "5htj2h3iSVAKkdA783xZmUrvyEfLGt9dDp93pv8keruy"
+  }
+    */

@@ -150,6 +150,40 @@ function validateAddressesByNetwork(networkPrefix, addresses){
   return result;
 }
 
+function generateAddress(publicKey, networkPrefix) {
+  let result = {
+    success: false,
+    errorMsg: "",
+    networkPrefix: networkPrefix,
+    address: "",
+  };
+
+  // validate the networkPrefix?
+  if(!isValidNetwork(networkPrefix)){
+    result.errorMsg = "Invalid network provided";
+    return result;
+  }
+
+  // validate the pk?
+  if(publicKey.length !== 32){
+    result.errorMsg = "Invalid publicKey length";
+    return result;
+  }
+
+  // include evidence with network prefix and multisig
+  const networkHex = getHexByNetwork(networkPrefix);
+  const multisig = new Uint8Array([networkHex, '0x01']); // network decimal + multisig
+  const concatEvidence = Buffer.concat([multisig, publicKey], 34); // insert the publicKey
+
+  // get the hash of these 2, add first 4 bytes to the end.
+  const hashChecksumBuffer = blake.createHash("blake2b", {digestLength:32}).update(concatEvidence).end().read().slice(0, 4);
+  const address = Buffer.concat([concatEvidence, hashChecksumBuffer], 38);
+
+  result.address = Base58.encode(address);
+  result.success = true;
+  return result;
+}
+
 function extractAddressesFromObj(obj){
   /**
    params =
@@ -274,4 +308,4 @@ function getValidNetworksList(networkPrefix) {
 //   }
 // };
 
-module.exports = {isValidNetwork, getUrlByNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList, validateAddressesByNetwork};
+module.exports = {isValidNetwork, getUrlByNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList, validateAddressesByNetwork, generateAddress};

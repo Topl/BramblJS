@@ -18,12 +18,13 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const curve25519 = require("curve25519-js");
+const Base58 = require("base-58");
 const {create, dump, recover, str2buf, generateKeystoreFilename} = require("../utils/key-utils.js");
 
 // utils
 const utils = require("../utils/address-utils.js");
 
-// Default options for key generation as of 2020.01.25
+// Default options for key generation as of 2021.02.04
 const defaultOptions = {
   // Symmetric cipher for private key encryption
   cipher: "aes-256-ctr",
@@ -40,7 +41,10 @@ const defaultOptions = {
     n: Math.pow(2, 18), // cost (as given in bifrost)
     r: 8, // blocksize
     p: 1 // parallelization
-  }
+  },
+
+  // networkPrefix
+  networkPrefix: "local"
 };
 
 /* -------------------------------------------------------------------------- */
@@ -82,11 +86,14 @@ class KeyManager {
         this.#keyStorage = keyStorage;
         if (this.#address){
           const temp = recover(password, keyStorage, this.constants.scrypt);//TODO: look for a way to avoid having this in mem
-          [this.#sk, this.#pk] = recover(password, keyStorage, this.constants.scrypt);
-          this.#sk = temp.slice(0,32);
-          this.#pk = temp.slice(33);
-          console.log(this.#sk);
-          console.log(this.#pk);
+          //[this.#sk, this.#pk] = recover(password, keyStorage, this.constants.scrypt);
+          console.log(temp);
+          this.#sk = Base58.encode(temp.slice(0, 32));
+          this.#pk = Base58.encode(temp.slice(32));
+          // this.#sk = temp.slice(0,32);
+          // this.#pk = temp.slice(32);
+          // console.log(this.#sk.length);
+          // console.log(this.#pk.length);
         }
       };
 
@@ -106,6 +113,10 @@ class KeyManager {
 
       // set networkPrefix and validate
       this.#networkPrefix = params.networkPrefix || "local";
+
+      //ensure constant include this.#networkPrefix for key creation
+      this.constants.networkPrefix = this.#networkPrefix;
+
       if(this.#networkPrefix !== "local" && !utils.isValidNetwork(this.#networkPrefix)){
         throw new Error(`Invalid Network Prefix. Must be one of: ${utils.getValidNetworksList()}`);
       }

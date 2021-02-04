@@ -16,6 +16,8 @@ const Base58 = require("base-58");
 const keccakHash = require("keccak");
 const curve25519 = require("curve25519-js");
 
+const utils = require("../utils/address-utils.js");
+
 /* ------------------------------ Generic key utils  ------------------------------ */
 
 /**
@@ -166,26 +168,30 @@ function deriveKey(password, salt, kdfParams) {
  * @param {Buffer} algo encryption algorithm to be used
  * @returns {Object} key data object in secret-storage format
  */
-function marshal(derivedKey, keyObject, salt, iv, algo) {
+function marshal(derivedKey, keyObject, salt, iv, algo, network) {
   // encrypt using last 16 bytes of derived key (this matches Bifrost)
   const concatKeys = Buffer.concat([keyObject.privateKey, keyObject.publicKey], 64);
   const ciphertext = encrypt(concatKeys, derivedKey, iv, algo);
 
+  // generate address
+  const createAddress = utils.generateAddress(keyObject.publicKey, network);
+  if(createAddress && !createAddress.success){
+    throw new Error(createAddress.errorMsg);
+  }
   const keyStorage = {
     //for cipher: encryption of public + private key
     //publicKeyId: Base58.encode(keyObject.publicKey),
-    address: Base58.encode(keyObject.publicKey),//TODO: specify network to be used at (RA: create address using address-utils)
+    //address: Base58.encode(keyObject.publicKey),//TODO: specify network to be used at (RA: create address using address-utils)
+    address: createAddress.address,
     crypto: {
-      cipher: algo,
+      mac: Base58.encode(getMAC(derivedKey, ciphertext)),
+      kdf: "scrypt",
       cipherText: Base58.encode(ciphertext),
-      cipherParams: {iv: Base58.encode(iv)},
-      mac: Base58.encode(getMAC(derivedKey, ciphertext))
+      kdfSalt: Base58.encode(salt),
+      cipher: algo,
+      cipherParams: {iv: Base58.encode(iv)}
     }
   };
-
-  //TODO is this needed? Add them to the json body in :181
-  keyStorage.crypto.kdf = "scrypt";
-  keyStorage.crypto.kdfSalt = Base58.encode(salt);
 
   return keyStorage;
 }
@@ -204,7 +210,7 @@ function dump(password, keyObject, options) {
   const privateKey = str2buf(keyObject.privateKey);
   const publicKey = str2buf(keyObject.publicKey);
 
-  return marshal(deriveKey(password, salt, kdfParams), {privateKey, publicKey}, salt, iv, options.cipher);
+  return marshal(deriveKey(password, salt, kdfParams), {privateKey, publicKey}, salt, iv, options.cipher, options.networkPrefix);
 }
 
 /**
