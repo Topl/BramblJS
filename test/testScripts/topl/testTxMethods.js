@@ -4,7 +4,7 @@ const Brambl = require("../../../src/Brambl");
 const Requests = require("../../../src/modules/Requests");
 const requests = new Requests("private");
 
-// const KeyManager = require("../../../src/modules/KeyManager");
+const KeyManager = require("../../../src/modules/KeyManager");
 // const keyManager = new KeyManager("private");
 
 
@@ -127,10 +127,23 @@ const rawAssetParams = {
 //   .catch((e) => console.error(e));
 
 /* ---------------------- Get Block by Height ------------------------ */
-brambl.requests.getBlockByHeight({"height": 3})
-.then((res) => console.log(res))
-.catch((e) => console.error(e));
+// brambl.requests.getBlockByHeight({"height": 3})
+// .then((res) => console.log(res))
+// .catch((e) => console.error(e));
 
+
+/* ---------------------- Import Keyfile from BramblSc ------------------------ */
+// brambl.requests.getBlockByHeight({"height": 3})
+// .then((res) => console.log(res))
+// .catch((e) => console.error(e));
+
+const keyfilePath = ".keyfiles/brambl-sc-key1.json";
+let keyManTest = new KeyManager({
+  'keyPath':keyfilePath,
+  'password': "tmp",
+  'networkPrefix': "local"
+});
+//password in tmp and the network is 'local'
 
   /**
    *
