@@ -8,10 +8,10 @@ const requests = new Requests("private");
 // const keyManager = new KeyManager("private");
 
 
-
-// my local bifrost is set to Private Network
+/* ---------------------- Create Raw Asset Trasfer ------------------------ */
+// my local bifrost is set to Private Network:
 //AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE
-// this is a local network address
+// this is a local network address:
 //86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz
 const rawAssetParams1 = {
   "propositionType": "PublicKeyCurve25519",
@@ -26,11 +26,21 @@ const rawAssetParams1 = {
   "minting": true,
   "fee": 1
 };
+/**
+ * for
+  securityRoot : base58 enconded string  [32 bytes]   hash output of blake2b
+  metadata : 128 byte string UTF8
+
+  make asset and tag asset
+  metadata is an davanced feature
+ */
 
 // requests.createRawAssetTransfer(rawAssetParams)
 //   .then((res) => console.log(res))
 //   .catch((e) => console.error(e));
 
+
+/* ---------------------- Create Raw Poly Trasfer ------------------------ */
 const rawPolyParams = {
   "propositionType": "PublicKeyCurve25519",
   "recipients": [
@@ -46,8 +56,7 @@ const rawPolyParams = {
 //   .then((res) => console.log(res))
 //   .catch((e) => console.error(e));
 
-//86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz
-
+/* ---------------------- Create Raw Arbit Trasfer ------------------------ */
 const rawArbitParams = {
   "propositionType": "PublicKeyCurve25519",
   "recipients": [["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE", 10]],
@@ -63,42 +72,28 @@ const rawArbitParams = {
 //   .catch((e) => console.error(e));
 
 
-
-
-//for 
-  //securityRoot : base58 enconded string  [32 bytes]   hash output of blake2b
-  //metadata : 128 byte string UTF8
-
-//make asset and tag asset
-// metadata is an davanced feature
-
-
-
-
+/* ---------------------- Get Latest Block ------------------------ */
 // requests.getLatestBlock()
 //   .then((res) => console.log(res))
 //   .catch((e) => console.error(e));
 
-
-  //blockID vLaNRGVjCMJR6yXoxzq5UXwzioKBSjiDasGCZD7iFRTw
-
-
-
+/* ---------------------- Lookup Balances By Key ------------------------ */
 // requests.lookupBalancesByKey({addresses:["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE"]})
 //   .then((res) => console.log(res))
 //   .catch((e) => console.error(e));
 
-
+/* ---------------------- Get Mem Pool ------------------------ */
 // requests.getMempool()
 //   .then((res) => console.log(res))
 //   .catch((e) => console.error(e));
 
 
+/* ---------------------- Create Asset + Sign and Broadcast Tx ------------------------ */
 //const keyManager = BramblJS.KeyManager();
 //const keyMan = new KeyManager({networkPrefix:"private", password:"topl_the_world!"});
 
 // [keyManager.pk, 4, "5Jrbs2qVvXEtLpshpR7dLsSPmsgJLYU5nUiQftyoZYL3","as"],
-//     [keyManager.pk, 3, "5Jrbs2qVvXEtLpshpR7dLsSPmsgJLYU5nUiQftyoZYL3"],
+// [keyManager.pk, 3, "5Jrbs2qVvXEtLpshpR7dLsSPmsgJLYU5nUiQftyoZYL3"],
 
 const brambl = new Brambl({networkPrefix:"private", password:"topl_the_world!"});
 
