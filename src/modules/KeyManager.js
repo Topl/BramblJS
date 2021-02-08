@@ -86,8 +86,6 @@ class KeyManager {
 
         if (this.#address){
           [this.#sk, this.#pk] = recover(password, keyStorage, this.constants.scrypt);
-          // console.log(this.#sk);
-          // console.log(this.#pk);
         }
       };
 
@@ -99,6 +97,7 @@ class KeyManager {
       // Imports key data object from keystore JSON file.
       const importFromFile = (filepath, password) => {
         const keyStorage = JSON.parse(fs.readFileSync(filepath));
+        //TODO: check address has valid network and it was instantiated correctly.
         initKeyStorage(keyStorage, password);
       };
 

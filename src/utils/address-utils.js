@@ -31,17 +31,17 @@ const networksDefaults = {
   'toplnet': {
     hex: "0x01",
     decimal: 1,
-    url: "https:\\torus.topl.services"
+    url: "https://torus.topl.services"
   },
   'valhalla': {
     hex: "0x10",
     decimal: 16,
-    url: "https:\\valhalla.torus.topl.services"
+    url: "https://valhalla.torus.topl.services"
   },
   'hel': {
     hex: "0x20",
     decimal: 32,
-    url: "https:\\hel.torus.topl.services"
+    url: "https://hel.torus.topl.services"
   }
 };
 
@@ -172,8 +172,10 @@ function generateAddress(publicKey, networkPrefix) {
 
   // include evidence with network prefix and multisig
   const networkHex = getHexByNetwork(networkPrefix);
-  const multisig = new Uint8Array([networkHex, '0x01']); // network decimal + multisig
-  const concatEvidence = Buffer.concat([multisig, publicKey], 34); // insert the publicKey
+  const netSigBytes = new Uint8Array([networkHex, '0x01']); // network decimal + multisig
+  const evidence = blake.createHash("blake2b", {digestLength: 32}).update(publicKey).digest(); //hash it
+
+  const concatEvidence = Buffer.concat([netSigBytes, evidence], 34); // insert the publicKey
 
   // get the hash of these 2, add first 4 bytes to the end.
   const hashChecksumBuffer = blake.createHash("blake2b", {digestLength:32}).update(concatEvidence).end().read().slice(0, 4);

@@ -45,7 +45,7 @@ function isCipherAvailable(cipher) {
 }
 
 /**
- * Symmetric private key encryption using secret (derived) key.
+ * Symmetric privateKey + secretKey encryption using secret (derived) key.
  * @param {Buffer|string} plaintext Data to be encrypted.
  * @param {Buffer|string} key Secret key.
  * @param {Buffer|string} iv Initialization vector.
@@ -61,9 +61,9 @@ function encrypt(plaintext, key, iv, algo) {
 }
 
 /**
- * Symmetric private key decryption using secret (derived) key.
+ * Symmetric privateKey + secretKey decryption using secret (derived) key.
  * @param {Buffer|string} ciphertext Data to be decrypted.
- * @param {Buffer|string} key Secret key.
+ * @param {Buffer|string} key derived key.
  * @param {Buffer|string} iv Initialization vector.
  * @param {string=} algo Encryption algorithm (default: constants.cipher).
  * @returns {Buffer} Decrypted data.
@@ -77,7 +77,7 @@ function decrypt(ciphertext, key, iv, algo) {
 
 /**
  * Calculate message authentication code from secret (derived) key and
- * encrypted text.  The MAC is the keccak-256 hash of the byte array
+ * encrypted text. The MAC is the keccak-256 hash of the byte array
  * formed by concatenating the second 16 bytes of the derived key with
  * the ciphertext key's contents.
  * @param {Buffer|string} derivedKey Secret key derived from password.
@@ -85,9 +85,9 @@ function decrypt(ciphertext, key, iv, algo) {
  * @returns {string} Base58-encoded MAC.
  */
 function getMAC(derivedKey, ciphertext) {
-  const keccak256 = (msg) => keccakHash("keccak256").update(msg).digest();
+  const blake2b = (msg) => blake.createHash("blake2b", {digestLength: 32}).update(msg).digest();
   if (derivedKey !== undefined && derivedKey !== null && ciphertext !== undefined && ciphertext !== null) {
-    return keccak256(Buffer.concat([
+    return blake2b(Buffer.concat([
       str2buf(derivedKey).slice(16, 32),
       str2buf(ciphertext)
     ]));
@@ -234,8 +234,7 @@ function recover(password, keyStorage, kdfParams) {
     if (!getMAC(derivedKey, ciphertext).equals(mac)) {
       throw new Error("message authentication code mismatch");
     }
-    return decrypt(ciphertext, derivedKey, iv, algo); //TODO: [(0,32), (32)] - what was this??
-    //return decrypt(ciphertext, derivedKey, iv, algo);
+    return decrypt(ciphertext, derivedKey, iv, algo);
   }
 
   const iv = str2buf(keyStorage.crypto.cipherParams.iv);
