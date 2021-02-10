@@ -3,17 +3,17 @@
  *
  * @author Raul Aragonez (r.aragonez@topl.me)
  *
- * @exports utils isValidNetwork, getUrlByNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList
+ * @exports utils isValidNetwork, getUrlByNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList, validateAddressesByNetwork, generateAddress
  */
 
 "use strict";
 
 // Dependencies
-const blake = require("blake2");
-const crypto = require("crypto");
 const Base58 = require("base-58");
-const keccakHash = require("keccak");
-const curve25519 = require("curve25519-js");
+const blake = require("blake2");
+//const crypto = require("crypto");
+//const keccakHash = require("keccak");
+//const curve25519 = require("curve25519-js");
 
 const validNetworks = ['local', 'private', 'toplnet', 'valhalla', 'hel'];
 
@@ -91,7 +91,7 @@ function validateAddressesByNetwork(networkPrefix, addresses){
     invalidAddresses: []
   };
 
-  // check if network is valid first
+  // check if network is valid
   if(!isValidNetwork(networkPrefix)){
     result.errorMsg = "Invalid network provided";
     return result;
@@ -105,7 +105,7 @@ function validateAddressesByNetwork(networkPrefix, addresses){
   // get decimal of the network prefix
   const networkDecimal = getDecimalByNetwork(networkPrefix);
 
-  // addresses can be passed as an array or extracted from an json obj
+  // addresses can be passed as an array or extracted from a json obj
   result.addresses = addresses.constructor === Array ? addresses : extractAddressesFromObj(addresses);
 
   // check if addresses were obtained
@@ -116,15 +116,13 @@ function validateAddressesByNetwork(networkPrefix, addresses){
 
   // run validation on addresses, if address is not valid then add it to invalidAddresses array
   result.addresses.forEach(address => {
-    // decode base58 address
     const decodedAddress = Base58.decode(address);
-    //console.log(decodedAddress)
 
-    //validation: base58 38 byte obj that matches networkPrefix decimal
+    // validation: base58 38 byte obj that matches networkPrefix decimal
     if(decodedAddress.length !== 38 || decodedAddress[0] !== networkDecimal){
       result.invalidAddresses.push(address);
     } else {
-      // address has correct length and matches the network, now validate the chacksum
+      // address has correct length and matches the network, now validate the checksum
       const checksumBuffer = Buffer.from(decodedAddress.slice(34));
 
       // encrypt message (bytes 1-34)
@@ -145,8 +143,10 @@ function validateAddressesByNetwork(networkPrefix, addresses){
     result.success = true;
   }
 
+  // TODO: Remove this console logs.
   console.log("Addresses validation result: ");
   console.log(result);
+
   return result;
 }
 
@@ -158,13 +158,13 @@ function generateAddress(publicKey, networkPrefix) {
     address: "",
   };
 
-  // validate the networkPrefix?
+  // validate Network Prefix
   if(!isValidNetwork(networkPrefix)){
     result.errorMsg = "Invalid network provided";
     return result;
   }
 
-  // validate the pk?
+  // validate public key
   if(publicKey.length !== 32){
     result.errorMsg = "Invalid publicKey length";
     return result;
@@ -173,7 +173,7 @@ function generateAddress(publicKey, networkPrefix) {
   // include evidence with network prefix and multisig
   const networkHex = getHexByNetwork(networkPrefix);
   const netSigBytes = new Uint8Array([networkHex, '0x01']); // network decimal + multisig
-  const evidence = blake.createHash("blake2b", {digestLength: 32}).update(publicKey).digest(); //hash it
+  const evidence = blake.createHash("blake2b", {digestLength: 32}).update(publicKey).digest(); // hash it
 
   const concatEvidence = Buffer.concat([netSigBytes, evidence], 34); // insert the publicKey
 

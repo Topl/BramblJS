@@ -255,7 +255,6 @@ function keysEncodedFormat(keysBuffer) {
   if(keysBuffer.length !== 64){
     throw new Error("Invalid keysBuffer.");
   }
-  // [sk, pk]
   return [Base58.encode(keysBuffer.slice(0, 32)), Base58.encode(keysBuffer.slice(32))];
 }
 
