@@ -258,7 +258,7 @@ describe("KeyManager", () => {
                 keyMan.sign([]);
             }, Error, 'Error: Key manager is currently locked. Please unlock and try again.');
         });
-        it('should padd if message is a string', async () => {
+        it('should pass if message is a string', async () => {
             // ensure key is properly unlocked
             keyMan.lockKey();
             keyMan.unlockKey("password_test");

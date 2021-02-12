@@ -1,5 +1,6 @@
 /**
  * @author James Aman (j.aman@topl.me)
+ * @author Raul Aragonez (r.aragonez@topl.me)
  * @version 3.0.0
  * @date 2020.4.03
  **/
@@ -22,10 +23,6 @@ const pollTx = require("./lib/polling");
 
 // Constants definitions
 const validTxMethods = [
-  "createAssetsPrototype",
-  "transferAssetsPrototype",
-  "transferTargetAssetsPrototype",
-
   "createRawArbitTransfer",
   "createRawAssetTransfer",
   "createRawPolyTransfer"
@@ -45,7 +42,7 @@ const validTxMethods = [
  * @requires KeyManager
  */
 class Brambl {
-  // Private variables
+  // private variables
   #networkPrefix;
 
   /**
@@ -104,8 +101,7 @@ class Brambl {
       });
     }
 
-    // If KeyManager and Requests instances were not created by Brambl class
-    // then verify that both have a matching NetworkPrefix
+    // If KeyManager and Requests instances were not created by Brambl class verify that both have a matching NetworkPrefix
     if (this.#networkPrefix !== this.requests.networkPrefix || this.#networkPrefix !== this.keyManager.networkPrefix){
       throw new Error("Incompatible network prefixes set for Requests and KeyManager Instances.");
     }
@@ -137,23 +133,25 @@ class Brambl {
     * Method for creating a separate Requests instance
     * @static
     *
+    * @param {string} [networkPrefix="local"] Network Prefix, defaults to "local"
     * @param {string} [url="http://localhost:9085/"] Chain provider location
     * @param {string} [apiKey="topl_the_world!"] Access key for authorizing requests to the client API
     * @returns {object} new Requests instance
     * @memberof Brambl
     */
-  static Requests(url, apiKey) {
-    return new Requests(url, apiKey);
+  static Requests(networkPrefix, url, apiKey) {
+    return new Requests(networkPrefix, url, apiKey);
   }
 
   /**
     * Method for creating a separate KeyManager instance
     * @static
     *
-    * @param {object} params constructor object for key manager
-    * @param {string} params.password password for encrypting (decrypting) the keyfile
-    * @param {string} [params.path] path to import keyfile
+    * @param {object} params constructor object for key manager or as a string password
+    * @param {string} [params.password] password for encrypting (decrypting) the keyfile
+    * @param {string} [params.keyPath] path to import keyfile
     * @param {object} [params.constants] default encryption options for storing keyfiles
+    * @param {string} [params.networkPrefix] Network Prefix, defaults to "local"
     * @returns {object} new KeyManager instance
     * @memberof Brambl
     */

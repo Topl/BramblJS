@@ -18,7 +18,6 @@
 
 "use strict";
 
-// Dependencies
 const fetch = require("node-fetch");
 const utils = require("../utils/address-utils.js");
 const Base58 = require("base-58");
@@ -49,15 +48,8 @@ async function bramblRequest(routeInfo, params, self) {
       url: self.url + route,
       method: "POST",
       headers: self.headers,
-      //body: body
       body: JSON.stringify(body)
     };
-    console.log("-------body and payload ---------");
-    console.log(body.params[0].tx);
-    console.log(payload);
-    console.log("---------------------------------");
-
-
     const response = await (await fetch(self.url + route, payload)).json();
     if (response.error) {
       throw response;
@@ -117,6 +109,7 @@ class Requests {
   setApiKey(apiKey) {
     this.headers["x-api-key"] = apiKey;
   }
+
   /* -------------------------------------------------------------------------- */
   /*                             Topl Api Routes                                */
   /* -------------------------------------------------------------------------- */
@@ -148,11 +141,9 @@ class Requests {
     if (!params.sender) {
       throw new Error("An asset sender must be specified");
     }
-
-    
     if (!params.assetCode) {
       throw new Error("An assetCode must be specified");
-    } 
+    }
     //TODO: add validation - 47 bytes MAX ( 1 version, 38 issuer address, and up to 8 for a name) = 94 chars
     //TODO: add validation - 40 bytes MIN ( 1 version, 38 issuer address, and up to 1 for a name) = 80 chars
     // else if (params.assetCode.length < 80 || params.assetCode.length > 94) {
@@ -354,7 +345,7 @@ class Requests {
     return bramblRequest({route, method, id}, params, this);
   }
 
-  /* --------------------------------- broadcastTx --------------------------------------- */
+  /* --------------------------------- Broadcast Tx --------------------------------------- */
   /**
    * Have the node sign a `messageToSign` raw transaction
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -383,6 +374,7 @@ class Requests {
     return bramblRequest({route, method, id}, params, this);
   }
 
+  /* --------------------------------- Get Latest Block --------------------------------------- */
   /**
    * Return the chain information
    * @param {string} [id="1"] - identifying number for the json-rpc request
@@ -396,7 +388,7 @@ class Requests {
     return bramblRequest({route, method, id}, params, this);
   }
 
-
+  /* --------------------------------- Lookup Balances By Key --------------------------------------- */
   /**
    * Get the balances of a specified public key in the keyfiles directory of the node
    * @param {Object} params - body parameters passed to the specified json-rpc method
@@ -417,7 +409,7 @@ class Requests {
     return bramblRequest({route, method, id}, params, this);
   }
 
-  /* ----------------------------- getMempool ------------------------------------ */
+  /* ----------------------------- Get Mempool ------------------------------------ */
   /**
    * Return the entire mempool of the node
    * @param {string} [id="1"] - identifying number for the json-rpc request
@@ -431,7 +423,7 @@ class Requests {
     return bramblRequest({route, method, id}, params, this);
   }
 
-  /* -------------------------- getTransactionById ---------------------------- */
+  /* -------------------------- Get Tx By Id ---------------------------- */
   /**
    * Lookup a transaction from history by the provided id
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -452,7 +444,7 @@ class Requests {
     return bramblRequest({route, method, id}, params, this);
   }
 
-  /* -------------------------- getTransactionFromMempool ---------------------------- */
+  /* -------------------------- Get Tx From Mempool ---------------------------- */
   /**
    * Lookup a transaction from the mempool by the provided id
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -473,7 +465,7 @@ class Requests {
     return bramblRequest({route, method, id}, params, this);
   }
 
-  /* ----------------------------- getBlockById --------------------------------- */
+  /* ----------------------------- Get Block By Id --------------------------------- */
   /**
    * Lookup a block from history by the provided id
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -494,8 +486,7 @@ class Requests {
     return bramblRequest({route, method, id}, params, this);
   }
 
-
-  /* ----------------------------- getBlockByHeight --------------------------------- */
+  /* ----------------------------- Get Block By Height --------------------------------- */
   /**
    * Lookup a block from history by the provided id
    * @param {object} params - body parameters passed to the specified json-rpc method
@@ -526,7 +517,5 @@ class Requests {
 }
 
 /* -------------------------------------------------------------------------- */
-
 module.exports = Requests;
-
 /* -------------------------------------------------------------------------- */

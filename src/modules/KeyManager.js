@@ -69,7 +69,7 @@ class KeyManager {
      * @constructor
      * @param {object} params constructor object for key manager or as a string password
      * @param {string} [params.password] password for encrypting (decrypting) the keyfile
-     * @param {string} [params.path] path to import keyfile
+     * @param {string} [params.keyPath] path to import keyfile
      * @param {object} [params.constants] default encryption options for storing keyfiles
      * @param {string} [params.networkPrefix] Network Prefix, defaults to "local"
      */
@@ -138,7 +138,6 @@ class KeyManager {
      * @param {Buffer|string} publicKey A public key (if string, must be base-58 encoded)
      * @param {string} message Message to sign (utf-8 encoded)
      * @param {Buffer|string} signature Signature to verify (if string, must be base-58 encoded)
-     * @param {function=} cb Callback function (optional).
      * @returns {function} returns function Verify
      * @memberof KeyManager
      */
