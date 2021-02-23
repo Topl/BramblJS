@@ -58,8 +58,41 @@ console.log(signedKey);
 let dirPath = "../keyfiles-sample-dir"
 keyMan.exportToFile(dirPath); // defaults to ./.keyfiles
 
+// check if key is locked
+keyMan.isLocked();
+
 // lock key
 keyMan.lockKey();
+
+// unlock key
+keyMan.unlockKey();
+
+// retrieve public key
+keyMan.pk();
+
+// Generate the signature of a message using the provided private key
+// optional, it is recommended to use brambl.signAndBroadcast(tx) instead
+keyMan.sign(message);
+
+// Create Raw Asset Transfer and sign Tx
+const signAndBroadcastPromise = (tx) => brambl.signAndBroadcast(tx);
+
+const rawAssetParams = {
+  "propositionType": "PublicKeyCurve25519",
+  "recipients": [
+    ["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE", 2]
+  ],
+  "assetCode": "AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE",
+  "sender": ["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE"],
+  "changeAddress": "AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE",//brambl.keyManager.pk
+  "minting": true,
+  "fee": 1
+};
+
+brambl.requests.createRawAssetTransfer(rawAssetParams)
+  .then((res) => signAndBroadcastPromise(res.result))
+  .then((res) => console.log(res))
+  .catch((e) => console.error(e));
 
 /* -------------------------------------------------------------------------- */
 /*                                Requests                                    */
@@ -77,6 +110,22 @@ const requests = new Requests("private");
 // Optional url and apiKey can be provided
 const requests = new Requests("private", "http://localhost:9085/");
 const requests = new Requests("private", "http://localhost:9085/", "topl_the_world!");
+
+// url can be set during instantiation or set using setUrl()
+requests.setUrl("http://test.url.net:6969");
+
+// apiKey can be set during instantiation or set using setApiKey()
+requests.setApiKey("new_key!");
+
+//TODO: 
+requests.createRawAssetTransfer();
+
+requests.createRawPolyTransfer();
+
+requests.createRawArbitTransfer();
+
+requests.getBlockByHeight();
+
 
 
 /* -------------------------------------------------------------------------- */

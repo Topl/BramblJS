@@ -11,9 +11,6 @@
 // Dependencies
 const Base58 = require("base-58");
 const blake = require("blake2");
-//const crypto = require("crypto");
-//const keccakHash = require("keccak");
-//const curve25519 = require("curve25519-js");
 
 const validNetworks = ['local', 'private', 'toplnet', 'valhalla', 'hel'];
 
@@ -50,6 +47,9 @@ function str2buf(str, enc) {
   return enc ? Buffer.from(str, enc) : Buffer.from(Base58.decode(str));
 }
 
+
+// TODO: include errors if the addresses are not valid. Include queue.
+
 /**
  * Check if addresses are valid by verifying these belong to the same network.
  * @param {String} networkPrefix
@@ -82,7 +82,7 @@ function str2buf(str, enc) {
    * }
    */
 function validateAddressesByNetwork(networkPrefix, addresses){
-  // this is the response we are providing upon the completion of the validation
+  // response upon the completion of validation
   let result = {
     success: false,
     errorMsg: "",
@@ -201,8 +201,7 @@ function extractAddressesFromObj(obj){
     };
    */
 
-   // only push unique items in array, so that validation is faster
-
+  // only push unique items in array, so that validation is faster
   let addresses = [];
   if (obj.constructor === String){
     return obj;
@@ -213,8 +212,17 @@ function extractAddressesFromObj(obj){
   // }
 
   // make this parser a bit faster, use strings or array logic
-  var keys = ["recipients", "sender", "changeAddress", "consolidationAdddress", "addresses"]
+  var addKeys = ["recipients", "sender", "changeAddress", "consolidationAdddress", "addresses"]
 
+  // addKeys.forEach(addKey => {
+  //   if(obj[addKey]){
+  //     if(addKey === 'recipient'){
+
+  //     } else {
+  //       addresses.concat(obj[addKey]);
+  //     }
+  //   }
+  // });
 
   if(obj['changeAddress']){
    addresses.push(obj["changeAddress"]);
@@ -240,7 +248,6 @@ function extractAddressesFromObj(obj){
   }
   //console.log("addresses list: "+ addresses);
   return addresses;
-  
 }
 /*** ------  TESTING FOR RAUL -------*/
 
