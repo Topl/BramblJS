@@ -9,13 +9,6 @@
  * Based on the original work of Yamir Tainwala - 2019
  */
 
-//TODO:
-// DONE add network prefix here... as optional, specially when coming from Brambl
-// DONE network prefix should map url to be used... as defaults
-// DONE users have the option to include different urls
-// DONE add util script to check for prefix in all addresses.
-// DONE check addresses on all operations which have recipients, sender, changeaddress and consolidaitonadddress
-
 "use strict";
 
 const fetch = require("node-fetch");
@@ -173,7 +166,8 @@ class Requests {
     if(!validationResult.success){
       throw new Error("Invalid Addresses::"
         + " Network Type: <" + this.networkPrefix + ">"
-        + " Addresses: <" + validationResult.invalidAddresses + ">");
+        + " Invalid Addresses: <" + validationResult.invalidAddresses + ">"
+        + " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
     }
 
     // Include token value holder as tuple format
@@ -265,7 +259,8 @@ class Requests {
     if(!validationResult.success){
       throw new Error("Invalid Addresses::"
         + " Network Type: <" + this.networkPrefix + ">"
-        + " Addresses: <" + validationResult.invalidAddresses + ">");
+        + " Invalid Addresses: <" + validationResult.invalidAddresses + ">"
+        + " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
     }
 
     params.recipients.forEach(recipient => {
@@ -330,7 +325,8 @@ class Requests {
     if(!validationResult.success){
       throw new Error("Invalid Addresses::"
         + " Network Type: <" + this.networkPrefix + ">"
-        + " Addresses: <" + validationResult.invalidAddresses + ">");
+        + " Invalid Addresses: <" + validationResult.invalidAddresses + ">"
+        + " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
     }
 
     params.recipients.forEach(recipient => {

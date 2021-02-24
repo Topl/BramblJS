@@ -7,10 +7,9 @@
  *
  * @module KeyManager
  *
- * Based on the keythereum library from Jack Peterson
- * https://github.com/Ethereumjs/keythereum
  */
 
+ // Initial implementation of this lib isBased on the keythereum library from Jack Peterson https://github.com/Ethereumjs/keythereum
 "use strict";
 
 // Dependencies

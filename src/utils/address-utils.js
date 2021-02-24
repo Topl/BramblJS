@@ -55,32 +55,11 @@ function str2buf(str, enc) {
  * @param {String} networkPrefix
  * @param {Object} params
  * @param {Array} addresses
+ * 1. verify the address is not null
+ * 2. verify the base58 is 38 bytes long
+ * 3. verify that it matches the network
+ * 4. verify that hash matches the last 4 bytes
  */
-/**
-   * 1. verify the address is not null - DONE
-   * 2. verify the base58 is 38 bytes long
-   * 3. verify that it matches the network
-   * 4. verify that hash matches the last 4 bytes?
-   * 5. verify that address is multi-sig vs uni-sig? NO
-   *
-   * return an object
-   * {
-   *  success: true,
-   *  errorMsg: "",
-   *  networkPrefix: "local",
-   *  addresses:
-   *  [
-  *     {
-            "address": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
-            "network": "local"
-        },
-        {
-            "address": "77tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
-            "network": "valhalla"
-        }
-   *  ]
-   * }
-   */
 function validateAddressesByNetwork(networkPrefix, addresses){
   // response upon the completion of validation
   let result = {
@@ -88,7 +67,8 @@ function validateAddressesByNetwork(networkPrefix, addresses){
     errorMsg: "",
     networkPrefix: networkPrefix,
     addresses: [],
-    invalidAddresses: []
+    invalidAddresses: [],
+    invalidChecksums: []
   };
 
   // check if network is valid
@@ -131,14 +111,16 @@ function validateAddressesByNetwork(networkPrefix, addresses){
 
       // verify checksum bytes match
       if(!checksumBuffer.equals(hashChecksumBuffer)){
-        result.invalidAddresses.push(address);
+        result.invalidChecksums.push(address);
       }
     }
   });
 
   // check if any invalid addresses were found
   if(result.invalidAddresses.length > 0){
-    result.errorMsg = "Invalid addresses for network: " + networkPrefix
+    result.errorMsg = "Invalid addresses for network: " + networkPrefix;
+  } else if (result.invalidChecksums.length > 0) {
+    result.errorMsg = "Addresses with invalid checksums found.";
   } else {
     result.success = true;
   }
@@ -187,83 +169,29 @@ function generateAddress(publicKey, networkPrefix) {
 }
 
 function extractAddressesFromObj(obj){
-  /**
-   params =
-    {
-        "propositionType": "PublicKeyCurve25519",
-        "changeAddress": "899tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
-        "consolidationAdddress": "899tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
-        "recipients": [["899tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz", 10]],
-        "sender": ["899tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz"],
-        "addresses": ["899tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz"],
-        "fee": 1,
-        "data": ""
-    };
-   */
-
   // only push unique items in array, so that validation is faster
   let addresses = [];
   if (obj.constructor === String){
-    return obj;
+    return [obj];
   }
-  //obj = obj;
-  // if(obj.constructor === Array){
-  //   obj = obj[0];
-  // }
 
-  // make this parser a bit faster, use strings or array logic
   var addKeys = ["recipients", "sender", "changeAddress", "consolidationAdddress", "addresses"]
 
-  // addKeys.forEach(addKey => {
-  //   if(obj[addKey]){
-  //     if(addKey === 'recipient'){
+  addKeys.forEach(addKey => {
+    if(obj[addKey] && obj[addKey].length > 0){
+      if(addKey === 'recipients'){
+        obj[addKey].forEach(recipient => {
+          // retrieve address from tuple
+          addresses = addresses.concat(recipient[0]);
+        });
+      } else {
+        addresses = addresses.concat(obj[addKey]);
+      }
+    }
+  });
 
-  //     } else {
-  //       addresses.concat(obj[addKey]);
-  //     }
-  //   }
-  // });
-
-  if(obj['changeAddress']){
-   addresses.push(obj["changeAddress"]);
-  }
-  if(obj["consolidationAdddress"]){
-    addresses.push(obj["consolidationAdddress"]);
-  }
-
-  if(obj["recipients"] && obj["recipients"].length > 0){
-    obj["recipients"].forEach(address => {
-      addresses.push(address[0]);
-    });
-  }
-  if(obj["sender"] && obj["sender"].length > 0){
-    obj["sender"].forEach(address => {
-      addresses.push(address);
-    });
-  }
-  if(obj["addresses"] && obj["addresses"].length > 0){
-    obj["addresses"].forEach(address => {
-      addresses.push(address);
-    });
-  }
-  //console.log("addresses list: "+ addresses);
   return addresses;
 }
-/*** ------  TESTING FOR RAUL -------*/
-
-let arrExample = [
-  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
-  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
-  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
-  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz',
-  '86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz'
-];
-//let addValidationRes2 = validateAddressesByNetwork('local', arrExample);
-
-// let arrSingle = ['AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE'];
-// let addValidationRes2 = validateAddressesByNetwork('private', arrSingle);
-// console.log(addValidationRes2);
-
 
 let paramObj =
   {
@@ -271,16 +199,16 @@ let paramObj =
       "changeAddress": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
       "consolidationAdddress": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
       "recipients": [["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz", 10]],
-      "sender": ["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz"],
-      "addresses": ["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz"],
+      "sender": ["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTs"],
+      "addresses": [],
       "fee": 1,
       "data": ""
   }
 ;
 
 //extractAddressesFromObj(paramObj);
-//let addValidationRes = validateAddressesByNetwork('local', paramObj);
-//console.log(addValidationRes);
+let addValidationRes = validateAddressesByNetwork('local', paramObj);
+console.log(addValidationRes);
 
 function isValidNetwork(networkPrefix) {
   return networkPrefix && validNetworks.includes(networkPrefix);
