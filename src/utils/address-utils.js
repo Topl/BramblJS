@@ -45,14 +45,14 @@ const networksDefaults = {
 // TODO: include errors if the addresses are not valid. Include queue.
 
 /**
- * Check if addresses are valid by verifying these belong to the same network.
- * @param {String} networkPrefix prefix of network
- * @param {Array} addresses list of addresses to run validation against
- * @returns {object} result obj returned as json
+ * Check if addresses are valid by verifying:
  * 1. verify the address is not null
  * 2. verify the base58 is 38 bytes long
  * 3. verify that it matches the network
  * 4. verify that hash matches the last 4 bytes
+ * @param {String} networkPrefix prefix of network to validate against
+ * @param {Array} addresses list of addresses to run validation against
+ * @returns {object} result obj returned as json
  */
 function validateAddressesByNetwork(networkPrefix, addresses) {
   // response upon the completion of validation
@@ -126,6 +126,12 @@ function validateAddressesByNetwork(networkPrefix, addresses) {
   return result;
 }
 
+/**
+ * Generate valid address using the public key and network prefix
+ * @param {Buffer} publicKey base58 buffer of public key
+ * @param {String} networkPrefix prefix of network where address will be used
+ * @returns {object} result obj returned as json
+ */
 function generateAddress(publicKey, networkPrefix) {
   const result = {
     success: false,
@@ -162,6 +168,13 @@ function generateAddress(publicKey, networkPrefix) {
   return result;
 }
 
+/**
+ * Parse obj to retrieve addresses from the following keys:
+ * ["recipients", "sender", "changeAddress", "consolidationAdddress", "addresses"]
+ *
+ * @param {object} obj json obj to retrieve addresses from
+ * @returns {Array} list of addresses found in object
+ */
 function extractAddressesFromObj(obj) {
   // only push unique items in array, so that validation is faster
   let addresses = [];
@@ -187,38 +200,59 @@ function extractAddressesFromObj(obj) {
   return addresses;
 }
 
-const paramObj =
-  {
-    "propositionType": "PublicKeyCurve25519",
-    "changeAddress": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
-    "consolidationAdddress": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
-    "recipients": [["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz", 10]],
-    "sender": ["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTs"],
-    "addresses": [],
-    "fee": 1,
-    "data": ""
-  }
-;
+// const paramObj =
+//   {
+//     "propositionType": "PublicKeyCurve25519",
+//     "changeAddress": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
+//     "consolidationAdddress": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
+//     "recipients": [["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz", 10]],
+//     "sender": ["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTs"],
+//     "addresses": [],
+//     "fee": 1,
+//     "data": ""
+//   }
+// ;
 
-// extractAddressesFromObj(paramObj);
-const addValidationRes = validateAddressesByNetwork("local", paramObj);
-console.log(addValidationRes);
+// // extractAddressesFromObj(paramObj);
+// const addValidationRes = validateAddressesByNetwork("local", paramObj);
+// console.log(addValidationRes);
 
+/**
+ * @param {String} networkPrefix prefix of network to validate against
+ * @returns {boolean} true if network is valid and is included in the valid networks obj
+ */
 function isValidNetwork(networkPrefix) {
   return networkPrefix && validNetworks.includes(networkPrefix);
 }
 
+/**
+ * @param {String} networkPrefix prefix of network to validate against
+ * @returns {String} url of network
+ */
 function getUrlByNetwork(networkPrefix) {
   return networksDefaults[networkPrefix].url;
 }
 
+/**
+ * @param {String} networkPrefix prefix of network to validate against
+ * @returns {hex} hexadecimal value of network
+ */
 function getHexByNetwork(networkPrefix) {
   return networksDefaults[networkPrefix].hex;
 }
 
+/**
+ * @param {String} networkPrefix prefix of network to validate against
+ * @returns {String} hexadecimal value of network
+ */
 function getDecimalByNetwork(networkPrefix) {
   return networksDefaults[networkPrefix].decimal;
 }
+
+/**
+ * @param {String} networkPrefix prefix of network to validate against
+ * @returns {object} json obj of valid networks
+ */
 function getValidNetworksList() {
   return validNetworks;
 }
