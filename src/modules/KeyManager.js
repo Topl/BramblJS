@@ -17,7 +17,6 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const curve25519 = require("curve25519-js");
-const Base58 = require("base-58");
 const {create, dump, recover, str2buf, generateKeystoreFilename} = require("../utils/key-utils.js");
 
 // utils

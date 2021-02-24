@@ -42,19 +42,13 @@ const networksDefaults = {
   }
 };
 
-function str2buf(str, enc) {
-  if (!str || str.constructor !== String) return str;
-  return enc ? Buffer.from(str, enc) : Buffer.from(Base58.decode(str));
-}
-
-
 // TODO: include errors if the addresses are not valid. Include queue.
 
 /**
  * Check if addresses are valid by verifying these belong to the same network.
- * @param {String} networkPrefix
- * @param {Object} params
- * @param {Array} addresses
+ * @param {String} networkPrefix prefix of network
+ * @param {Array} addresses list of addresses to run validation against
+ * @returns {object} result obj returned as json
  * 1. verify the address is not null
  * 2. verify the base58 is 38 bytes long
  * 3. verify that it matches the network

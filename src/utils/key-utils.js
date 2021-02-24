@@ -13,7 +13,6 @@
 const blake = require("blake2");
 const crypto = require("crypto");
 const Base58 = require("base-58");
-const keccakHash = require("keccak");
 const curve25519 = require("curve25519-js");
 
 const utils = require("../utils/address-utils.js");
@@ -166,6 +165,7 @@ function deriveKey(password, salt, kdfParams) {
  * @param {Buffer} salt Randomly generated salt.
  * @param {Buffer} iv Initialization vector.
  * @param {Buffer} algo encryption algorithm to be used
+ * @param {String} network network prefix as string i.e local/private/toplnet
  * @returns {Object} key data object in secret-storage format
  */
 function marshal(derivedKey, keyObject, salt, iv, algo, network) {

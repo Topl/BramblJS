@@ -19,7 +19,6 @@
     "blake2": "^4.0.0",
     "canonicalize": "^1.0.1",
     "curve25519-js": "0.0.4",
-    "keccak": "^3.0.0",
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
