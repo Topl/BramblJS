@@ -9,7 +9,7 @@
  *
  */
 
- // Initial implementation of this lib isBased on the keythereum library from Jack Peterson https://github.com/Ethereumjs/keythereum
+// Initial implementation of this lib isBased on the keythereum library from Jack Peterson https://github.com/Ethereumjs/keythereum
 "use strict";
 
 // Dependencies
@@ -83,7 +83,7 @@ class KeyManager {
         this.#password = password;
         this.#keyStorage = keyStorage;
 
-        if (this.#address){
+        if (this.#address) {
           [this.#sk, this.#pk] = recover(password, keyStorage, this.constants.scrypt);
         }
       };
@@ -96,7 +96,7 @@ class KeyManager {
       // Imports key data object from keystore JSON file.
       const importFromFile = (filepath, password) => {
         const keyStorage = JSON.parse(fs.readFileSync(filepath));
-        //TODO: check address has valid network and it was instantiated correctly.
+        // TODO: check address has valid network and it was instantiated correctly.
         initKeyStorage(keyStorage, password);
       };
 
@@ -106,10 +106,10 @@ class KeyManager {
       // set networkPrefix and validate
       this.#networkPrefix = params.networkPrefix || "local";
 
-      //ensure constant include this.#networkPrefix for key creation
+      // ensure constant include this.#networkPrefix for key creation
       this.constants.networkPrefix = this.#networkPrefix;
 
-      if(this.#networkPrefix !== "local" && !utils.isValidNetwork(this.#networkPrefix)){
+      if (this.#networkPrefix !== "local" && !utils.isValidNetwork(this.#networkPrefix)) {
         throw new Error(`Invalid Network Prefix. Must be one of: ${utils.getValidNetworksList()}`);
       }
 
@@ -119,7 +119,7 @@ class KeyManager {
       if (params.keyPath) {
         try {
           importFromFile(params.keyPath, params.password);
-          //deteermine the network and set it...
+          // deteermine the network and set it...
         } catch (err) {
           throw new Error("Error importing keyfile - " + err);
         }

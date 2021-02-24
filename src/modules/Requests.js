@@ -69,7 +69,7 @@ class Requests {
     // set networkPrefix and validate
     this.networkPrefix = networkPrefix || "local";
 
-    if(this.networkPrefix !== "local" && !utils.isValidNetwork(this.networkPrefix)){
+    if (this.networkPrefix !== "local" && !utils.isValidNetwork(this.networkPrefix)) {
       throw new Error(`Invalid Network Prefix. Must be one of: ${utils.getValidNetworksList()}`);
     }
 
@@ -137,8 +137,8 @@ class Requests {
     if (!params.assetCode) {
       throw new Error("An assetCode must be specified");
     }
-    //TODO: add validation - 47 bytes MAX ( 1 version, 38 issuer address, and up to 8 for a name) = 94 chars
-    //TODO: add validation - 40 bytes MIN ( 1 version, 38 issuer address, and up to 1 for a name) = 80 chars
+    // TODO: add validation - 47 bytes MAX ( 1 version, 38 issuer address, and up to 8 for a name) = 94 chars
+    // TODO: add validation - 40 bytes MIN ( 1 version, 38 issuer address, and up to 1 for a name) = 80 chars
     // else if (params.assetCode.length < 80 || params.assetCode.length > 94) {
     //   throw new Error("Invalid byte length for assetCode");
     // }
@@ -162,12 +162,12 @@ class Requests {
     }
 
     // validate all addresses
-    let validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params);
-    if(!validationResult.success){
-      throw new Error("Invalid Addresses::"
-        + " Network Type: <" + this.networkPrefix + ">"
-        + " Invalid Addresses: <" + validationResult.invalidAddresses + ">"
-        + " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
+    const validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params);
+    if (!validationResult.success) {
+      throw new Error("Invalid Addresses::" +
+        " Network Type: <" + this.networkPrefix + ">" +
+        " Invalid Addresses: <" + validationResult.invalidAddresses + ">" +
+        " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
     }
 
     // Include token value holder as tuple format
@@ -175,7 +175,7 @@ class Requests {
       // destructuring assingment syntax
       // basic: [address, quantity]
       // advance: [address, quantity, securityRoot, metadata]
-      let [address, quantity, securityRoot, metadata] = params.recipients[i];
+      const [address, quantity, securityRoot, metadata] = params.recipients[i];
 
       // ensure quantitiy is part of the tuple ["address", 10]
       if (!quantity || quantity < 1) {
@@ -183,14 +183,14 @@ class Requests {
       }
 
       // required fields
-      let tokenValueHolder = {
+      const tokenValueHolder = {
         "type": "Asset",
         "quantity": quantity,
         "assetCode": params.assetCode
       };
 
       // advance option - securityRoot: base58 enconded string [32 bytes]
-      if(securityRoot !== undefined){
+      if (securityRoot !== undefined) {
         if (Base58.decode(securityRoot).length !== 32) {
           throw new Error(`Invalid securityRoot in Recipient: ${params.recipients[i]}`);
         }
@@ -198,7 +198,7 @@ class Requests {
       }
 
       // advance option - metadata: 128 byte string UTF8
-      if(metadata !== undefined){
+      if (metadata !== undefined) {
         if (metadata.length < 2 || metadata.length > 127 ) {
           throw new Error(`Invalid metadata in Recipient: ${params.recipients[i]}`);
         }
@@ -255,15 +255,15 @@ class Requests {
     }
 
     // validate all addresses
-    let validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params);
-    if(!validationResult.success){
-      throw new Error("Invalid Addresses::"
-        + " Network Type: <" + this.networkPrefix + ">"
-        + " Invalid Addresses: <" + validationResult.invalidAddresses + ">"
-        + " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
+    const validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params);
+    if (!validationResult.success) {
+      throw new Error("Invalid Addresses::" +
+        " Network Type: <" + this.networkPrefix + ">" +
+        " Invalid Addresses: <" + validationResult.invalidAddresses + ">" +
+        " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
     }
 
-    params.recipients.forEach(recipient => {
+    params.recipients.forEach((recipient) => {
       // ensure quantitiy is part of the tuple ["address", 10]
       if (!recipient[1]) {
         throw new Error("Recipient quantity must be specified");
@@ -321,15 +321,15 @@ class Requests {
     }
 
     // validate all addresses
-    let validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params);
-    if(!validationResult.success){
-      throw new Error("Invalid Addresses::"
-        + " Network Type: <" + this.networkPrefix + ">"
-        + " Invalid Addresses: <" + validationResult.invalidAddresses + ">"
-        + " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
+    const validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params);
+    if (!validationResult.success) {
+      throw new Error("Invalid Addresses::" +
+        " Network Type: <" + this.networkPrefix + ">" +
+        " Invalid Addresses: <" + validationResult.invalidAddresses + ">" +
+        " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
     }
 
-    params.recipients.forEach(recipient => {
+    params.recipients.forEach((recipient) => {
       // ensure quantitiy is part of the tuple ["address", 10]
       if (!recipient[1]) {
         throw new Error("Recipient quantity must be specified");
@@ -357,11 +357,11 @@ class Requests {
     if (!params.tx) {
       throw new Error("A tx object must be specified");
     }
-    console.log(params.tx)
+    console.log(params.tx);
     if (!params.tx.signatures || !Object.keys(params.tx.signatures)[0]) {
       throw new Error("Tx must include signatures");
     }
-    //this is not valid since also a signature is being sent, not a full Tx ???
+    // this is not valid since also a signature is being sent, not a full Tx ???
     if (Object.keys(params.tx).length < 10 && params.tx.constructor === Object) {
       throw new Error("Invalid tx object, one or more tx keys not specified");
     }
@@ -509,7 +509,6 @@ class Requests {
     const method = "topl_blockByHeight";
     return bramblRequest({route, method, id}, params, this);
   }
-
 }
 
 /* -------------------------------------------------------------------------- */

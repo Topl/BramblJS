@@ -177,7 +177,7 @@ function marshal(derivedKey, keyObject, salt, iv, algo, network) {
 
   // generate address
   const createAddress = utils.generateAddress(keyObject.publicKey, network);
-  if(createAddress && !createAddress.success){
+  if (createAddress && !createAddress.success) {
     throw new Error(createAddress.errorMsg);
   }
 
@@ -252,7 +252,7 @@ function recover(password, keyStorage, kdfParams) {
  * @returns {Array} Array with format [sk, pk]
  */
 function keysEncodedFormat(keysBuffer) {
-  if(keysBuffer.length !== 64){
+  if (keysBuffer.length !== 64) {
     throw new Error("Invalid keysBuffer.");
   }
   return [Base58.encode(keysBuffer.slice(0, 32)), Base58.encode(keysBuffer.slice(32))];

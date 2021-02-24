@@ -66,16 +66,16 @@ class Brambl {
 
     // If only a string is given in the constructor, assume it is the password.
     // Therefore, target a local chain provider and make a new key
-    if (params.constructor === String){
+    if (params.constructor === String) {
       keyManagerVar.password = params;
     }
 
-    if (params.password && params.password.constructor === String){
+    if (params.password && params.password.constructor === String) {
       keyManagerVar.password = params.password;
     }
 
     // validate network prefix
-    if(!addressUtils.isValidNetwork(this.#networkPrefix)){
+    if (!addressUtils.isValidNetwork(this.#networkPrefix)) {
       throw new Error(`Invalid Network Prefix. Must be one of: ${addressUtils.getValidNetworksList()}`);
     }
 
@@ -102,7 +102,7 @@ class Brambl {
     }
 
     // If KeyManager and Requests instances were not created by Brambl class verify that both have a matching NetworkPrefix
-    if (this.#networkPrefix !== this.requests.networkPrefix || this.#networkPrefix !== this.keyManager.networkPrefix){
+    if (this.#networkPrefix !== this.requests.networkPrefix || this.#networkPrefix !== this.keyManager.networkPrefix) {
       throw new Error("Incompatible network prefixes set for Requests and KeyManager Instances.");
     }
 
@@ -206,7 +206,7 @@ Brambl.prototype.addSigToTx = async function(prototypeTx, userKeys) {
   */
 Brambl.prototype.signAndBroadcast = async function(prototypeTx) {
   const formattedTx = await this.addSigToTx(prototypeTx, this.keyManager);
-  //console.log(formattedTx);
+  // console.log(formattedTx);
   return this.requests.broadcastTx({tx: formattedTx}).catch((e) => {
     console.error(e); throw e;
   });
