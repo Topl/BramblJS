@@ -6,7 +6,7 @@
 // Must include the following
 const KeyManager = require("../../../src/modules/KeyManager");
 
-// Option 1 - create new key manager by passing password | defaults to "local" network
+// Option 1 - create new key manager by passing password | defaults to "private" network
 const keyManager = new KeyManager("topl_the_world!");
 
 // Option 2 - create new key manager by passing password and setting a different network
@@ -65,10 +65,13 @@ keyMan.isLocked();
 keyMan.lockKey();
 
 // unlock key
-keyMan.unlockKey();
+keyMan.unlockKey(password_dude);
 
 // retrieve public key
 keyMan.pk();
+
+// retrieve address
+keyMan.address();
 
 // Generate the signature of a message using the provided private key
 // optional, it is recommended to use brambl.signAndBroadcast(tx) instead
@@ -102,7 +105,7 @@ brambl.requests.createRawAssetTransfer(rawAssetParams)
 // Must include the following
 const Requests = require("../../../src/modules/Requests");
 
-// Option 1 - create new requests instance by passing the networkPrefix | defaults to "local" network
+// Option 1 - create new requests instance by passing the networkPrefix | defaults to "private" network
 const requests = new Requests("private");
 
 // Option 2 -
@@ -135,7 +138,7 @@ requests.getBlockByHeight();
 /* -------------------- Create new Requests Instance ------------------------ */
 const Brambl = require("../../../src/Brambl");
 
-// option 1 - set password to creqte new keyfile with default network "local"
+// option 1 - set password to creqte new keyfile with default network "private"
 const brambl = new Brambl("topl_the_world!");
 
 // option 2 - set both network Prefix and password to create new keyfile

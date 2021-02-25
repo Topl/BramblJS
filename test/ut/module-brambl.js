@@ -72,12 +72,12 @@ describe("Brambl", () => {
             });
             assert.strictEqual(brambl.networkPrefix, "valhalla", "network prefix is valhalla");
         });
-        it('should default empty network prefix to local', async () => {
+        it('should default empty network prefix to private', async () => {
             const brambl = new BrabmlJS({
                 KeyManager: keyMan // use instance in before block due to faster scrypt alg
             });
 
-            assert.strictEqual(brambl.networkPrefix, "local", "network prefix is local");
+            assert.strictEqual(brambl.networkPrefix, "private", "network prefix is private");
         });
         it('should fail is trying to set network prefix outside of constructor', async () => {
             const brambl = new BrabmlJS({

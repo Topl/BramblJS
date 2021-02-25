@@ -14,6 +14,7 @@ const blake = require("blake2");
 
 const validNetworks = ["local", "private", "toplnet", "valhalla", "hel"];
 
+// TODO: support custom define network
 const networksDefaults = {
   "local": {
     hex: "0x30",
@@ -132,6 +133,7 @@ function validateAddressesByNetwork(networkPrefix, addresses) {
  * @param {String} networkPrefix prefix of network where address will be used
  * @returns {object} result obj returned as json
  */
+// TODO: rename to generatePubKeyHashAddress()
 function generateAddress(publicKey, networkPrefix) {
   const result = {
     success: false,

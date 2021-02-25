@@ -42,7 +42,7 @@ const defaultOptions = {
   },
 
   // networkPrefix
-  networkPrefix: "local"
+  networkPrefix: "private"
 };
 
 /* -------------------------------------------------------------------------- */
@@ -69,7 +69,7 @@ class KeyManager {
      * @param {string} [params.password] password for encrypting (decrypting) the keyfile
      * @param {string} [params.keyPath] path to import keyfile
      * @param {object} [params.constants] default encryption options for storing keyfiles
-     * @param {string} [params.networkPrefix] Network Prefix, defaults to "local"
+     * @param {string} [params.networkPrefix] Network Prefix, defaults to "private"
      */
     constructor(params) {
       // enforce that a password must be provided
@@ -103,12 +103,12 @@ class KeyManager {
       this.constants = params.constants || defaultOptions;
 
       // set networkPrefix and validate
-      this.#networkPrefix = params.networkPrefix || "local";
+      this.#networkPrefix = params.networkPrefix || "private";
 
       // ensure constant include this.#networkPrefix for key creation
       this.constants.networkPrefix = this.#networkPrefix;
 
-      if (this.#networkPrefix !== "local" && !utils.isValidNetwork(this.#networkPrefix)) {
+      if (this.#networkPrefix !== "private" && !utils.isValidNetwork(this.#networkPrefix)) {
         throw new Error(`Invalid Network Prefix. Must be one of: ${utils.getValidNetworksList()}`);
       }
 
@@ -118,6 +118,7 @@ class KeyManager {
       if (params.keyPath) {
         try {
           importFromFile(params.keyPath, params.password);
+          //TODO validate address...
           // deteermine the network and set it...
         } catch (err) {
           throw new Error("Error importing keyfile - " + err);
@@ -192,8 +193,14 @@ class KeyManager {
      * @memberof KeyManager
      * @returns {string} value of #pk (public key string)
      */
+    //TODO remot his accessor...
+    //TODO in all 1.3 all should use addresses.
     get pk() {
       return this.#pk;
+    }
+
+    get address() {
+      return this.#address;
     }
 
     /**

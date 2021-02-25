@@ -62,7 +62,7 @@ class Brambl {
     // default values for the constructor arguement
     const keyManagerVar = params.KeyManager || {};
     const requestsVar = params.Requests || {};
-    this.#networkPrefix = params.networkPrefix || "local";
+    this.#networkPrefix = params.networkPrefix || "private";
 
     // If only a string is given in the constructor, assume it is the password.
     // Therefore, target a local chain provider and make a new key
@@ -108,6 +108,7 @@ class Brambl {
 
     // Import utilities
     this.utils = {Hash};
+    //TODO include helper fn as part of this.utils "address validation"
   }
 
   /**
@@ -133,7 +134,7 @@ class Brambl {
     * Method for creating a separate Requests instance
     * @static
     *
-    * @param {string} [networkPrefix="local"] Network Prefix, defaults to "local"
+    * @param {string} [networkPrefix="private"] Network Prefix, defaults to "private"
     * @param {string} [url="http://localhost:9085/"] Chain provider location
     * @param {string} [apiKey="topl_the_world!"] Access key for authorizing requests to the client API
     * @returns {object} new Requests instance

@@ -1,3 +1,5 @@
+//TODO remove routes support
+
 /** A Javascript API wrapper module for the Bifrost Protocol.
  * Currently supports version 4.1 of Bifrost's Brambl-Layer API
  * Documentation for Brambl-layer is available at https://Requests.docs.topl.co
@@ -61,15 +63,15 @@ async function bramblRequest(routeInfo, params, self) {
 class Requests {
   /**
    * @constructor
-   * @param {string} [networkPrefix="local"] Network Prefix, defaults to "local"
+   * @param {string} [networkPrefix="private"] Network Prefix, defaults to "private"
    * @param {string} [url="http://localhost:9085/"] Chain provider location, local and private default to http://localhost:9085/
    * @param {string} [apiKey="topl_the_world!"] Access key for authorizing requests to the client API ["x-api-key"], default to "topl_the_world!"
    */
   constructor(networkPrefix, url, apiKey) {
     // set networkPrefix and validate
-    this.networkPrefix = networkPrefix || "local";
+    this.networkPrefix = networkPrefix || "private";
 
-    if (this.networkPrefix !== "local" && !utils.isValidNetwork(this.networkPrefix)) {
+    if (this.networkPrefix !== "private" && !utils.isValidNetwork(this.networkPrefix)) {
       throw new Error(`Invalid Network Prefix. Must be one of: ${utils.getValidNetworksList()}`);
     }
 
@@ -123,13 +125,13 @@ class Requests {
    * @memberof Requests
    */
   async createRawAssetTransfer(params, id = "1") {
-    const validPropositions = ["PublicKeyCurve25519", "TheresholdCurve25519"];
+    const validPropositions = ["PublicKeyCurve25519", "ThresholdCurve25519"];
 
     if (!params) {
       throw new Error("A parameter object must be specified");
     }
     if (!params.propositionType || !validPropositions.includes(params.propositionType)) {
-      throw new Error("A propositionTYpe must be specified: <PublicKeyCurve25519, TheresholdCurve25519>");
+      throw new Error("A propositionTYpe must be specified: <PublicKeyCurve25519, ThresholdCurve25519>");
     }
     if (!params.sender) {
       throw new Error("An asset sender must be specified");
@@ -139,9 +141,13 @@ class Requests {
     }
     // TODO: add validation - 47 bytes MAX ( 1 version, 38 issuer address, and up to 8 for a name) = 94 chars
     // TODO: add validation - 40 bytes MIN ( 1 version, 38 issuer address, and up to 1 for a name) = 80 chars
+    // TODO: assetCode: address - checksum ""
+    // TODO: given address and short name - > return a string 
     // else if (params.assetCode.length < 80 || params.assetCode.length > 94) {
     //   throw new Error("Invalid byte length for assetCode");
     // }
+
+    //TODO: everything in UTILS should be part of BramblJS
 
     if (!params.recipients || params.recipients.length < 1) {
       throw new Error("At least one recipient must be specified");
@@ -199,6 +205,7 @@ class Requests {
 
       // advance option - metadata: 128 byte string UTF8
       if (metadata !== undefined) {
+        // TODO check these are latin-1 encoding
         if (metadata.length < 2 || metadata.length > 127 ) {
           throw new Error(`Invalid metadata in Recipient: ${params.recipients[i]}`);
         }
