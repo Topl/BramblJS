@@ -1,4 +1,4 @@
-//TODO remove routes support
+// TODO remove routes support
 
 /** A Javascript API wrapper module for the Bifrost Protocol.
  * Currently supports version 4.1 of Bifrost's Brambl-Layer API
@@ -142,12 +142,12 @@ class Requests {
     // TODO: add validation - 47 bytes MAX ( 1 version, 38 issuer address, and up to 8 for a name) = 94 chars
     // TODO: add validation - 40 bytes MIN ( 1 version, 38 issuer address, and up to 1 for a name) = 80 chars
     // TODO: assetCode: address - checksum ""
-    // TODO: given address and short name - > return a string 
+    // TODO: given address and short name - > return a string
     // else if (params.assetCode.length < 80 || params.assetCode.length > 94) {
     //   throw new Error("Invalid byte length for assetCode");
     // }
 
-    //TODO: everything in UTILS should be part of BramblJS
+    // TODO: everything in UTILS should be part of BramblJS
 
     if (!params.recipients || params.recipients.length < 1) {
       throw new Error("At least one recipient must be specified");

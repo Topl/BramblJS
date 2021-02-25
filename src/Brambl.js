@@ -108,7 +108,7 @@ class Brambl {
 
     // Import utilities
     this.utils = {Hash};
-    //TODO include helper fn as part of this.utils "address validation"
+    // TODO include helper fn as part of this.utils "address validation"
   }
 
   /**
@@ -152,7 +152,7 @@ class Brambl {
     * @param {string} [params.password] password for encrypting (decrypting) the keyfile
     * @param {string} [params.keyPath] path to import keyfile
     * @param {object} [params.constants] default encryption options for storing keyfiles
-    * @param {string} [params.networkPrefix] Network Prefix, defaults to "local"
+    * @param {string} [params.networkPrefix] Network Prefix, defaults to "private"
     * @returns {object} new KeyManager instance
     * @memberof Brambl
     */

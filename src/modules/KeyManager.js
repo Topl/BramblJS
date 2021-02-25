@@ -118,7 +118,7 @@ class KeyManager {
       if (params.keyPath) {
         try {
           importFromFile(params.keyPath, params.password);
-          //TODO validate address...
+          // TODO validate address...
           // deteermine the network and set it...
         } catch (err) {
           throw new Error("Error importing keyfile - " + err);
@@ -193,8 +193,8 @@ class KeyManager {
      * @memberof KeyManager
      * @returns {string} value of #pk (public key string)
      */
-    //TODO remot his accessor...
-    //TODO in all 1.3 all should use addresses.
+    // TODO remot his accessor...
+    // TODO in all 1.3 all should use addresses.
     get pk() {
       return this.#pk;
     }
