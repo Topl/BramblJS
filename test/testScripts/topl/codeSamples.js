@@ -312,3 +312,27 @@ brambl.requests.getBlockById({blockId: "wL12me5cR4imXjssQsB47sKfaAgciYvYrHZCF6JN
 brambl.requests.getBlockByHeight({"height": 3})
 .then((res) => console.log(res))
 .catch((e) => console.error(e));
+
+/* -------------------------------------------------------------------------- */
+/*                              Address Utils                                 */
+/* -------------------------------------------------------------------------- */
+
+/* ---------------------- Validate Addresses ------------------------ */
+// const paramObj =
+//   {
+//     "propositionType": "PublicKeyCurve25519",
+//     "changeAddress": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
+//     "consolidationAdddress": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
+//     "recipients": [["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz", 10]],
+//     "sender": ["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTs"],
+//     "addresses": [],
+//     "fee": 1,
+//     "data": ""
+//   }
+// ;
+
+// // extractAddressesFromObj(paramObj);
+// const addValidationRes = validateAddressesByNetwork("local", paramObj);
+// console.log(addValidationRes);
+
+

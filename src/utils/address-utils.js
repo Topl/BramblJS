@@ -202,22 +202,36 @@ function extractAddressesFromObj(obj) {
   return addresses;
 }
 
-// const paramObj =
-//   {
-//     "propositionType": "PublicKeyCurve25519",
-//     "changeAddress": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
-//     "consolidationAdddress": "86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz",
-//     "recipients": [["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTz", 10]],
-//     "sender": ["86tS2ExvjGEpS3Ntq5vZgHirUMuee7pJELGD8GmBoUyjXpAaAXTs"],
-//     "addresses": [],
-//     "fee": 1,
-//     "data": ""
-//   }
-// ;
+/**
+ * 
+ * @param {string} address address to be used to create asset code
+ * @param {string} assetName name of assets, up to 8 bytes long latin-1 enconding
+ */
+function createAssetCode(address, assetName) {
+  /**
+   *
+      00 4001d55f806be2759a3523d7b83ca9288396e8df521466212c80168509f638847b40 04303030
 
-// // extractAddressesFromObj(paramObj);
-// const addValidationRes = validateAddressesByNetwork("local", paramObj);
-// console.log(addValidationRes);
+         40 01 d55f806be2759a3523d7b83ca9288396e8df521466212c80168509f638847b40 - 187ff961
+
+      fn(){
+      01
+      34 bytes of address
+      + 8 bytes max for name
+
+      in latin-1 encoding
+      }
+
+      ::fixed width - include zeros to make it 8 bytes long::
+
+      1. get address in base58
+      2. ignore network prefix
+      3. ignore the checksum
+      4. get assetName and convert to bytes, concat 0's at the beginning to make it 8 bytes long
+      5. concat 01 + 34 bytes of address + asset name
+      6. return result in enconded base58
+   */
+}
 
 /**
  * @param {String} networkPrefix prefix of network to validate against
