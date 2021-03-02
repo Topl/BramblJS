@@ -193,14 +193,8 @@ class KeyManager {
      * @memberof KeyManager
      * @returns {string} value of #pk (public key string)
      */
-    // TODO remot his accessor...
-    // TODO in all 1.3 all should use addresses.
     get pk() {
       return this.#pk;
-    }
-
-    get address() {
-      return this.#address;
     }
 
     /**
@@ -210,6 +204,26 @@ class KeyManager {
      * @returns {void} Error is thrown to protect private variable
      */
     set pk(args) {
+      throw new Error("Invalid private variable access, instantiate a new KeyManager instead.");
+    }
+
+    /**
+     * Getter for private property #address
+     * @memberof KeyManager
+     * @param {any} args ignored, only necessary for setter
+     * @returns {void} Error is thrown to protect private variable
+     */
+    get address() {
+      return this.#address;
+    }
+
+    /**
+     * Setter for private property #address
+     * @memberof KeyManager
+     * @param {any} args ignored, only necessary for setter
+     * @returns {void} Error is thrown to protect private variable
+     */
+    set address(args) {
       throw new Error("Invalid private variable access, instantiate a new KeyManager instead.");
     }
 

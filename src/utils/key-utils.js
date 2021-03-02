@@ -176,7 +176,7 @@ function marshal(derivedKey, keyObject, salt, iv, algo, network) {
   const ciphertext = encrypt(concatKeys, derivedKey, iv, algo);
 
   // generate address
-  const createAddress = utils.generateAddress(keyObject.publicKey, network);
+  const createAddress = utils.generatePubKeyHashAddress(keyObject.publicKey, network);
   if (createAddress && !createAddress.success) {
     throw new Error(createAddress.errorMsg);
   }

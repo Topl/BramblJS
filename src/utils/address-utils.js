@@ -3,7 +3,7 @@
  *
  * @author Raul Aragonez (r.aragonez@topl.me)
  *
- * @exports utils isValidNetwork, getUrlByNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList, validateAddressesByNetwork, generateAddress
+ * @exports utils isValidNetwork, getUrlByNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList, validateAddressesByNetwork, generatePubKeyHashAddress
  */
 
 "use strict";
@@ -128,13 +128,12 @@ function validateAddressesByNetwork(networkPrefix, addresses) {
 }
 
 /**
- * Generate valid address using the public key and network prefix
+ * Generate Hash Address using the Public Key and Network Prefix
  * @param {Buffer} publicKey base58 buffer of public key
  * @param {String} networkPrefix prefix of network where address will be used
  * @returns {object} result obj returned as json
  */
-// TODO: rename to generatePubKeyHashAddress()
-function generateAddress(publicKey, networkPrefix) {
+function generatePubKeyHashAddress(publicKey, networkPrefix) {
   const result = {
     success: false,
     errorMsg: "",
@@ -203,7 +202,7 @@ function extractAddressesFromObj(obj) {
 }
 
 /**
- * 
+ *
  * @param {string} address address to be used to create asset code
  * @param {string} assetName name of assets, up to 8 bytes long latin-1 enconding
  */
@@ -273,4 +272,4 @@ function getValidNetworksList() {
   return validNetworks;
 }
 
-module.exports = {isValidNetwork, getUrlByNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList, validateAddressesByNetwork, generateAddress};
+module.exports = {isValidNetwork, getUrlByNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList, validateAddressesByNetwork, generatePubKeyHashAddress, createAssetCode};
