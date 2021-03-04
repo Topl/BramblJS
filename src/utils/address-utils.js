@@ -121,8 +121,8 @@ function validateAddressesByNetwork(networkPrefix, addresses) {
   }
 
   // TODO: Remove this console logs.
-  console.log("Addresses validation result: ");
-  console.log(result);
+  // console.log("Addresses validation result: ");
+  // console.log(result);
 
   return result;
 }

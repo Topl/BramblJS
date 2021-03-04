@@ -7,7 +7,7 @@
     "lint": "eslint src --ext .js",
     "lint:fix": "npm run lint -- --fix",
     "test:ut": "./node_modules/mocha/bin/mocha test/ut --timeout 15000",
-    "test:ut2": "./node_modules/mocha/bin/mocha test/ut/arbits --timeout 15000",
+    "test:ut2": "./node_modules/mocha/bin/mocha test/ut/blocks --timeout 15000",
     "test:e2e": "./node_modules/mocha/bin/mocha test/e2e --timeout 15000",
     "test:all": "npm run lint && npm run test:ut && npm run test:e2e",
     "test": "npm run lint && npm run test:ut"

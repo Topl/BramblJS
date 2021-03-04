@@ -36,7 +36,7 @@ describe("Blocks", () => {
 
     // run this before all tests
     before(() => {
-        brambljs = new Requests();
+        requests = new Requests();
     });
 
     // run this before every test
@@ -54,7 +54,7 @@ describe("Blocks", () => {
     describe("lookup block by id", () => {
         beforeEach(() => {
             parameters = {
-                "blockId": "GMbv6Ku3BQQGFj2WeGY6aYweAiEBpKUHVSHey6eUY1jt"
+                "blockId": "2BTSL7ubSmADr6n5K7qNRodygTVmruHMy8MhtKuaC6G2H"
             }
         });
 
@@ -65,55 +65,84 @@ describe("Blocks", () => {
                 "jsonrpc": "2.0",
                 "id": "1",
                 "result": {
-                    "timestamp": 1586479749120,
-                    "inflation": 0,
-                    "signature": "2K5A8UNwKFYF9ZUroanzV4JqSAK6tzsYe5fTxcfSdS4HFzfzj9bymcsSscfiRm56BVuMDYutWsmUTiCA45j8xtaW",
-                    "blockSize": 597,
-                    "generatorBox": "111zEddudjZtxDVS3hwEhvLt2WfTbLt939RYCpm3FXQwbc3Wie9h489iGQVyBaiJrqxsZTCs5xEUMP6N",
-                    "version": 3,
-                    "id": "GMbv6Ku3BQQGFj2WeGY6aYweAiEBpKUHVSHey6eUY1jt",
-                    "txs": [
-                        {
-                            "txType": "CoinbaseTransaction",
-                            "txHash": "CjKnYRWHVUDQxU8fcV18Mk3MzWWJmHDkm3jdMwyUyGuB",
-                            "timestamp": 1586479749119,
-                            "signatures": [
-                                "4BvL4e7LLzX9GxHVpW3PPD1AmqvpjzuNWekqpCeN81uopwt7v69c4caRzNqeGkTmT1o1odrDrk8BqoKkDfc8DG4B"
-                            ],
-                            "newBoxes": [],
-                            "to": [
-                                {
-                                    "proposition": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                                    "value": 0
-                                }
-                            ],
-                            "fee": 0
+                    "header": {
+                        "txRoot": "3HwNJirUFu7cEqF4DgBZJDv27QgKMctior8cWjCqV9j7",
+                        "difficulty": 67338152852815544,
+                        "timestamp": 1614870913077,
+                        "bloomFilter": "111112aqEiuVS2efQXoVV33coDbqihkMzNt6CsCazeCAzTQ2j1YAds6tebhCDqBaDBs3Lo28WB",
+                        "height": 295,
+                        "signature": "6EAPy7vV3JVhpZ3ARSQLfPtFuY8qhd15KrPKoijyoRLzDnPi7C4FF2HTwDk5F7bPVz9qbenSSBdeRj1pr6W8vu1a",
+                        "generatorBox": {
+                            "nonce": "6192622283292330446",
+                            "id": "5Wq9cayFkbA2WzMVugWtm4kpLoYn5QTMkvpyNh9jCDBY",
+                            "evidence": "PGdnCwZkNwzL9JgMMThi1Qv3mc5SHCG9Zu4k7qb5TdvT",
+                            "type": "ArbitBox",
+                            "value": {
+                                "type": "Simple",
+                                "quantity": "1000000"
+                            }
                         },
-                        {
-                            "txType": "AssetCreation",
-                            "txHash": "6XHxhYxe4TWXaXP9QQZroHN1bKU5sCdRdFrXe1p2WToF",
-                            "timestamp": 1586479692408,
-                            "signatures": {
-                                "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ": "66TgRqmFbWVbZqMg7XRhkgD8mksucvt64anbZWHTYf1fABBKShaHZxW6BaUMQchxcChReDiQugRRMunAzzz2KAXx"
+                        "version": 0,
+                        "id": "2BTSL7ubSmADr6n5K7qNRodygTVmruHMy8MhtKuaC6G2H",
+                        "publicKey": "bDpCdRHS5YzVndGmSrmXgjR4Q31AQqM9VkVAjBz9nzRE",
+                        "parentId": "ziho65Xc5GqHqhgeBEFiS6redsZfcgGdXcAFWbUNxzdV"
+                    },
+                    "body": {
+                        "id": "2BTSL7ubSmADr6n5K7qNRodygTVmruHMy8MhtKuaC6G2H",
+                        "parentId": "ziho65Xc5GqHqhgeBEFiS6redsZfcgGdXcAFWbUNxzdV",
+                        "txs": [
+                            {
+                                "txType": "ArbitTransfer",
+                                "timestamp": 1614870913077,
+                                "signatures": {
+                                    "bDpCdRHS5YzVndGmSrmXgjR4Q31AQqM9VkVAjBz9nzRE": "7iGAPS2bthwXLnMsbsDDuNAkKxaygbcSPv2bfGg5pgwUCXXQtA7CgYYg2CTqchmRRvHtixrVy5QiMEhcgyYdQcLM"
+                                },
+                                "newBoxes": [],
+                                "data": "ziho65Xc5GqHqhgeBEFiS6redsZfcgGdXcAFWbUNxzdV_",
+                                "to": [
+                                    [
+                                        "AU9dn9YhqL1YWxfemMfS97zjVXR6G9QX74XRq1jVLtP3snQtuuVk",
+                                        {
+                                            "type": "Simple",
+                                            "quantity": "0"
+                                        }
+                                    ]
+                                ],
+                                "propositionType": "PublicKeyCurve25519",
+                                "from": [],
+                                "minting": true,
+                                "txId": "bwwYcvfconQVaqdJsGPmX2nH9Qg3DEVSqzaQFH267xbu",
+                                "boxesToRemove": [],
+                                "fee": "0"
                             },
-                            "newBoxes": [
-                                "8FCKnXM8FECtLCLMhQt1vqBzD59bxhkFD7kzhAfGqGVZ"
-                            ],
-                            "data": "",
-                            "issuer": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                            "to": [
-                                [
-                                    "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                                    "100"
-                                ]
-                            ],
-                            "assetCode": "test",
-                            "fee": 0
-                        }
-                    ],
-                    "parentId": "DkhceFXCgPBhtn6X9LNdcf3b7wck3zzpMtQggmdcPQkQ",
-                    "blockNumber": 1178,
-                    "blockDifficulty": 12994701517
+                            {
+                                "txType": "PolyTransfer",
+                                "timestamp": 1614870913077,
+                                "signatures": {
+                                    "bDpCdRHS5YzVndGmSrmXgjR4Q31AQqM9VkVAjBz9nzRE": "6yXjsELAC5FHnHJw6zgCtf81XJ7AZgKjAwFtBBCQ7aDHAD8LcfdXuJEYBeMtGGcD5jitjkyqnuB9CcudMTjeRbG3"
+                                },
+                                "newBoxes": [],
+                                "data": "ziho65Xc5GqHqhgeBEFiS6redsZfcgGdXcAFWbUNxzdV_",
+                                "to": [
+                                    [
+                                        "AU9dn9YhqL1YWxfemMfS97zjVXR6G9QX74XRq1jVLtP3snQtuuVk",
+                                        {
+                                            "type": "Simple",
+                                            "quantity": "0"
+                                        }
+                                    ]
+                                ],
+                                "propositionType": "PublicKeyCurve25519",
+                                "from": [],
+                                "minting": true,
+                                "txId": "bvEJk2bQG9QmnEXGErjJdJgkJ1GvfeKzMzXAP7bivUXB",
+                                "boxesToRemove": [],
+                                "fee": "0"
+                            }
+                        ],
+                        "version": 0
+                    },
+                    "blockSize": 655
                 }
             };
 
@@ -125,16 +154,16 @@ describe("Blocks", () => {
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
-            var response = await brambljs.getBlockById(parameters);
+            var response = await requests.getBlockById(parameters);
 
             // do validation here
-            assert.strictEqual(response.result.id, "GMbv6Ku3BQQGFj2WeGY6aYweAiEBpKUHVSHey6eUY1jt");
-            assert.strictEqual(response.result.version, 3);
-            assert.strictEqual(response.result.blockNumber, 1178);
+            assert.strictEqual(response.result.header.id, "2BTSL7ubSmADr6n5K7qNRodygTVmruHMy8MhtKuaC6G2H");
+            assert.strictEqual(response.result.body.version, 0);
+            assert.strictEqual(response.result.blockSize, 655);
         });
         it('should fail if no parameters present', function(done) {
             // make call without parameters
-            brambljs
+            requests
             .getBlockById()
             .then((response) => {
                 done(new Error("should not succeded"));
@@ -148,7 +177,7 @@ describe("Blocks", () => {
             // set "recipient" as empty string to validate
             parameters.blockId = "";
 
-            brambljs
+            requests
             .getBlockById(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
@@ -168,38 +197,89 @@ describe("Blocks", () => {
                 "jsonrpc": "2.0",
                 "id": "1",
                 "result": {
-                    "score": 16736420219225,
-                    "height": "629",
-                    "stateVersion": "G8kyTgM8Gd9HaTvsVHP11HLmummCZGBst5ABXEnUiCTZ",
+                    "height": "403",
+                    "score": 5527765018,
+                    "bestBlockId": "xeSu62ZNd4psnYvxj1M9QzrHTnxHZLsotqBNvjem3aGC",
                     "bestBlock": {
-                        "timestamp": 1586475020360,
-                        "inflation": 0,
-                        "signature": "wFEvphFVQ6VS6afoQDLeEdz9i6cYF8haWqt8ZvPaWiMmpaTTdE3o1zuTYPtRsAq5wWowFUkd7xbaJodC6NiyjBr",
-                        "blockSize": 372,
-                        "generatorBox": "111zEddudjZtxDVS3hwEhvLt2WfTbLt939RYCpm3FXQwbc3Wie9h489iGQVyBaiJrqxsZTCs5xEUMP6N",
-                        "version": 3,
-                        "id": "G8kyTgM8Gd9HaTvsVHP11HLmummCZGBst5ABXEnUiCTZ",
-                        "txs": [
-                            {
-                                "txType": "CoinbaseTransaction",
-                                "txHash": "7AuvHdcztKm5vwesq4UBVoqoNc9zTGATQLWWnk8FEQDZ",
-                                "timestamp": 1586475020359,
-                                "signatures": [
-                                    "4Rr8VVJfzHWKJM7g61hQzdPZ8H63RCSjQLUnhF4HsbCE1e6gYg9KpZw4SxeLVAg39t2toXg2yLs18aeZpFupdFGN"
-                                ],
-                                "newBoxes": [],
-                                "to": [
-                                    {
-                                        "proposition": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                                        "value": 0
-                                    }
-                                ],
-                                "fee": 0
-                            }
-                        ],
-                        "parentId": "ECtW7zZLaYkdoFDYTKNm9t67Rf7Ys6unSxDxRP6kMqg4"
-                    },
-                    "bestBlockId": "G8kyTgM8Gd9HaTvsVHP11HLmummCZGBst5ABXEnUiCTZ"
+                        "header": {
+                            "txRoot": "Hnr45z9TFKjS3YbKdUrTxszLeD9cErMPLQGz9kfpgDeb",
+                            "difficulty": 123164816978748752,
+                            "timestamp": 1614871235474,
+                            "bloomFilter": "111112aqEiuVS2efQXoVV33coDbqihkMzNt6CsCazeCAzTQ2j1YAds6tebhCDqBaDBs3Lo28WB",
+                            "height": 403,
+                            "signature": "92QJGw9ayXo1HeBZ5ngHERb1L4QCge8JSoGrbVTfoMYgE8HzG1k1RHEsRF6k2MzsAkyYSzUxRi4egBCuyftq7A5C",
+                            "generatorBox": {
+                                "nonce": "632651921866009156",
+                                "id": "HAkHigK5gLyf7h6sXrr6TXeN2e2kGuWn5eLe53muGBrD",
+                                "evidence": "MCeJ37GRGfqgzLwjn2G9yk5aN9ch91nVGgAmzWrvMMAq",
+                                "type": "ArbitBox",
+                                "value": {
+                                    "type": "Simple",
+                                    "quantity": "1000000"
+                                }
+                            },
+                            "version": 0,
+                            "id": "xeSu62ZNd4psnYvxj1M9QzrHTnxHZLsotqBNvjem3aGC",
+                            "publicKey": "XYD8eeqVNVbxW7KgPj9vWMzEph76vg7xNCRYQFWfneGd",
+                            "parentId": "xZvaaLKrFzznZ2t9ieMSihfgmstjB6xYM5EgZpgRnUnx"
+                        },
+                        "body": {
+                            "id": "xeSu62ZNd4psnYvxj1M9QzrHTnxHZLsotqBNvjem3aGC",
+                            "parentId": "xZvaaLKrFzznZ2t9ieMSihfgmstjB6xYM5EgZpgRnUnx",
+                            "txs": [
+                                {
+                                    "txType": "ArbitTransfer",
+                                    "timestamp": 1614871235474,
+                                    "signatures": {
+                                        "XYD8eeqVNVbxW7KgPj9vWMzEph76vg7xNCRYQFWfneGd": "9ZTNcebwgkxUn1sAipYcKFmTxAuTPAZngWdSkNZEoRc4mZCtpEBCU7bZMRZBjtjTQRC98hWxFCJ3wsEWxM4JqQL7"
+                                    },
+                                    "newBoxes": [],
+                                    "data": "xZvaaLKrFzznZ2t9ieMSihfgmstjB6xYM5EgZpgRnUnx_",
+                                    "to": [
+                                        [
+                                            "AU9dn9YhqL1YWxfemMfS97zjVXR6G9QX74XRq1jVLtP3snQtuuVk",
+                                            {
+                                                "type": "Simple",
+                                                "quantity": "0"
+                                            }
+                                        ]
+                                    ],
+                                    "propositionType": "PublicKeyCurve25519",
+                                    "from": [],
+                                    "minting": true,
+                                    "txId": "t6dpKT3o2jPQLgb2e2snEw4rGNqCdJiZ5KE1L57d5juE",
+                                    "boxesToRemove": [],
+                                    "fee": "0"
+                                },
+                                {
+                                    "txType": "PolyTransfer",
+                                    "timestamp": 1614871235474,
+                                    "signatures": {
+                                        "XYD8eeqVNVbxW7KgPj9vWMzEph76vg7xNCRYQFWfneGd": "AGKWbeTpS7JRT3jkfBJxaBUjvkfBQRRqntJGHh7gUPFBD1TJDyHkxkYkpUqTUNfkJncMFvNfhVybLoRiAEqqdWTv"
+                                    },
+                                    "newBoxes": [],
+                                    "data": "xZvaaLKrFzznZ2t9ieMSihfgmstjB6xYM5EgZpgRnUnx_",
+                                    "to": [
+                                        [
+                                            "AU9dn9YhqL1YWxfemMfS97zjVXR6G9QX74XRq1jVLtP3snQtuuVk",
+                                            {
+                                                "type": "Simple",
+                                                "quantity": "0"
+                                            }
+                                        ]
+                                    ],
+                                    "propositionType": "PublicKeyCurve25519",
+                                    "from": [],
+                                    "minting": true,
+                                    "txId": "frYhd49QqGAkWrVywsyWTyb37eAa8wq798gw4Ad7BGXe",
+                                    "boxesToRemove": [],
+                                    "fee": "0"
+                                }
+                            ],
+                            "version": 0
+                        },
+                        "blockSize": 655
+                    }
                 }
             };
 
@@ -211,12 +291,12 @@ describe("Blocks", () => {
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
-            var response = await brambljs.chainInfo(parameters);
+            var response = await requests.getLatestBlock(parameters);
 
             // do validation here
             assert.strictEqual(typeof response.result, "object");
             assert.strictEqual(typeof response.result.bestBlock, "object");
-            assert.strictEqual(response.result.bestBlockId, "G8kyTgM8Gd9HaTvsVHP11HLmummCZGBst5ABXEnUiCTZ");
+            assert.strictEqual(response.result.bestBlockId, "xeSu62ZNd4psnYvxj1M9QzrHTnxHZLsotqBNvjem3aGC");
         });
     });
 });
