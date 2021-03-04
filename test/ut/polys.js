@@ -35,7 +35,7 @@ describe("Polys", () => {
 
     // run this before all tests
     before(() => {
-        brambljs = new Requests();
+        requests = new Requests();
     });
 
     // run this before every test
@@ -53,10 +53,11 @@ describe("Polys", () => {
     describe("transfer polys", () => {
         beforeEach(() => {
             parameters = {
-                "recipient": "22222222222222222222222222222222222222222222",
-                "sender": ["6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ"],
-                "amount": 1,
-                "fee": 0,
+                "propositionType": "PublicKeyCurve25519",
+                "recipients": [["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE", 10]],
+                "sender": ["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE"],
+                "changeAddress": "AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE",
+                "fee": 1,
                 "data": ""
             };
         });
@@ -108,7 +109,7 @@ describe("Polys", () => {
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
-            var response = await brambljs.transferPolys(parameters);
+            var response = await requests.createRawPolyTransfer(parameters);
 
             // do validation here
             assert.strictEqual(response.result.txType, "PolyTransfer");
@@ -116,8 +117,8 @@ describe("Polys", () => {
         });
         it('should fail if no parameters present', function(done) {
             // make call without parameters
-            brambljs
-            .transferPolys()
+            requests
+            .createRawPolyTransfer()
             .then((response) => {
                 done(new Error("should not succeded"));
             })
@@ -128,38 +129,38 @@ describe("Polys", () => {
         });
         it('should fail if no recipient provided', function(done) {
             // set "recipient" as empty string to validate
-            parameters.recipient = "";
+            parameters.recipients = "";
 
-            brambljs
-            .transferPolys(parameters)
+            requests
+            .createRawPolyTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
             .catch((error) => {
-                expect(String(error)).to.equal('Error: A recipient must be specified');
+                expect(String(error)).to.equal('Error: At least one recipient must be specified');
                 done();
             });
         });
-        it('should fail if no amount provided', function(done) {
-            // set "amount" as empty string to validate
-            parameters.amount = "";
+        // it('should fail if no amount provided', function(done) {
+        //     // set "amount" as empty string to validate
+        //     parameters.amount = "";
 
-            brambljs
-            .transferPolys(parameters)
-            .then((response) => {
-                done(new Error("should not succeded"));
-            })
-            .catch((error) => {
-                expect(String(error)).to.equal('Error: An amount must be specified');
-                done();
-            });
-        });
+        //     requests
+        //     .createRawPolyTransfer(parameters)
+        //     .then((response) => {
+        //         done(new Error("should not succeded"));
+        //     })
+        //     .catch((error) => {
+        //         expect(String(error)).to.equal('Error: An amount must be specified');
+        //         done();
+        //     });
+        // });
         it('should fail if no fee provided', function(done) {
             // set "fee" as empty string to validate
             parameters.fee = "";
 
-            brambljs
-            .transferPolys(parameters)
+            requests
+            .createRawPolyTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
@@ -172,8 +173,8 @@ describe("Polys", () => {
             // set "fee" a value < 0
             parameters.fee = -23;
 
-            brambljs
-            .transferPolys(parameters)
+            requests
+            .createRawPolyTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })

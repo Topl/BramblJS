@@ -18,28 +18,23 @@ const validNetworks = ["local", "private", "toplnet", "valhalla", "hel"];
 const networksDefaults = {
   "local": {
     hex: "0x30",
-    decimal: 48,
-    url: "http://localhost:9085/"
+    decimal: 48
   },
   "private": {
     hex: "0x40",
-    decimal: 64,
-    url: "http://localhost:9085/"
+    decimal: 64
   },
   "toplnet": {
     hex: "0x01",
-    decimal: 1,
-    url: "https://torus.topl.services"
+    decimal: 1
   },
   "valhalla": {
     hex: "0x10",
-    decimal: 16,
-    url: "https://valhalla.torus.topl.services"
+    decimal: 16
   },
   "hel": {
     hex: "0x20",
-    decimal: 32,
-    url: "https://hel.torus.topl.services"
+    decimal: 32
   }
 };
 
@@ -246,14 +241,6 @@ function isValidNetwork(networkPrefix) {
 
 /**
  * @param {String} networkPrefix prefix of network to validate against
- * @returns {String} url of network
- */
-function getUrlByNetwork(networkPrefix) {
-  return networksDefaults[networkPrefix].url;
-}
-
-/**
- * @param {String} networkPrefix prefix of network to validate against
  * @returns {hex} hexadecimal value of network
  */
 function getHexByNetwork(networkPrefix) {
@@ -276,4 +263,4 @@ function getValidNetworksList() {
   return validNetworks;
 }
 
-module.exports = {isValidNetwork, getUrlByNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList, validateAddressesByNetwork, generatePubKeyHashAddress, createAssetCode};
+module.exports = {isValidNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList, validateAddressesByNetwork, generatePubKeyHashAddress, createAssetCode};

@@ -54,6 +54,8 @@ async function bramblRequest(routeInfo, params, self) {
   }
 };
 
+
+//TODO remove URL, no default.
 /**
  * @class Requests
  * @classdesc A class for sending requests to the Brambl layer interface of the given chain provider
@@ -74,7 +76,7 @@ class Requests {
     }
 
     // set url or get default values from utils
-    this.url = url || utils.getUrlByNetwork(this.networkPrefix);
+    this.url = url || "http://localhost:9085/";
 
     // set apiKey or set default
     this.apiKey = apiKey || "topl_the_world!";
@@ -359,7 +361,7 @@ class Requests {
     if (!params.tx) {
       throw new Error("A tx object must be specified");
     }
-    console.log(params.tx);
+    //console.log(params.tx);
     if (!params.tx.signatures || !Object.keys(params.tx.signatures)[0]) {
       throw new Error("Tx must include signatures");
     }
@@ -386,6 +388,7 @@ class Requests {
   }
 
   /* --------------------------------- Lookup Balances By Key --------------------------------------- */
+//TODO: check addresses?? add validation...
   /**
    * Get the balances of a specified public key in the keyfiles directory of the node
    * @param {Object} params - body parameters passed to the specified json-rpc method
