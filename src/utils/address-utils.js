@@ -198,8 +198,19 @@ function extractAddressesFromObj(obj) {
  * @param {string} shortName name of assets, up to 8 bytes long latin-1 enconding
  * @returns {string} return asset code
  */
-function createAssetCode(address, shortName) {
-  // TODO: add addresses validation
+function createAssetCode(networkPrefix, address, shortName) {
+  if (!isValidNetwork(networkPrefix)) {
+    throw new Error("Invalid network provided");
+  }
+
+  const validationResult = validateAddressesByNetwork(networkPrefix, address);
+  if (!validationResult.success) {
+    throw new Error("Invalid Addresses::" +
+      " Network Type: <" + this.networkPrefix + ">" +
+      " Invalid Addresses: <" + validationResult.invalidAddresses + ">" +
+      " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
+  }
+
   const decodedAddress = Base58.decode(address);
   const slicedAddress = Buffer.from(decodedAddress.slice(0, 34));
 
@@ -219,8 +230,6 @@ function createAssetCode(address, shortName) {
   const concatValues = Buffer.concat([version, slicedAddress, latin1ShortName], 43); // add trailing zeros, shortname must be 8 bytes long
   const encodedAssetCode = Base58.encode(concatValues);
 
-  // 6. return result in enconded base58
-  console.log(encodedAssetCode);
   return encodedAssetCode;
 }
 
@@ -256,8 +265,8 @@ function isValidMetadata(metadata) {
   return true;
 }
 
-// TODO check for network...
-createAssetCode("AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE", "test");
+// TODO: and add unit testing
+//createAssetCode("AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE", "test");
 // isValidAssetCode("5onXoYNRk1g5Fn6YmTpJnBPTgDd89SBwvSB4Hup2VVxeoXm2iMkHdGj5gT");
 
 // isValidLatin1("是是是");

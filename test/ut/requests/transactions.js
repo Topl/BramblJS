@@ -1,9 +1,9 @@
 /** Unit testing for transaction type funtionality:
+ * - get Mempool
  * - broadcast transaction
  * - lookup transaction by id
- * - lookup transaction in Mempool by id
- * - get Mempool
  * - lookup balances by addresses
+ * - lookup transaction in Mempool by id
  *
  * @author Raul Aragonez (r.aragonez@topl.me)
  * @date 2020.12.8
