@@ -285,7 +285,7 @@ brambl.requests.getLatestBlock()
 
 /* --------------------------------- Lookup Balances By Key --------------------------------------- */
 const addresses = ["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLos", "AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLos"];
-brambl.requests.lookupBalancesByKey({addresses: addresses})
+brambl.requests.lookupBalancesByAddresses({addresses: addresses})
   .then((res) => console.log(res))
   .catch((e) => console.error(e));
 

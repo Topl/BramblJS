@@ -350,7 +350,6 @@ class Requests {
     if (!params.tx) {
       throw new Error("A tx object must be specified");
     }
-    // console.log(params.tx);
     if (!params.tx.signatures || !Object.keys(params.tx.signatures)[0]) {
       throw new Error("Tx must include signatures");
     }
@@ -363,22 +362,29 @@ class Requests {
     return bramblRequest({id, method}, params, this);
   }
 
-  /* --------------------------------- Lookup Balances By Key --------------------------------------- */
-  // TODO: check addresses?? add validation...
+  /* --------------------------------- Lookup Balances By Addresses --------------------------------------- */
   /**
-   * Get the balances of a specified public key in the keyfiles directory of the node
+   * Get the balances of a specified addresses in the keyfiles directory of the node
    * @param {Object} params - body parameters passed to the specified json-rpc method
    * @param {string[]} params.addresses - An array of addresses to query the balance for
    * @param {string} [id="1"] - identifying number for the json-rpc request
    * @returns {object} json-rpc response from the chain
    * @memberof Requests
    */
-  async lookupBalancesByKey(params, id = "1") {
+  async lookupBalancesByAddresses(params, id = "1") {
     if (!params) {
       throw new Error("A parameter object must be specified");
     }
     if (!params.addresses || !Array.isArray(params.addresses)) {
-      throw new Error("A list of publicKeys must be specified");
+      throw new Error("A list of addresses must be specified");
+    }
+    // validate all addresses
+    const validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params.addresses);
+    if (!validationResult.success) {
+      throw new Error("Invalid Addresses::" +
+        " Network Type: <" + this.networkPrefix + ">" +
+        " Invalid Addresses: <" + validationResult.invalidAddresses + ">" +
+        " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
     }
     const method = "topl_balances";
     return bramblRequest({id, method}, params, this);

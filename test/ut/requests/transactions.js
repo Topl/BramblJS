@@ -2,6 +2,8 @@
  * - broadcast transaction
  * - lookup transaction by id
  * - lookup transaction in Mempool by id
+ * - get Mempool
+ * - lookup balances by addresses
  *
  * @author Raul Aragonez (r.aragonez@topl.me)
  * @date 2020.12.8
@@ -425,7 +427,7 @@ describe("Transactions", () => {
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
-            var response = await requests.lookupBalancesByKey(parameters);
+            var response = await requests.lookupBalancesByAddresses(parameters);
 
             // do validation here
             assert.strictEqual(typeof response.result, "object");
@@ -434,7 +436,7 @@ describe("Transactions", () => {
         it('should fail if no parameters present', function(done) {
             // make call without parameters
             requests
-            .lookupBalancesByKey()
+            .lookupBalancesByAddresses()
             .then((response) => {
                 done(new Error("should not succeded"));
             })
@@ -448,12 +450,12 @@ describe("Transactions", () => {
             parameters.addresses = "";
 
             requests
-            .lookupBalancesByKey(parameters)
+            .lookupBalancesByAddresses(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
             .catch((error) => {
-                expect(String(error)).to.equal('Error: A list of publicKeys must be specified');
+                expect(String(error)).to.equal('Error: A list of addresses must be specified');
                 done();
             });
         });
@@ -462,12 +464,28 @@ describe("Transactions", () => {
             parameters.addresses = {};
 
             requests
-            .lookupBalancesByKey(parameters)
+            .lookupBalancesByAddresses(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
             .catch((error) => {
-                expect(String(error)).to.equal('Error: A list of publicKeys must be specified');
+                expect(String(error)).to.equal('Error: A list of addresses must be specified');
+                done();
+            });
+        });
+        it('should fail if addresses are invalid', function(done) {
+            // set "tx" as empty string to validate
+            parameters.addresses = [
+                "AUA1XJxBn5M6rUz1EfSAXYvbcgys7noXxBei1Kp8iTykkxyAJeV"
+            ];
+
+            requests
+            .lookupBalancesByAddresses(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: Invalid Addresses:: Network Type: <private> Invalid Addresses: <AUA1XJxBn5M6rUz1EfSAXYvbcgys7noXxBei1Kp8iTykkxyAJeV> Invalid Checksums: <>');
                 done();
             });
         });

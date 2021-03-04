@@ -83,7 +83,7 @@ const rawArbitParams = {
 //   .catch((e) => console.error(e));
 
 /* ---------------------- Lookup Balances By Key ------------------------ */
-// requests.lookupBalancesByKey({addresses:["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE"]})
+// requests.lookupBalancesByAddresses({addresses:["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE"]})
 //   .then((res) => console.log(res))
 //   .catch((e) => console.error(e));
 
