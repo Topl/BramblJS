@@ -1,8 +1,8 @@
 /**
  * @author James Aman (j.aman@topl.me)
  * @author Raul Aragonez (r.aragonez@topl.me)
- * @version 3.0.0
- * @date 2020.4.03
+ * @version 1.0.0
+ * @date 2021.03.04
  **/
 
 "use strict";
@@ -16,7 +16,7 @@ const KeyManager = require("./modules/KeyManager");
 
 // Utilities
 const Hash = require("./utils/Hash");
-const addressUtils = require("./utils/address-utils.js");
+const Address = require("./utils/address-utils.js");
 
 // Libraries
 const pollTx = require("./lib/polling");
@@ -75,8 +75,8 @@ class Brambl {
     }
 
     // validate network prefix
-    if (!addressUtils.isValidNetwork(this.#networkPrefix)) {
-      throw new Error(`Invalid Network Prefix. Must be one of: ${addressUtils.getValidNetworksList()}`);
+    if (!Address.isValidNetwork(this.#networkPrefix)) {
+      throw new Error(`Invalid Network Prefix. Must be one of: ${Address.getValidNetworksList()}`);
     }
 
     if (requestsVar instanceof Requests) {
@@ -106,9 +106,8 @@ class Brambl {
       throw new Error("Incompatible network prefixes set for Requests and KeyManager Instances.");
     }
 
-    // Import utilities
-    this.utils = {Hash};
-    // TODO include helper fn as part of this.utils "address validation"
+    // Expose Utilities
+    this.utils = {Hash, Address};
   }
 
   /**

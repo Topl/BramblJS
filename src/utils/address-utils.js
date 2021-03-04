@@ -1,5 +1,3 @@
-// TODO: everything in UTILS should be part of BramblJS
-
 /**
  * @fileOverview Utility encryption related functions for KeyManager module.
  *
@@ -17,6 +15,7 @@ const blake = require("blake2");
 const validNetworks = ["local", "private", "toplnet", "valhalla", "hel"];
 
 // TODO: Feature - support custom define network
+// TODO: everything in UTILS should be part of BramblJS
 const networksDefaults = {
   "local": {
     hex: "0x30",
