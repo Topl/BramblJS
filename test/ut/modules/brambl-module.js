@@ -6,9 +6,9 @@
  *
  */
 
-const BrabmlJS = require("../../src/Brambl");
-const KeyManager = require("../../src/modules/KeyManager");
-const Requests = require("../../src/modules/Requests");
+const BrabmlJS = require("../../../src/Brambl");
+const KeyManager = require("../../../src/modules/KeyManager");
+const Requests = require("../../../src/modules/Requests");
 
 const assert = require("assert");
 const chai = require('chai');

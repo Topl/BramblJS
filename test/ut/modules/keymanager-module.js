@@ -6,7 +6,7 @@
  *
  */
 
-const KeyManager = require("../../src/modules/KeyManager");
+const KeyManager = require("../../../src/modules/KeyManager");
 const assert = require("assert");
 const chai = require('chai');
 const expect = chai.expect;

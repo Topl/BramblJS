@@ -1,5 +1,5 @@
-/** Unit testing for arbits type funtionality:
- * - create raw arbit transfer
+/** Unit testing for polys type funtionality:
+ * - transfer poly
  *
  * @author Raul Aragonez (r.aragonez@topl.me)
  * @date 2020.12.8
@@ -8,18 +8,17 @@
  * and Sinon(https://sinonjs.org/).
  */
 
-const Requests = require("../../src/modules/Requests");
+const Requests = require("../../../src/modules/Requests");
 const assert = require("assert");
 const sinon = require('sinon');
 const chai = require('chai');
 const expect = chai.expect;
 const nodeFetch = require('node-fetch');
-const { request } = require("http");
 
 /* -------------------------------------------------------------------------- */
-/*                          Arbits type unit tests                            */
+/*                          Polys type unit tests                             */
 /* -------------------------------------------------------------------------- */
-describe("Arbits", () => {
+describe("Polys", () => {
     const localTestObj = {"status":'200',json: () => {
             return {"test":"dummy data"}
         }};
@@ -50,34 +49,33 @@ describe("Arbits", () => {
         sinon.restore();
     });
 
-    /* ---------------------------- raw arbit -------------------------------- */
-    describe("create raw arbit transfer", () => {
+    /* ---------------------------- transfer polys -------------------------------- */
+    describe("transfer polys", () => {
         beforeEach(() => {
             parameters = {
                 "propositionType": "PublicKeyCurve25519",
-                "recipients": [["AUA1XJxBn5M6rUz1EfSAXYvbcgys7noXxBei1Kp8iTykkxyAJeVh", 10]],
-                "sender": ["AUA1XJxBn5M6rUz1EfSAXYvbcgys7noXxBei1Kp8iTykkxyAJeVh"],
-                "changeAddress": "AUA1XJxBn5M6rUz1EfSAXYvbcgys7noXxBei1Kp8iTykkxyAJeVh",
-                "consolidationAddress": "AUA1XJxBn5M6rUz1EfSAXYvbcgys7noXxBei1Kp8iTykkxyAJeVh",
+                "recipients": [["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE", 10]],
+                "sender": ["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE"],
+                "changeAddress": "AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE",
                 "fee": 1,
                 "data": ""
-            }
+            };
         });
 
-        it('should create raw arbit transfer', async () => {
+        it('should transfer poly', async () => {
             // query params using params under beforeEach()
             // mock response data
             let jsonObject = {
                 "jsonrpc": "2.0",
                 "id": "1",
                 "result": {
-                    "txType": "ArbitTransfer",
-                    "txHash": "EeRwxuVuMsrud2xfd2zXaADkqsAJkH6ve1WRNEXu2f7T",
-                    "timestamp": 1586471049860,
+                    "txType": "PolyTransfer",
+                    "txHash": "bGnxUP7Pqsm6ejVJtM6Fy49bYaMRnXYxy8GWmvodKoa",
+                    "timestamp": 1586470958034,
                     "signatures": [],
                     "newBoxes": [
-                        "iDW8A5GdVcSP1P6VdmSAkRFHTrSZ63G2PTvQZx8zy9a",
-                        "5oMe9ybDBpBSr8nXYLNoAb2Lf4no81xoxLgcXWNf4UqA"
+                        "7sCDKSMC3ULvm8PgTmDEPRQZ1HxpM5YThnWsU3friwJR",
+                        "6DEwauT4qJCqDb3hW9eJnWmXCzQRQAnsgx3NjaWJ416r"
                     ],
                     "data": "",
                     "to": [
@@ -93,11 +91,11 @@ describe("Arbits", () => {
                     "from": [
                         {
                             "proposition": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                            "nonce": "-269532489367390959"
+                            "nonce": "3596905697323859524"
                         }
                     ],
                     "boxesToRemove": [
-                        "852rQUseapF1mRUvN9Nu8Vt9Dt7ahj7X9aZ4s3xzeanj"
+                        "39HNS5UbKV75Ysqejt8mARN2vbtthNK2Fh3NEeHbEmry"
                     ],
                     "fee": 0
                 }
@@ -111,16 +109,16 @@ describe("Arbits", () => {
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
-            var response = await requests.createRawArbitTransfer(parameters);
+            var response = await requests.createRawPolyTransfer(parameters);
 
             // do validation here
-            assert.strictEqual(response.result.txType, "ArbitTransfer");
-            assert.strictEqual(response.result.txHash, "EeRwxuVuMsrud2xfd2zXaADkqsAJkH6ve1WRNEXu2f7T");
+            assert.strictEqual(response.result.txType, "PolyTransfer");
+            assert.strictEqual(response.result.txHash, "bGnxUP7Pqsm6ejVJtM6Fy49bYaMRnXYxy8GWmvodKoa");
         });
         it('should fail if no parameters present', function(done) {
             // make call without parameters
             requests
-            .createRawArbitTransfer()
+            .createRawPolyTransfer()
             .then((response) => {
                 done(new Error("should not succeded"));
             })
@@ -130,11 +128,11 @@ describe("Arbits", () => {
             });
         });
         it('should fail if no recipient provided', function(done) {
-            // set "assetCode" as empty string to validate
+            // set "recipient" as empty string to validate
             parameters.recipients = "";
 
             requests
-            .createRawArbitTransfer(parameters)
+            .createRawPolyTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
@@ -144,11 +142,11 @@ describe("Arbits", () => {
             });
         });
         // it('should fail if no amount provided', function(done) {
-        //     // set "assetCode" as empty string to validate
+        //     // set "amount" as empty string to validate
         //     parameters.amount = "";
 
         //     requests
-        //     .createRawArbitTransfer(parameters)
+        //     .createRawPolyTransfer(parameters)
         //     .then((response) => {
         //         done(new Error("should not succeded"));
         //     })
@@ -162,7 +160,7 @@ describe("Arbits", () => {
             parameters.fee = "";
 
             requests
-            .createRawArbitTransfer(parameters)
+            .createRawPolyTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
@@ -176,7 +174,7 @@ describe("Arbits", () => {
             parameters.fee = -23;
 
             requests
-            .createRawArbitTransfer(parameters)
+            .createRawPolyTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
