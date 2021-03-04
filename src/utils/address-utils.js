@@ -265,13 +265,6 @@ function isValidMetadata(metadata) {
   return true;
 }
 
-// TODO: and add unit testing
-//createAssetCode("AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE", "test");
-// isValidAssetCode("5onXoYNRk1g5Fn6YmTpJnBPTgDd89SBwvSB4Hup2VVxeoXm2iMkHdGj5gT");
-
-// isValidLatin1("是是是");
-// isValidMetadata("1234567是")
-
 /**
  * @param {String} networkPrefix prefix of network to validate against
  * @returns {boolean} true if network is valid and is included in the valid networks obj
@@ -304,4 +297,28 @@ function getValidNetworksList() {
   return validNetworks;
 }
 
-module.exports = {isValidNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList, validateAddressesByNetwork, generatePubKeyHashAddress, createAssetCode, isValidAssetCode, isValidMetadata};
+function getAddressNetwork(address) {
+  const decodedAddress = Base58.decode(address);
+  let result = {
+    success: false,
+    networkPrefix: "",
+    error: ""
+  };
+
+  if(decodedAddress.length > 0){
+    validNetworks.forEach(prefix => {
+      if(networksDefaults[prefix].decimal === decodedAddress[0]){
+        result.networkPrefix = prefix;
+      }
+    });
+    if(!isValidNetwork(result.networkPrefix)) {
+      result.success = false;
+      result.error = "invalid network prefix found";
+    } else {
+      result.success = true;
+    }
+  }
+  return result;
+}
+
+module.exports = {isValidNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList, validateAddressesByNetwork, generatePubKeyHashAddress, createAssetCode, isValidAssetCode, isValidMetadata, getAddressNetwork};

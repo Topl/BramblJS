@@ -104,7 +104,7 @@ describe("KeyManager", () => {
                 it('should instantiate using keyPath ' + test.it, (done) => {
                     // create test key
                     let keyMan = new KeyManager({
-                        'password':test.value,
+                        'password': test.value,
                         'constants': defaultTestOptions
                     });
                     expect(keyMan).to.have.property('pk');
@@ -125,8 +125,8 @@ describe("KeyManager", () => {
 
                             // create new key using path
                             let keyManTest = new KeyManager({
-                                'keyPath':keyfilePath,
-                                'password':test.value,
+                                'keyPath': keyfilePath,
+                                'password': test.value,
                                 'constants': defaultTestOptions
                             });
                             expect(keyManTest).to.have.property('pk');
@@ -206,10 +206,34 @@ describe("KeyManager", () => {
         });
     });
 
+    /* ---------------------------- unlock key -------------------------------- */
+    describe('unlockKey()', function() {
+        it('should set isLocked to false when unlocked', async () => {
+            keyMan.lockKey();
+            keyMan.unlockKey('password_test');
+            assert.strictEqual(keyMan.isLocked, false, "Key is unlocked");
+        });
+        it('should fail if key is already unlocked', async () => {
+            keyMan.lockKey();// ensure is locked
+            keyMan.unlockKey('password_test');
+
+            assert.throws(function() {
+                keyMan.unlockKey('password_test');
+            }, Error, 'Error: The key is already unlocked');
+        });
+        it('should fail if unlocking with incorrect password', async () => {
+            assert.throws(function() {
+                keyMan.lockKey();// ensure is locked
+                keyMan.unlockKey('password_test2');
+            }, Error, 'Error: Invalid password');
+        });
+    });
+
     /* ---------------------------- get key storage -------------------------------- */
     describe('getKeyStorage()', function() {
         it('should pass if key is unlocked', async () => {
             // key is unlocked by default
+            keyMan.unlockKey('password_test');
             let keyStorage = keyMan.getKeyStorage();
 
             assert.strictEqual(typeof keyStorage, "object");
@@ -268,6 +292,46 @@ describe("KeyManager", () => {
             assert.strictEqual(typeof signedKey, "object");
             assert.strictEqual(signedKey.constructor, Uint8Array);
             assert.strictEqual(signedKey.length, 64);
+        });
+    });
+
+    /* ---------------------------- getters -------------------------------- */
+    describe('Getters()', function() {
+        it('should pass get isLocked()', async () => {
+            assert.strictEqual(typeof keyMan.isLocked, "boolean");
+        });
+        it('should pass get pk()', async () => {
+            assert.strictEqual(typeof keyMan.pk, "string");
+        });
+        it('should pass get address()', async () => {
+            assert.strictEqual(typeof keyMan.address, "string");
+        });
+        it('should pass get networkPrefix()', async () => {
+            assert.strictEqual(typeof keyMan.networkPrefix, "string");
+        });
+    });
+
+    /* ---------------------------- getters -------------------------------- */
+    describe('setters()', function() {
+        it('should fail set isLocked()', async () => {
+            assert.throws(function() {
+                keyMan.isLocked = 'invalid';
+            }, Error, 'Invalid private variable access');
+        });
+        it('should fail set pk()', async () => {
+            assert.throws(function() {
+                keyMan.pk = 'invalid';
+            }, Error, 'Invalid private variable access');
+        });
+        it('should fail set address()', async () => {
+            assert.throws(function() {
+                keyMan.address = 'invalid';
+            }, Error, 'Invalid private variable access');
+        });
+        it('should fail set networkPrefix()', async () => {
+            assert.throws(function() {
+                keyMan.networkPrefix = 'invalid';
+            }, Error, 'Invalid private variable access');
         });
     });
 

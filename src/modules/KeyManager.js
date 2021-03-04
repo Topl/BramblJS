@@ -95,8 +95,30 @@ class KeyManager {
       // Imports key data object from keystore JSON file.
       const importFromFile = (filepath, password) => {
         const keyStorage = JSON.parse(fs.readFileSync(filepath));
-        // TODO: check address has valid network and it was instantiated correctly.
-        initKeyStorage(keyStorage, password);
+
+        // check if address is valid and has a valid network
+        if(keyStorage.address){
+          // determine prefix and set networkPrefix
+          let prefixResult = utils.getAddressNetwork(keyStorage.address);
+          if(prefixResult.success){
+            this.#networkPrefix = prefixResult.networkPrefix;
+          }else{
+            throw new Error(prefixResult.error);
+          }
+
+          // validate address
+          const validationResult = utils.validateAddressesByNetwork(this.networkPrefix, keyStorage.address);
+          if (!validationResult.success) {
+            throw new Error("Invalid Addresses::" +
+              " Network Type: <" + this.networkPrefix + ">" +
+              " Invalid Addresses: <" + validationResult.invalidAddresses + ">" +
+              " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
+          }
+
+          initKeyStorage(keyStorage, password);
+        } else {
+          throw new Error("No address found in key");
+        }
       };
 
       // initialize variables
@@ -118,8 +140,6 @@ class KeyManager {
       if (params.keyPath) {
         try {
           importFromFile(params.keyPath, params.password);
-          // TODO validate address...
-          // deteermine the network and set it...
         } catch (err) {
           throw new Error("Error importing keyfile - " + err);
         }
