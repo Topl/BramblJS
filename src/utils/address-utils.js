@@ -1,3 +1,5 @@
+// TODO: everything in UTILS should be part of BramblJS
+
 /**
  * @fileOverview Utility encryption related functions for KeyManager module.
  *
@@ -14,7 +16,7 @@ const blake = require("blake2");
 
 const validNetworks = ["local", "private", "toplnet", "valhalla", "hel"];
 
-// TODO: support custom define network
+// TODO: Feature - support custom define network
 const networksDefaults = {
   "local": {
     hex: "0x30",
@@ -37,8 +39,6 @@ const networksDefaults = {
     decimal: 32
   }
 };
-
-// TODO: include errors if the addresses are not valid. Include queue.
 
 /**
  * Check if addresses are valid by verifying:
@@ -114,10 +114,6 @@ function validateAddressesByNetwork(networkPrefix, addresses) {
   } else {
     result.success = true;
   }
-
-  // TODO: Remove this console logs.
-  // console.log("Addresses validation result: ");
-  // console.log(result);
 
   return result;
 }
@@ -228,8 +224,34 @@ function createAssetCode(address, shortName) {
   return encodedAssetCode;
 }
 
+function isValidAssetCode(assetCode) {
+  // concat 01 [version] + 34 bytes [address] + ^8bytes [asset name]
+  const decodedAssetCode = Base58.decode(assetCode);
+  if (decodedAssetCode.length !== 43 || decodedAssetCode[0] !== 1) {
+    return false;
+  }
+  return true;
+}
+
+function isValidMetadata(metadata) {
+  // ensure data is latin1
+  if(!metadata){
+    return false;
+  }
+
+  const latin1Buffer = Buffer.from(metadata, "latin1");
+  if (latin1Buffer.toString() !== metadata || latin1Buffer.length > 128) {
+    return false;
+  }
+  return true;
+}
+
 // TODO check for network...
-// createAssetCode("5jbAFMffTsm3z6FqpVLsyMkd4UZzu8hB5XQQE5T9SAqnmQTa8x8h", "123");
+// createAssetCode("5jbAFMffTsm3z6FqpVLsyMkd4UZzu8hB5XQQE5T9SAqnmQTa8x8h", "test");
+//isValidAssetCode("5onXoYNRk1g5Fn6YmTpJnBPTgDd89SBwvSB4Hup2VVxeoXm2iMkHdGj5gT");
+
+//isValidLatin1("是是是");
+//isValidMetadata("1234567是")
 
 /**
  * @param {String} networkPrefix prefix of network to validate against
@@ -263,4 +285,4 @@ function getValidNetworksList() {
   return validNetworks;
 }
 
-module.exports = {isValidNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList, validateAddressesByNetwork, generatePubKeyHashAddress, createAssetCode};
+module.exports = {isValidNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList, validateAddressesByNetwork, generatePubKeyHashAddress, createAssetCode, isValidAssetCode, isValidMetadata};

@@ -14,6 +14,7 @@
 const fetch = require("node-fetch");
 const utils = require("../utils/address-utils.js");
 const Base58 = require("base-58");
+const { util } = require("chai");
 
 /**
  * General builder function for formatting API request
@@ -54,8 +55,6 @@ async function bramblRequest(routeInfo, params, self) {
   }
 };
 
-
-//TODO remove URL, no default.
 /**
  * @class Requests
  * @classdesc A class for sending requests to the Brambl layer interface of the given chain provider
@@ -64,7 +63,7 @@ class Requests {
   /**
    * @constructor
    * @param {string} [networkPrefix="private"] Network Prefix, defaults to "private"
-   * @param {string} [url="http://localhost:9085/"] Chain provider location, local and private default to http://localhost:9085/
+   * @param {string} [url="http://localhost:9085/YOUR_PROJECT_ID"] Chain provider location, local and private default to http://localhost:9085/
    * @param {string} [apiKey="topl_the_world!"] Access key for authorizing requests to the client API ["x-api-key"], default to "topl_the_world!"
    */
   constructor(networkPrefix, url, apiKey) {
@@ -75,7 +74,7 @@ class Requests {
       throw new Error(`Invalid Network Prefix. Must be one of: ${utils.getValidNetworksList()}`);
     }
 
-    // set url or get default values from utils
+    // set url if provided or set default
     this.url = url || "http://localhost:9085/";
 
     // set apiKey or set default
@@ -138,17 +137,9 @@ class Requests {
     }
     if (!params.assetCode) {
       throw new Error("An assetCode must be specified");
+    } else if (!utils.isValidAssetCode(params.assetCode)) {
+      throw new Error("Invalid asset code");
     }
-    // TODO: add validation - 47 bytes MAX ( 1 version, 38 issuer address, and up to 8 for a name) = 94 chars
-    // TODO: add validation - 40 bytes MIN ( 1 version, 38 issuer address, and up to 1 for a name) = 80 chars
-    // TODO: assetCode: address - checksum ""
-    // TODO: given address and short name - > return a string
-    // else if (params.assetCode.length < 80 || params.assetCode.length > 94) {
-    //   throw new Error("Invalid byte length for assetCode");
-    // }
-
-    // TODO: everything in UTILS should be part of BramblJS
-
     if (!params.recipients || params.recipients.length < 1) {
       throw new Error("At least one recipient must be specified");
     }
@@ -203,10 +194,9 @@ class Requests {
         tokenValueHolder.securityRoot = securityRoot;
       }
 
-      // advance option - metadata: 128 byte string UTF8
       if (metadata !== undefined) {
-        // TODO check these are latin-1 encoding
-        if (metadata.length < 2 || metadata.length > 127 ) {
+        // advance option - metadata: up to 128 bytes
+        if(!utils.isValidMetadata(metadata)){
           throw new Error(`Invalid metadata in Recipient: ${params.recipients[i]}`);
         }
         tokenValueHolder.metadata = metadata;
