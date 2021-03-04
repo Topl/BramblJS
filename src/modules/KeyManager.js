@@ -97,12 +97,12 @@ class KeyManager {
         const keyStorage = JSON.parse(fs.readFileSync(filepath));
 
         // check if address is valid and has a valid network
-        if(keyStorage.address){
+        if (keyStorage.address) {
           // determine prefix and set networkPrefix
-          let prefixResult = utils.getAddressNetwork(keyStorage.address);
-          if(prefixResult.success){
+          const prefixResult = utils.getAddressNetwork(keyStorage.address);
+          if (prefixResult.success) {
             this.#networkPrefix = prefixResult.networkPrefix;
-          }else{
+          } else {
             throw new Error(prefixResult.error);
           }
 

@@ -194,6 +194,7 @@ function extractAddressesFromObj(obj) {
 
 /**
  *
+ * @param {string} networkPrefix prefix of network where address will be used
  * @param {string} address address to be used to create asset code
  * @param {string} shortName name of assets, up to 8 bytes long latin-1 enconding
  * @returns {string} return asset code
@@ -296,22 +297,26 @@ function getDecimalByNetwork(networkPrefix) {
 function getValidNetworksList() {
   return validNetworks;
 }
-
+/**
+ *
+ * @param {string} address valid address to retrieve network prefix from
+ * @returns {object} obj with {success: <boolean>, networkPrefix: "<prefix if found>", error: "<message>"}
+ */
 function getAddressNetwork(address) {
   const decodedAddress = Base58.decode(address);
-  let result = {
+  const result = {
     success: false,
     networkPrefix: "",
     error: ""
   };
 
-  if(decodedAddress.length > 0){
-    validNetworks.forEach(prefix => {
-      if(networksDefaults[prefix].decimal === decodedAddress[0]){
+  if (decodedAddress.length > 0) {
+    validNetworks.forEach((prefix) => {
+      if (networksDefaults[prefix].decimal === decodedAddress[0]) {
         result.networkPrefix = prefix;
       }
     });
-    if(!isValidNetwork(result.networkPrefix)) {
+    if (!isValidNetwork(result.networkPrefix)) {
       result.success = false;
       result.error = "invalid network prefix found";
     } else {
