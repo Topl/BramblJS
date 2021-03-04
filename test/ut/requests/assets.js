@@ -1,6 +1,5 @@
 /** Unit testing for assets type funtionality:
  * - create raw asset transfer
- * - transfer raw asset transfer
  *
  * @author Raul Aragonez (r.aragonez@topl.me)
  * @date 2020.12.8
@@ -58,7 +57,7 @@ describe("Assets", () => {
                 "recipients": [
                   ["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE", 2]
                 ],
-                "assetCode": "AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE",
+                "assetCode": "6LmGjTkSGsgybGM5ZmjzjDv147p2yuKVAyE9npdDTGwVG5FeparzU965Vq",
                 "sender": ["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE"],
                 "changeAddress": "AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE",//brambl.keyManager.pk
                 "minting": true,
@@ -66,22 +65,22 @@ describe("Assets", () => {
               }
         });
 
-        // it('should NOT fail if parameters are valid', function(done) {
-        //     const validParameters = ["amount", "assetCode", "data",
-        //     "fee", "issuer", "recipient", "sender"];
-        //     expect(parameters).to.contain.keys(validParameters);
+        it('should NOT fail if parameters are valid', function(done) {
+            const validParameters = ["propositionType", "recipients", "assetCode",
+            "sender", "changeAddress", "minting", "fee"];
+            expect(parameters).to.contain.keys(validParameters);
 
-        //     requests
-        //     .createRawAssetTransfer(parameters)
-        //     .then((response) => {
-        //         assert.strictEqual(typeof response, "object");
-        //         assert.strictEqual(response.test, "dummy data");
-        //         done();
-        //     })
-        //     .catch((error) => {
-        //         done(new Error("Parameters Error: " + error));
-        //     });
-        // });
+            requests
+            .createRawAssetTransfer(parameters)
+            .then((response) => {
+                assert.strictEqual(typeof response, "object");
+                assert.strictEqual(response.test, "dummy data");
+                done();
+            })
+            .catch((error) => {
+                done(new Error("Parameters Error: " + error));
+            });
+        });
 
         it('should create raw asset', async () => {
             // query params using params under beforeEach()
@@ -152,6 +151,20 @@ describe("Assets", () => {
                 done();
             });
         });
+        it('should fail if invalid propositionType provided', function(done) {
+            // set "propositionType" as empty string to validate
+            parameters.propositionType = "testProposition";
+
+            requests
+            .createRawAssetTransfer(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: A propositionTYpe must be specified: <PublicKeyCurve25519, ThresholdCurve25519>');
+                done();
+            });
+        });
         it('should fail if no sender provided', function(done) {
             // set "sender" as empty string to validate
             parameters.sender = "";
@@ -180,8 +193,8 @@ describe("Assets", () => {
                 done();
             });
         });
-        it('should fail if no recipient provided', function(done) {
-            // set "recipient" as empty string to validate
+        it('should fail if no recipients provided', function(done) {
+            // set "recipients" as empty string to validate
             parameters.recipients = "";
 
             requests
@@ -194,20 +207,34 @@ describe("Assets", () => {
                 done();
             });
         });
-        // it('should fail if no amount provided', function(done) {
-        //     // set "amount" as empty string to validate
-        //     parameters.amount = "";
+        it('should fail if no changeAddress provided', function(done) {
+            // set "changeAddress" as empty string to validate
+            parameters.changeAddress = "";
 
-        //     requests
-        //     .createRawAssetTransfer(parameters)
-        //     .then((response) => {
-        //         done(new Error("should not succeded"));
-        //     })
-        //     .catch((error) => {
-        //         expect(String(error)).to.equal('Error: An amount must be specified');
-        //         done();
-        //     });
-        // });
+            requests
+            .createRawAssetTransfer(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: A changeAddress must be specified');
+                done();
+            });
+        });
+        it('should fail if no minting provided', function(done) {
+            // set "minting" as empty string to validate
+            parameters.minting = "";
+
+            requests
+            .createRawAssetTransfer(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: Minting boolean value must be specified');
+                done();
+            });
+        });
         it('should fail if no fee provided', function(done) {
             // set "fee" as empty string to validate
             parameters.fee = "";

@@ -14,7 +14,6 @@
 const fetch = require("node-fetch");
 const utils = require("../utils/address-utils.js");
 const Base58 = require("base-58");
-const { util } = require("chai");
 
 /**
  * General builder function for formatting API request
@@ -196,7 +195,7 @@ class Requests {
 
       if (metadata !== undefined) {
         // advance option - metadata: up to 128 bytes
-        if(!utils.isValidMetadata(metadata)){
+        if (!utils.isValidMetadata(metadata)) {
           throw new Error(`Invalid metadata in Recipient: ${params.recipients[i]}`);
         }
         tokenValueHolder.metadata = metadata;
@@ -224,16 +223,16 @@ class Requests {
    * @memberof Requests
    */
   async createRawPolyTransfer(params, id = "1") {
-    const validPropositions = ["PublicKeyCurve25519", "TheresholdCurve25519"];
+    const validPropositions = ["PublicKeyCurve25519", "ThresholdCurve25519"];
 
     if (!params) {
       throw new Error("A parameter object must be specified");
     }
     if (!params.propositionType || !validPropositions.includes(params.propositionType)) {
-      throw new Error("A propositionTYpe must be specified: <PublicKeyCurve25519, TheresholdCurve25519>");
+      throw new Error("A propositionType must be specified: <PublicKeyCurve25519, ThresholdCurve25519>");
     }
     if (!params.sender) {
-      throw new Error("An asset issuer must be specified");
+      throw new Error("An asset sender must be specified");
     }
     if (!params.recipients || params.recipients.length < 1) {
       throw new Error("At least one recipient must be specified");
@@ -286,16 +285,16 @@ class Requests {
    * @memberof Requests
    */
   async createRawArbitTransfer(params, id = "1") {
-    const validPropositions = ["PublicKeyCurve25519", "TheresholdCurve25519"];
+    const validPropositions = ["PublicKeyCurve25519", "ThresholdCurve25519"];
 
     if (!params) {
       throw new Error("A parameter object must be specified");
     }
     if (!params.propositionType || !validPropositions.includes(params.propositionType)) {
-      throw new Error("A propositionTYpe must be specified: <PublicKeyCurve25519, TheresholdCurve25519>");
+      throw new Error("A propositionType must be specified: <PublicKeyCurve25519, ThresholdCurve25519>");
     }
     if (!params.sender) {
-      throw new Error("An asset issuer must be specified");
+      throw new Error("An asset sender must be specified");
     }
     if (!params.recipients || params.recipients.length < 1) {
       throw new Error("At least one recipient must be specified");
@@ -351,7 +350,7 @@ class Requests {
     if (!params.tx) {
       throw new Error("A tx object must be specified");
     }
-    //console.log(params.tx);
+    // console.log(params.tx);
     if (!params.tx.signatures || !Object.keys(params.tx.signatures)[0]) {
       throw new Error("Tx must include signatures");
     }
@@ -378,7 +377,7 @@ class Requests {
   }
 
   /* --------------------------------- Lookup Balances By Key --------------------------------------- */
-//TODO: check addresses?? add validation...
+  // TODO: check addresses?? add validation...
   /**
    * Get the balances of a specified public key in the keyfiles directory of the node
    * @param {Object} params - body parameters passed to the specified json-rpc method

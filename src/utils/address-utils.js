@@ -224,6 +224,11 @@ function createAssetCode(address, shortName) {
   return encodedAssetCode;
 }
 
+/**
+ *
+ * @param {string} assetCode string in latin1 encoding
+ * @returns {boolean} true if valid
+ */
 function isValidAssetCode(assetCode) {
   // concat 01 [version] + 34 bytes [address] + ^8bytes [asset name]
   const decodedAssetCode = Base58.decode(assetCode);
@@ -233,9 +238,14 @@ function isValidAssetCode(assetCode) {
   return true;
 }
 
+/**
+ *
+ * @param {string} metadata string in latin1 encoding
+ * @returns {boolean} true if valid
+ */
 function isValidMetadata(metadata) {
   // ensure data is latin1
-  if(!metadata){
+  if (!metadata) {
     return false;
   }
 
@@ -247,11 +257,11 @@ function isValidMetadata(metadata) {
 }
 
 // TODO check for network...
-// createAssetCode("5jbAFMffTsm3z6FqpVLsyMkd4UZzu8hB5XQQE5T9SAqnmQTa8x8h", "test");
-//isValidAssetCode("5onXoYNRk1g5Fn6YmTpJnBPTgDd89SBwvSB4Hup2VVxeoXm2iMkHdGj5gT");
+createAssetCode("AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE", "test");
+// isValidAssetCode("5onXoYNRk1g5Fn6YmTpJnBPTgDd89SBwvSB4Hup2VVxeoXm2iMkHdGj5gT");
 
-//isValidLatin1("是是是");
-//isValidMetadata("1234567是")
+// isValidLatin1("是是是");
+// isValidMetadata("1234567是")
 
 /**
  * @param {String} networkPrefix prefix of network to validate against

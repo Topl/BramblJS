@@ -1,5 +1,5 @@
 /** Unit testing for polys type funtionality:
- * - transfer poly
+ * - create raw poly transfer
  *
  * @author Raul Aragonez (r.aragonez@topl.me)
  * @date 2020.12.8
@@ -50,7 +50,7 @@ describe("Polys", () => {
     });
 
     /* ---------------------------- transfer polys -------------------------------- */
-    describe("transfer polys", () => {
+    describe("create raw polys transfer", () => {
         beforeEach(() => {
             parameters = {
                 "propositionType": "PublicKeyCurve25519",
@@ -62,7 +62,7 @@ describe("Polys", () => {
             };
         });
 
-        it('should transfer poly', async () => {
+        it('should create raw polys transfer', async () => {
             // query params using params under beforeEach()
             // mock response data
             let jsonObject = {
@@ -127,8 +127,22 @@ describe("Polys", () => {
                 done();
             });
         });
-        it('should fail if no recipient provided', function(done) {
-            // set "recipient" as empty string to validate
+        it('should fail if invalid propositionType provided', function(done) {
+            // set "propositionType" as empty string to validate
+            parameters.propositionType = "testProposition";
+
+            requests
+            .createRawPolyTransfer(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: A propositionType must be specified: <PublicKeyCurve25519, ThresholdCurve25519>');
+                done();
+            });
+        });
+        it('should fail if no recipients provided', function(done) {
+            // set "recipients" as empty string to validate
             parameters.recipients = "";
 
             requests
@@ -141,20 +155,34 @@ describe("Polys", () => {
                 done();
             });
         });
-        // it('should fail if no amount provided', function(done) {
-        //     // set "amount" as empty string to validate
-        //     parameters.amount = "";
+        it('should fail if no changeAddress provided', function(done) {
+            // set "changeAddress" as empty string to validate
+            parameters.changeAddress = "";
 
-        //     requests
-        //     .createRawPolyTransfer(parameters)
-        //     .then((response) => {
-        //         done(new Error("should not succeded"));
-        //     })
-        //     .catch((error) => {
-        //         expect(String(error)).to.equal('Error: An amount must be specified');
-        //         done();
-        //     });
-        // });
+            requests
+            .createRawPolyTransfer(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: A changeAddress must be specified');
+                done();
+            });
+        });
+        it('should fail if no sender provided', function(done) {
+            // set "sender" as empty string to validate
+            parameters.sender = "";
+
+            requests
+            .createRawPolyTransfer(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: An asset sender must be specified');
+                done();
+            });
+        });
         it('should fail if no fee provided', function(done) {
             // set "fee" as empty string to validate
             parameters.fee = "";
