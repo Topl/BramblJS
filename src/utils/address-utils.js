@@ -205,7 +205,7 @@ function extractAddressesFromObj(obj) {
  *
  * @param {string} address address to be used to create asset code
  * @param {string} shortName name of assets, up to 8 bytes long latin-1 enconding
- * @returns {string} returm asset code
+ * @returns {string} return asset code
  */
 function createAssetCode(address, shortName) {
   //TODO: add addresses validation

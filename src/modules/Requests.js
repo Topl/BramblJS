@@ -1,5 +1,3 @@
-// TODO remove routes support
-
 /** A Javascript API wrapper module for the Bifrost Protocol.
  * Currently supports version 4.1 of Bifrost's Brambl-Layer API
  * Documentation for Brambl-layer is available at https://Requests.docs.topl.co
@@ -30,7 +28,7 @@ const Base58 = require("base-58");
  */
 async function bramblRequest(routeInfo, params, self) {
   try {
-    const route = routeInfo.route;
+    //const projectId = self.projectId;
     const body = {
       jsonrpc: "2.0",
       id: routeInfo.id || "1",
@@ -40,12 +38,12 @@ async function bramblRequest(routeInfo, params, self) {
       ]
     };
     const payload = {
-      url: self.url + route,
+      url: self.url,
       method: "POST",
       headers: self.headers,
       body: JSON.stringify(body)
     };
-    const response = await (await fetch(self.url + route, payload)).json();
+    const response = await (await fetch(self.url, payload)).json();
     if (response.error) {
       throw response;
     } else {
@@ -215,9 +213,8 @@ class Requests {
       params.recipients[i] = [address, tokenValueHolder];
     }
 
-    const route = "";
     const method = "topl_rawAssetTransfer";
-    return bramblRequest({route, method, id}, params, this);
+    return bramblRequest({id, method}, params, this);
   }
 
   /* ---------------------- Create Raw Poly Trasfer ------------------------ */
@@ -277,9 +274,8 @@ class Requests {
       }
     });
 
-    const route = "";
     const method = "topl_rawPolyTransfer";
-    return bramblRequest({route, method, id}, params, this);
+    return bramblRequest({id, method}, params, this);
   }
 
   /* ---------------------- Create Raw Arbit Trasfer ------------------------ */
@@ -343,9 +339,8 @@ class Requests {
       }
     });
 
-    const route = "";
     const method = "topl_rawArbitTransfer";
-    return bramblRequest({route, method, id}, params, this);
+    return bramblRequest({id, method}, params, this);
   }
 
   /* --------------------------------- Broadcast Tx --------------------------------------- */
@@ -372,9 +367,9 @@ class Requests {
     if (Object.keys(params.tx).length < 10 && params.tx.constructor === Object) {
       throw new Error("Invalid tx object, one or more tx keys not specified");
     }
-    const route = "";
+
     const method = "topl_broadcastTx";
-    return bramblRequest({route, method, id}, params, this);
+    return bramblRequest({id, method}, params, this);
   }
 
   /* --------------------------------- Get Latest Block --------------------------------------- */
@@ -386,9 +381,8 @@ class Requests {
    */
   async getLatestBlock(id = "1") {
     const params = {};
-    const route = "";
     const method = "topl_head";
-    return bramblRequest({route, method, id}, params, this);
+    return bramblRequest({id, method}, params, this);
   }
 
   /* --------------------------------- Lookup Balances By Key --------------------------------------- */
@@ -407,9 +401,8 @@ class Requests {
     if (!params.addresses || !Array.isArray(params.addresses)) {
       throw new Error("A list of publicKeys must be specified");
     }
-    const route = "";
     const method = "topl_balances";
-    return bramblRequest({route, method, id}, params, this);
+    return bramblRequest({id, method}, params, this);
   }
 
   /* ----------------------------- Get Mempool ------------------------------------ */
@@ -421,9 +414,8 @@ class Requests {
    */
   async getMempool(id = "1") {
     const params = {};
-    const route = "";
     const method = "topl_mempool";
-    return bramblRequest({route, method, id}, params, this);
+    return bramblRequest({id, method}, params, this);
   }
 
   /* -------------------------- Get Tx By Id ---------------------------- */
@@ -442,9 +434,8 @@ class Requests {
     if (!params.transactionId) {
       throw new Error("A transactionId must be specified");
     }
-    const route = "";
     const method = "topl_transactionById";
-    return bramblRequest({route, method, id}, params, this);
+    return bramblRequest({id, method}, params, this);
   }
 
   /* -------------------------- Get Tx From Mempool ---------------------------- */
@@ -463,9 +454,8 @@ class Requests {
     if (!params.transactionId) {
       throw new Error("A transactionId must be specified");
     }
-    const route = "";
     const method = "topl_transactionFromMempool";
-    return bramblRequest({route, method, id}, params, this);
+    return bramblRequest({id, method}, params, this);
   }
 
   /* ----------------------------- Get Block By Id --------------------------------- */
@@ -484,9 +474,8 @@ class Requests {
     if (!params.blockId) {
       throw new Error("A blockId must be specified");
     }
-    const route = "";
     const method = "topl_blockById";
-    return bramblRequest({route, method, id}, params, this);
+    return bramblRequest({id, method}, params, this);
   }
 
   /* ----------------------------- Get Block By Height --------------------------------- */
@@ -512,9 +501,8 @@ class Requests {
       throw new Error("Height must be a number >= 1");
     }
 
-    const route = "";
     const method = "topl_blockByHeight";
-    return bramblRequest({route, method, id}, params, this);
+    return bramblRequest({id, method}, params, this);
   }
 }
 
