@@ -204,33 +204,37 @@ function extractAddressesFromObj(obj) {
 /**
  *
  * @param {string} address address to be used to create asset code
- * @param {string} assetName name of assets, up to 8 bytes long latin-1 enconding
+ * @param {string} shortName name of assets, up to 8 bytes long latin-1 enconding
+ * @returns {string} returm asset code
  */
-function createAssetCode(address, assetName) {
-  /**
-   *
-      00 4001d55f806be2759a3523d7b83ca9288396e8df521466212c80168509f638847b40 04303030
+function createAssetCode(address, shortName) {
+  //TODO: add addresses validation
+  const decodedAddress = Base58.decode(address);
+  const slicedAddress = Buffer.from(decodedAddress.slice(0, 34));
 
-         40 01 d55f806be2759a3523d7b83ca9288396e8df521466212c80168509f638847b40 - 187ff961
+  // validate shortName
+  if(!shortName || shortName.length > 8) {
+    throw new Error("shortname must be defined with length up to 8 bytes in latin-1 encoding");
+  }
 
-      fn(){
-      01
-      34 bytes of address
-      + 8 bytes max for name
+  // ensure shortName is latin1
+  const latin1ShortName = Buffer.from(shortName, 'latin1');
+  if(latin1ShortName.toString() !== shortName){
+    throw new Error("shortname must be latin-1 encoding, other languages are currenlty not supported");
+  }
 
-      in latin-1 encoding
-      }
+  // concat 01 [version] + 34 bytes [address] + ^8bytes [asset name]
+  const version = new Uint8Array(["0x01"]);
+  const concatValues = Buffer.concat([version, slicedAddress, latin1ShortName], 43); // add trailing zeros, shortname must be 8 bytes long
+  const encodedAssetCode = Base58.encode(concatValues);
 
-      ::fixed width - include zeros to make it 8 bytes long::
-
-      1. get address in base58
-      2. ignore network prefix
-      3. ignore the checksum
-      4. get assetName and convert to bytes, concat 0's at the beginning to make it 8 bytes long
-      5. concat 01 + 34 bytes of address + asset name
-      6. return result in enconded base58
-   */
+  // 6. return result in enconded base58
+  console.log(encodedAssetCode);
+  return encodedAssetCode;
 }
+
+//TODO check for network...
+createAssetCode("5jbAFMffTsm3z6FqpVLsyMkd4UZzu8hB5XQQE5T9SAqnmQTa8x8h", "測123");
 
 /**
  * @param {String} networkPrefix prefix of network to validate against
