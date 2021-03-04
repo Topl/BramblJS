@@ -1,5 +1,5 @@
 /** A Javascript API wrapper module for the Bifrost Protocol.
- * Currently supports version 4.1 of Bifrost's Brambl-Layer API
+ * Currently supports Bifrost v1.3
  * Documentation for Brambl-layer is available at https://Requests.docs.topl.co
  *
  * @author James Aman (j.aman@topl.me)
@@ -28,7 +28,7 @@ const Base58 = require("base-58");
  */
 async function bramblRequest(routeInfo, params, self) {
   try {
-    //const projectId = self.projectId;
+    // const projectId = self.projectId;
     const body = {
       jsonrpc: "2.0",
       id: routeInfo.id || "1",

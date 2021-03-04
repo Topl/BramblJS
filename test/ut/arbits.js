@@ -14,6 +14,7 @@ const sinon = require('sinon');
 const chai = require('chai');
 const expect = chai.expect;
 const nodeFetch = require('node-fetch');
+const { request } = require("http");
 
 /* -------------------------------------------------------------------------- */
 /*                          Arbits type unit tests                            */
@@ -35,7 +36,7 @@ describe("Arbits", () => {
 
     // run this before all tests
     before(() => {
-        brambljs = new Requests();
+        requests = new Requests();
     });
 
     // run this before every test
@@ -53,12 +54,14 @@ describe("Arbits", () => {
     describe("create raw arbit transfer", () => {
         beforeEach(() => {
             parameters = {
-                "recipient": "22222222222222222222222222222222222222222222",
-                "sender": ["6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ"],
-                "amount": 1,
-                "fee": 0,
+                "propositionType": "PublicKeyCurve25519",
+                "recipients": [["AUA1XJxBn5M6rUz1EfSAXYvbcgys7noXxBei1Kp8iTykkxyAJeVh", 10]],
+                "sender": ["AUA1XJxBn5M6rUz1EfSAXYvbcgys7noXxBei1Kp8iTykkxyAJeVh"],
+                "changeAddress": "AUA1XJxBn5M6rUz1EfSAXYvbcgys7noXxBei1Kp8iTykkxyAJeVh",
+                "consolidationAddress": "AUA1XJxBn5M6rUz1EfSAXYvbcgys7noXxBei1Kp8iTykkxyAJeVh",
+                "fee": 1,
                 "data": ""
-            };
+            }
         });
 
         it('should create raw arbit transfer', async () => {
@@ -108,7 +111,7 @@ describe("Arbits", () => {
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
-            var response = await brambljs.transferArbits(parameters);
+            var response = await requests.createRawArbitTransfer(parameters);
 
             // do validation here
             assert.strictEqual(response.result.txType, "ArbitTransfer");
@@ -116,8 +119,8 @@ describe("Arbits", () => {
         });
         it('should fail if no parameters present', function(done) {
             // make call without parameters
-            brambljs
-            .transferArbits()
+            requests
+            .createRawArbitTransfer()
             .then((response) => {
                 done(new Error("should not succeded"));
             })
@@ -128,38 +131,38 @@ describe("Arbits", () => {
         });
         it('should fail if no recipient provided', function(done) {
             // set "assetCode" as empty string to validate
-            parameters.recipient = "";
+            parameters.recipients = "";
 
-            brambljs
-            .transferArbits(parameters)
+            requests
+            .createRawArbitTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
             .catch((error) => {
-                expect(String(error)).to.equal('Error: A recipient must be specified');
+                expect(String(error)).to.equal('Error: At least one recipient must be specified');
                 done();
             });
         });
-        it('should fail if no amount provided', function(done) {
-            // set "assetCode" as empty string to validate
-            parameters.amount = "";
+        // it('should fail if no amount provided', function(done) {
+        //     // set "assetCode" as empty string to validate
+        //     parameters.amount = "";
 
-            brambljs
-            .transferArbits(parameters)
-            .then((response) => {
-                done(new Error("should not succeded"));
-            })
-            .catch((error) => {
-                expect(String(error)).to.equal('Error: An amount must be specified');
-                done();
-            });
-        });
+        //     requests
+        //     .createRawArbitTransfer(parameters)
+        //     .then((response) => {
+        //         done(new Error("should not succeded"));
+        //     })
+        //     .catch((error) => {
+        //         expect(String(error)).to.equal('Error: An amount must be specified');
+        //         done();
+        //     });
+        // });
         it('should fail if no fee provided', function(done) {
             // set "fee" as empty string to validate
             parameters.fee = "";
 
-            brambljs
-            .transferArbits(parameters)
+            requests
+            .createRawArbitTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
@@ -172,8 +175,8 @@ describe("Arbits", () => {
             // set "fee" a value < 0
             parameters.fee = -23;
 
-            brambljs
-            .transferArbits(parameters)
+            requests
+            .createRawArbitTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })

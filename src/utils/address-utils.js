@@ -208,18 +208,18 @@ function extractAddressesFromObj(obj) {
  * @returns {string} return asset code
  */
 function createAssetCode(address, shortName) {
-  //TODO: add addresses validation
+  // TODO: add addresses validation
   const decodedAddress = Base58.decode(address);
   const slicedAddress = Buffer.from(decodedAddress.slice(0, 34));
 
   // validate shortName
-  if(!shortName || shortName.length > 8) {
+  if (!shortName || shortName.length > 8) {
     throw new Error("shortname must be defined with length up to 8 bytes in latin-1 encoding");
   }
 
   // ensure shortName is latin1
-  const latin1ShortName = Buffer.from(shortName, 'latin1');
-  if(latin1ShortName.toString() !== shortName){
+  const latin1ShortName = Buffer.from(shortName, "latin1");
+  if (latin1ShortName.toString() !== shortName) {
     throw new Error("shortname must be latin-1 encoding, other languages are currenlty not supported");
   }
 
@@ -233,8 +233,8 @@ function createAssetCode(address, shortName) {
   return encodedAssetCode;
 }
 
-//TODO check for network...
-createAssetCode("5jbAFMffTsm3z6FqpVLsyMkd4UZzu8hB5XQQE5T9SAqnmQTa8x8h", "測123");
+// TODO check for network...
+// createAssetCode("5jbAFMffTsm3z6FqpVLsyMkd4UZzu8hB5XQQE5T9SAqnmQTa8x8h", "123");
 
 /**
  * @param {String} networkPrefix prefix of network to validate against
