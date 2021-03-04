@@ -1,5 +1,6 @@
 /** Unit testing for blocks type funtionality:
- * - Lookup Block
+ * - Lookup Block by Id
+ * - Lookup Block by Height
  * - Get the latest block in the chain
  *
  * @author Raul Aragonez (r.aragonez@topl.me)
@@ -184,6 +185,183 @@ describe("Blocks", () => {
             })
             .catch((error) => {
                 expect(String(error)).to.equal('Error: A blockId must be specified');
+                done();
+            });
+        });
+    });
+
+    /* ---------------------------- lookup block by height -------------------------------- */
+    describe("lookup block by height", () => {
+        beforeEach(() => {
+            parameters = {
+                "height": 10
+            }
+        });
+
+        it('should lookup block by height', async () => {
+            // query params using params under beforeEach()
+            // mock response data
+            let jsonObject = {
+                "jsonrpc": "2.0",
+                "id": "1",
+                "result": {
+                    "header": {
+                        "txRoot": "DX1Fsb1MdMvMcG3AcvJ4w5gxsKXrPjGv5qrmTvXR2WWt",
+                        "difficulty": 1051840731240324224,
+                        "timestamp": 1614870125215,
+                        "bloomFilter": "111112aqEiuVS2efQXoVV33coDbqihkMzNt6CsCazeCAzTQ2j1YAds6tebhCDqBaDBs3Lo28WB",
+                        "height": 10,
+                        "signature": "ABphU6uQZvan2GGBagmwsLeaTHFKDY26v1oER9dFhHoo4TuroFrmbVgqYE9bxepUZvnWTLajRNEGUMus2H4Xihtn",
+                        "generatorBox": {
+                            "nonce": "-2738345987285926199",
+                            "id": "EkQrVxwgAmHJrzgY5kJyAvqH36DjkBFa4cPGGE31tY6y",
+                            "evidence": "YbEfzvNJ9YeaejXvhV1G4TdBrdYg1mBgzZNAwQ5TYssm",
+                            "type": "ArbitBox",
+                            "value": {
+                                "type": "Simple",
+                                "quantity": "1000000"
+                            }
+                        },
+                        "version": 0,
+                        "id": "28kpaSA3AYrbnGDYTmK3J9V93FrmiWvfke7rP2UiZe5HL",
+                        "publicKey": "aansHqDUHRhD7kztDfQXXZkcGLL4KD8VcEDzQB9fjBPM",
+                        "parentId": "y2Xktmv6erDjjyykchKbffFBJ78yfMBTZfL5QHNPeD2k"
+                    },
+                    "body": {
+                        "id": "28kpaSA3AYrbnGDYTmK3J9V93FrmiWvfke7rP2UiZe5HL",
+                        "parentId": "y2Xktmv6erDjjyykchKbffFBJ78yfMBTZfL5QHNPeD2k",
+                        "txs": [
+                            {
+                                "txType": "ArbitTransfer",
+                                "timestamp": 1614870125215,
+                                "signatures": {
+                                    "aansHqDUHRhD7kztDfQXXZkcGLL4KD8VcEDzQB9fjBPM": "985C2DU1CCyP1V4rsNakn1XEQTwjwVsFfc1aTgKysvkNn1rAPwgkRC7Y6MKA4qdYpiXBbVH3RGgziEPP7nJxN6D6"
+                                },
+                                "newBoxes": [],
+                                "data": "y2Xktmv6erDjjyykchKbffFBJ78yfMBTZfL5QHNPeD2k_",
+                                "to": [
+                                    [
+                                        "AU9dn9YhqL1YWxfemMfS97zjVXR6G9QX74XRq1jVLtP3snQtuuVk",
+                                        {
+                                            "type": "Simple",
+                                            "quantity": "0"
+                                        }
+                                    ]
+                                ],
+                                "propositionType": "PublicKeyCurve25519",
+                                "from": [],
+                                "minting": true,
+                                "txId": "fNGtFy3AvyFNm4jhiKkvfB6x9agYpEdt6X2zVcMDLKJn",
+                                "boxesToRemove": [],
+                                "fee": "0"
+                            },
+                            {
+                                "txType": "PolyTransfer",
+                                "timestamp": 1614870125215,
+                                "signatures": {
+                                    "aansHqDUHRhD7kztDfQXXZkcGLL4KD8VcEDzQB9fjBPM": "7fPCwtJYYAv2RcUUoRafB4hn3SmC5Jiy5EB9thukjvtcnQRc6uUPqu5VnUo7EH65EZ3MxtDyTBDEmM2cdXJGvCmn"
+                                },
+                                "newBoxes": [],
+                                "data": "y2Xktmv6erDjjyykchKbffFBJ78yfMBTZfL5QHNPeD2k_",
+                                "to": [
+                                    [
+                                        "AU9dn9YhqL1YWxfemMfS97zjVXR6G9QX74XRq1jVLtP3snQtuuVk",
+                                        {
+                                            "type": "Simple",
+                                            "quantity": "0"
+                                        }
+                                    ]
+                                ],
+                                "propositionType": "PublicKeyCurve25519",
+                                "from": [],
+                                "minting": true,
+                                "txId": "n5RUHRn8wjWL6UagecnUpNjvvzBRMU9Z4CLEhREhowoV",
+                                "boxesToRemove": [],
+                                "fee": "0"
+                            }
+                        ],
+                        "version": 0
+                    },
+                    "blockSize": 654
+                }
+            };
+
+            // creates the response obj
+            var responseObject = {"status":'200',json: () => { return jsonObject }};
+
+            // stub the promise response
+            sinon.restore(); // restore sinon to resolve promise with new obj
+            sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
+
+            // make the call trying to test for
+            var response = await requests.getBlockByHeight(parameters);
+
+            // do validation here
+            assert.strictEqual(response.result.header.id, "28kpaSA3AYrbnGDYTmK3J9V93FrmiWvfke7rP2UiZe5HL");
+            assert.strictEqual(response.result.body.version, 0);
+            assert.strictEqual(response.result.blockSize, 654);
+        });
+        it('should fail if no parameters present', function(done) {
+            // make call without parameters
+            requests
+            .getBlockByHeight()
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: A parameter object must be specified');
+                done();
+            });
+        });
+        it('should fail if no height provided', (done) => {
+            parameters.height = "";
+
+            requests
+            .getBlockByHeight(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: A height must be specified');
+                done();
+            });
+        });
+        it('should fail if height < 1', (done) => {
+            parameters.height = -1;
+
+            requests
+            .getBlockByHeight(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: Height must be an Integer greater than 0');
+                done();
+            });
+        });
+        it('should fail if height is not an Integer', (done) => {
+            parameters.height = "notaninteger";
+
+            requests
+            .getBlockByHeight(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: Height must be an Integer greater than 0');
+                done();
+            });
+        });
+        it('should fail if height is a double', (done) => {
+            parameters.height = 3.14;
+
+            requests
+            .getBlockByHeight(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: Height must be an Integer greater than 0');
                 done();
             });
         });

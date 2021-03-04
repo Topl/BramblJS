@@ -363,19 +363,6 @@ class Requests {
     return bramblRequest({id, method}, params, this);
   }
 
-  /* --------------------------------- Get Latest Block --------------------------------------- */
-  /**
-   * Return the chain information
-   * @param {string} [id="1"] - identifying number for the json-rpc request
-   * @returns {object} json-rpc response from the chain
-   * @memberof Requests
-   */
-  async getLatestBlock(id = "1") {
-    const params = {};
-    const method = "topl_head";
-    return bramblRequest({id, method}, params, this);
-  }
-
   /* --------------------------------- Lookup Balances By Key --------------------------------------- */
   // TODO: check addresses?? add validation...
   /**
@@ -450,6 +437,19 @@ class Requests {
     return bramblRequest({id, method}, params, this);
   }
 
+  /* --------------------------------- Get Latest Block --------------------------------------- */
+  /**
+   * Return the chain information
+   * @param {string} [id="1"] - identifying number for the json-rpc request
+   * @returns {object} json-rpc response from the chain
+   * @memberof Requests
+   */
+  async getLatestBlock(id = "1") {
+    const params = {};
+    const method = "topl_head";
+    return bramblRequest({id, method}, params, this);
+  }
+
   /* ----------------------------- Get Block By Id --------------------------------- */
   /**
    * Lookup a block from history by the provided id
@@ -486,11 +486,8 @@ class Requests {
     if (!params.height) {
       throw new Error("A height must be specified");
     }
-
-    // ensure it is an integer
-    params.height = parseInt(params.height, 10);
-    if (params.height < 1) {
-      throw new Error("Height must be a number >= 1");
+    if (isNaN(params.height) || !Number.isInteger(params.height) || params.height < 1) {
+      throw new Error("Height must be an Integer greater than 0");
     }
 
     const method = "topl_blockByHeight";
