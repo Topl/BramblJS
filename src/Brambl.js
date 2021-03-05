@@ -221,7 +221,7 @@ Brambl.prototype.signAndBroadcast = async function(prototypeTx) {
 Brambl.prototype.transaction = async function(method, params) {
   if (!validTxMethods.includes(method)) throw new Error("Invalid transaction method");
   return this.requests[method](params)
-  .then((res) => this.signAndBroadcast(res.result));
+      .then((res) => this.signAndBroadcast(res.result));
 };
 
 /**
@@ -248,9 +248,10 @@ Brambl.prototype.pollTx = async function(txId, options) {
  * Brambl. Asset Codes are necessary to create Raw Asset transactions.
  *
  * @param {string} shortName name of assets, up to 8 bytes long latin-1 enconding
+ * @returns {string} asset code is returned if successful
  */
 Brambl.prototype.createAssetCode = function(shortName) {
   return this.utils.Address.createAssetCode(this.networkPrefix, this.keyManager.address, shortName);
-}
+};
 
 module.exports = Brambl;
