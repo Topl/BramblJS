@@ -206,7 +206,6 @@ Brambl.prototype.addSigToTx = async function(prototypeTx, userKeys) {
   */
 Brambl.prototype.signAndBroadcast = async function(prototypeTx) {
   const formattedTx = await this.addSigToTx(prototypeTx, this.keyManager);
-  // console.log(formattedTx);
   return this.requests.broadcastTx({tx: formattedTx}).catch((e) => {
     console.error(e); throw e;
   });
@@ -221,7 +220,8 @@ Brambl.prototype.signAndBroadcast = async function(prototypeTx) {
  */
 Brambl.prototype.transaction = async function(method, params) {
   if (!validTxMethods.includes(method)) throw new Error("Invalid transaction method");
-  return this.requests[method](params).then((res) => this.signAndBroadcast(res.result));
+  return this.requests[method](params)
+  .then((res) => this.signAndBroadcast(res.result));
 };
 
 /**
@@ -242,5 +242,15 @@ Brambl.prototype.pollTx = async function(txId, options) {
   const opts = options || {timeout: 90, interval: 3, maxFailedQueries: 10};
   return pollTx(this.requests, txId, opts);
 };
+
+/**
+ * A function to create an Asset Code by utilizing the Key created or imported by
+ * Brambl. Asset Codes are necessary to create Raw Asset transactions.
+ *
+ * @param {string} shortName name of assets, up to 8 bytes long latin-1 enconding
+ */
+Brambl.prototype.createAssetCode = function(shortName) {
+  return this.utils.Address.createAssetCode(this.networkPrefix, this.keyManager.address, shortName);
+}
 
 module.exports = Brambl;

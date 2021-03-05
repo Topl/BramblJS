@@ -58,10 +58,10 @@ describe("Brambl", () => {
     describe('new brambl()', function() {
 
         /* ---------------------------- network prefixes -------------------------------- */
-        // it('should pass by passing only password', async () => {
-        //     const brambl = new BrabmlJS("this_is_a_test_password");
-        //     assert.strictEqual(brambl.networkPrefix, "local", "network prefix is local");
-        // });
+        it('should pass by passing only password', async () => {
+            const brambl = new BrabmlJS("this_is_a_test_password");
+            assert.strictEqual(brambl.networkPrefix, "private", "network prefix is private");
+        });
         it('should pass by passing password and networkPrefix', async () => {
             const brambl = new BrabmlJS({
                 networkPrefix: "valhalla",

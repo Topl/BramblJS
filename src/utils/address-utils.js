@@ -325,4 +325,15 @@ function getAddressNetwork(address) {
   return result;
 }
 
-module.exports = {isValidNetwork, getHexByNetwork, getDecimalByNetwork, getValidNetworksList, validateAddressesByNetwork, generatePubKeyHashAddress, createAssetCode, isValidAssetCode, isValidMetadata, getAddressNetwork};
+module.exports = {
+  isValidNetwork,
+  getHexByNetwork,
+  getDecimalByNetwork,
+  getValidNetworksList,
+  validateAddressesByNetwork,
+  generatePubKeyHashAddress,
+  createAssetCode,
+  isValidAssetCode,
+  isValidMetadata,
+  getAddressNetwork
+};
