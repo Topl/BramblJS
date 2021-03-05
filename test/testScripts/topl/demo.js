@@ -35,41 +35,39 @@ const brambl = new BramblJS({
     password: "foo"
     });
 
-    brambl.requests.getLatestBlock().then(res => {
-        const timestamp = new Date(res.result.bestBlock.header.timestamp)
-        const blockHeight = res.result.bestBlock.header.height
-        console.log('Block #' + blockHeight + ' forged ' + timestamp)
-    })
+    // brambl.requests.getLatestBlock().then(res => {
+    //     const timestamp = new Date(res.result.bestBlock.header.timestamp)
+    //     const blockHeight = res.result.bestBlock.header.height
+    //     console.log('Block #' + blockHeight + ' forged ' + timestamp)
+    // })
     const assetCode = brambl.createAssetCode("SHORT1");
-
-    console.log(assetCode)
+    console.log("asset code: " + assetCode)
 
     const signAndBroadcastPromise = (tx) => brambl.signAndBroadcast(tx);
-
     const address = brambl.keyManager.address;
 
     const rawAssetParams = {
-    "propositionType": "PublicKeyCurve25519",
-     // Advanced feature - Recipients have these 2 options
-    // basic: [address, quantity]
-    // advance: [address, quantity, securityRoot, metadata]
-  "recipients": [
-    ["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE",4],
-    ["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE",3]
-  ],
-    "assetCode": assetCode,
-    "sender": [address],
-    "changeAddress": address,
-    "minting": true,
-    "fee": 1
+      "propositionType": "PublicKeyCurve25519",
+      "recipients": [
+        [address, "4"]
+      ],
+      "assetCode": assetCode,
+      "sender": ['AUAvJqLKc8Un3C6bC4aj8WgHZo74vamvX8Kdm6MhtdXgw51cGfix'],
+      "changeAddress": 'AUAvJqLKc8Un3C6bC4aj8WgHZo74vamvX8Kdm6MhtdXgw51cGfix',
+      "minting": true,
+      "fee": 1
     };
-    console.log(rawAssetParams)
 
-    brambl.transaction('createRawAssetTransfer', rawAssetParams)
-    // .then((res) => signAndBroadcastPromise(res.result))
-    .then((res) => console.log(res))
-    .catch((e) => console.error(e));
-    // const signAndBroadcastPromise = (tx) => brambl.signAndBroadcast(tx);
+    brambl.requests.createRawAssetTransfer(rawAssetParams)
+      .then((res) => signAndBroadcastPromise(res.result))
+      .then((res) => console.log(res))
+      .catch((e) => console.error(e));
+
+    // brambl.transaction('createRawAssetTransfer', rawAssetParams)
+    // // .then((res) => signAndBroadcastPromise(res.result))
+    // .then((res) => console.log(res))
+    // .catch((e) => console.error(e));
+  
 
     // const rawAssetParams = {
     //   "propositionType": "PublicKeyCurve25519",

@@ -157,7 +157,7 @@ class Requests {
       throw new Error("Invalid fee, a fee must be greater or equal to zero");
     }
     // fee must be a string
-    params.fee.toString();
+    params.fee = params.fee.toString();
 
     // validate all addresses
     const validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params);
@@ -251,7 +251,7 @@ class Requests {
       throw new Error("Invalid fee, a fee must be greater or equal to zero");
     }
     // fee must be a string
-    params.fee.toString();
+    params.fee = params.fee.toString();
 
     // validate all addresses
     const validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params);
@@ -320,7 +320,7 @@ class Requests {
       throw new Error("Invalid fee, a fee must be greater or equal to zero");
     }
     // fee must be a string
-    params.fee.toString();
+    params.fee = params.fee.toString();
 
     // validate all addresses
     const validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params);
