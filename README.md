@@ -322,7 +322,7 @@ brambl.requests.getBlockByHeight({"height": 3})
 # Testing
 * Run linter before committing any code or creating a PR: `npm run lint`
 * You can easily apply some fixes (make sure you review them after): `npm run lint:fix`
-* Run only unit tests (uses mocha, chai and sinon): `npm run test:it`
+* Run only unit tests (uses mocha, chai and sinon): `npm run test:ut`
 * Run only end to end (e2e) tests (uses mocha, chai): `npm run test:e2e`
 * Run both unit testing and linter: `npm run test`
 * Run all tests: `npm run test:all`
