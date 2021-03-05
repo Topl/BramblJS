@@ -210,7 +210,7 @@ class Requests {
 
   /* ---------------------- Create Raw Poly Trasfer ------------------------ */
   /**
-   * Create a new poly on chain
+   * Create a raw transaction for transferring polys between addresses
    * @param {object} params - body parameters passed to the specified json-rpc method
    * @param {string} params.propositionType - Proposition Type -> PublicKeyCurve25519 || TheresholdCurve25519
    * @param {string} params.recipients - 2-dimensional array (array of tuples) -> [["publicKey of asset recipient", quantity]]
@@ -271,7 +271,7 @@ class Requests {
 
   /* ---------------------- Create Raw Arbit Trasfer ------------------------ */
   /**
-   * Create a new arbit on chain
+   * Create a raw transaction for transferring arbits between addresses
    * @param {object} params - body parameters passed to the specified json-rpc method
    * @param {string} params.propositionType - Proposition Type -> PublicKeyCurve25519 || TheresholdCurve25519
    * @param {string} params.recipients - 2-dimensional array (array of tuples) -> [["publicKey of asset recipient", quantity]]
@@ -336,7 +336,7 @@ class Requests {
 
   /* --------------------------------- Broadcast Tx --------------------------------------- */
   /**
-   * Have the node sign a `messageToSign` raw transaction
+   * Broadcast a valid signed transaction that will be gossiped about to other nodes
    * @param {object} params - body parameters passed to the specified json-rpc method
    * @param {string} params.tx - a JSON formatted transaction (must include signature(s))
    * @param {string} [id="1"] - identifying number for the json-rpc request
@@ -364,7 +364,7 @@ class Requests {
 
   /* --------------------------------- Lookup Balances By Addresses --------------------------------------- */
   /**
-   * Get the balances of a specified addresses in the keyfiles directory of the node
+   * Lookup the balances of specified addresses
    * @param {Object} params - body parameters passed to the specified json-rpc method
    * @param {string[]} params.addresses - An array of addresses to query the balance for
    * @param {string} [id="1"] - identifying number for the json-rpc request
@@ -445,7 +445,7 @@ class Requests {
 
   /* --------------------------------- Get Latest Block --------------------------------------- */
   /**
-   * Return the chain information
+   * Return the latest block in the chain
    * @param {string} [id="1"] - identifying number for the json-rpc request
    * @returns {object} json-rpc response from the chain
    * @memberof Requests
