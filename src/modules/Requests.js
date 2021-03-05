@@ -156,6 +156,8 @@ class Requests {
     if (params.fee < 0) {
       throw new Error("Invalid fee, a fee must be greater or equal to zero");
     }
+    // fee must be a string
+    params.fee.toString();
 
     // validate all addresses
     const validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params);
@@ -181,7 +183,7 @@ class Requests {
       // required fields
       const tokenValueHolder = {
         "type": "Asset",
-        "quantity": quantity,
+        "quantity": quantity.toString(),
         "assetCode": params.assetCode
       };
 
@@ -248,6 +250,8 @@ class Requests {
     if (params.fee < 0) {
       throw new Error("Invalid fee, a fee must be greater or equal to zero");
     }
+    // fee must be a string
+    params.fee.toString();
 
     // validate all addresses
     const validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params);
@@ -263,6 +267,8 @@ class Requests {
       if (!recipient[1]) {
         throw new Error("Recipient quantity must be specified");
       }
+      // quantity must be a string
+      recipient[1] = recipient[1].toString();
     });
 
     const method = "topl_rawPolyTransfer";
@@ -313,6 +319,8 @@ class Requests {
     if (params.fee < 0) {
       throw new Error("Invalid fee, a fee must be greater or equal to zero");
     }
+    // fee must be a string
+    params.fee.toString();
 
     // validate all addresses
     const validationResult = utils.validateAddressesByNetwork(this.networkPrefix, params);
@@ -328,6 +336,8 @@ class Requests {
       if (!recipient[1]) {
         throw new Error("Recipient quantity must be specified");
       }
+      // quantity must be a string
+      recipient[1] = recipient[1].toString();
     });
 
     const method = "topl_rawArbitTransfer";
