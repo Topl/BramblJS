@@ -1,6 +1,8 @@
 /** Unit testing for transaction type funtionality:
+ * - get Mempool
  * - broadcast transaction
  * - lookup transaction by id
+ * - lookup balances by addresses
  * - lookup transaction in Mempool by id
  *
  * @author Raul Aragonez (r.aragonez@topl.me)
@@ -10,7 +12,7 @@
  * and Sinon(https://sinonjs.org/).
  */
 
-const Requests = require("../../src/modules/Requests");
+const Requests = require("../../../src/modules/Requests");
 const assert = require("assert");
 const sinon = require('sinon');
 const chai = require('chai');
@@ -37,7 +39,7 @@ describe("Transactions", () => {
 
     // run this before all tests
     before(() => {
-        brambljs = new Requests();
+        requests = new Requests();
     });
 
     // run this before every test
@@ -116,7 +118,7 @@ describe("Transactions", () => {
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
-            var response = await brambljs.broadcastTx(parameters);
+            var response = await requests.broadcastTx(parameters);
 
             // do validation here
             assert.strictEqual(response.result.txType, "AssetCreation");
@@ -124,7 +126,7 @@ describe("Transactions", () => {
         });
         it('should fail if no parameters present', function(done) {
             // make call without parameters
-            brambljs
+            requests
             .broadcastTx()
             .then((response) => {
                 done(new Error("should not succeded"));
@@ -138,7 +140,7 @@ describe("Transactions", () => {
             // set "tx" as empty string to validate
             parameters.tx = "";
 
-            brambljs
+            requests
             .broadcastTx(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
@@ -152,7 +154,7 @@ describe("Transactions", () => {
             // set "tx.signatures" as empty obj to validate
             parameters.tx.signatures = {};
 
-            brambljs
+            requests
             .broadcastTx(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
@@ -170,7 +172,7 @@ describe("Transactions", () => {
                 }
             }
 
-            brambljs
+            requests
             .broadcastTx(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
@@ -229,7 +231,7 @@ describe("Transactions", () => {
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
-            var response = await brambljs.getTransactionById(parameters);
+            var response = await requests.getTransactionById(parameters);
 
             // do validation here
             assert.strictEqual(response.result.txType, "AssetCreation");
@@ -237,7 +239,7 @@ describe("Transactions", () => {
         });
         it('should fail if no parameters present', function(done) {
             // make call without parameters
-            brambljs
+            requests
             .getTransactionById()
             .then((response) => {
                 done(new Error("should not succeded"));
@@ -251,7 +253,7 @@ describe("Transactions", () => {
             // set "tx" as empty string to validate
             parameters.transactionId = "";
 
-            brambljs
+            requests
             .getTransactionById(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
@@ -308,7 +310,7 @@ describe("Transactions", () => {
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
-            var response = await brambljs.getTransactionFromMempool(parameters);
+            var response = await requests.getTransactionFromMempool(parameters);
 
             // do validation here
             assert.strictEqual(response.result.txType, "AssetCreation");
@@ -316,7 +318,7 @@ describe("Transactions", () => {
         });
         it('should fail if no parameters present', function(done) {
             // make call without parameters
-            brambljs
+            requests
             .getTransactionFromMempool()
             .then((response) => {
                 done(new Error("should not succeded"));
@@ -330,7 +332,7 @@ describe("Transactions", () => {
             // set "tx" as empty string to validate
             parameters.transactionId = "";
 
-            brambljs
+            requests
             .getTransactionFromMempool(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
@@ -383,7 +385,7 @@ describe("Transactions", () => {
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
-            var response = await brambljs.getMempool(parameters);
+            var response = await requests.getMempool(parameters);
 
             // do validation here
             assert.strictEqual(typeof response.result, "object");
@@ -394,80 +396,28 @@ describe("Transactions", () => {
     describe("lookup balances", () => {
         beforeEach(() => {
             parameters =  {
-                "publicKeys": [
-                    "22222222222222222222222222222222222222222222",
-                    "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ"
+                "addresses": [
+                    "AUA1XJxBn5M6rUz1EfSAXYvbcgys7noXxBei1Kp8iTykkxyAJeVh"
                 ]
             };
         });
 
-        it('should get balances using PubKeysId list', async () => {
+        it('should get balances using Addresses list', async () => {
             // query params using params under beforeEach()
             // mock response data
             let jsonObject = {
                 "jsonrpc": "2.0",
                 "id": "1",
                 "result": {
-                    "22222222222222222222222222222222222222222222": {
+                    "AUA1XJxBn5M6rUz1EfSAXYvbcgys7noXxBei1Kp8iTykkxyAJeVh": {
                         "Balances": {
                             "Polys": "0",
                             "Arbits": "0"
                         },
-                        "Boxes": {
-                            "Asset": [
-                                {
-                                    "nonce": "-4529498046359676742",
-                                    "data": "",
-                                    "issuer": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                                    "assetCode": "test",
-                                    "id": "9eKHfJzfWxZ1nw7HM9asUsKx3XnFT611uJBEWVgq1t1Q",
-                                    "type": "Asset",
-                                    "proposition": "22222222222222222222222222222222222222222222",
-                                    "value": "1"
-                                }
-                            ]
-                        }
-                    },
-                    "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ": {
-                        "Balances": {
-                            "Polys": "100000000",
-                            "Arbits": "100000000"
-                        },
-                        "Boxes": {
-                            "Asset": [
-                                {
-                                    "nonce": "-3898410089397904521",
-                                    "data": "",
-                                    "issuer": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                                    "assetCode": "test",
-                                    "id": "HdXwi2FhUFtkRSgogEoazFQkTQ8qhgqTDBVmN8syyNL2",
-                                    "type": "Asset",
-                                    "proposition": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                                    "value": "100"
-                                }
-                            ],
-                            "Poly": [
-                                {
-                                    "nonce": "3596905697323859524",
-                                    "id": "39HNS5UbKV75Ysqejt8mARN2vbtthNK2Fh3NEeHbEmry",
-                                    "type": "Poly",
-                                    "proposition": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                                    "value": "100000000"
-                                }
-                            ],
-                            "Arbit": [
-                                {
-                                    "nonce": "-269532489367390959",
-                                    "id": "852rQUseapF1mRUvN9Nu8Vt9Dt7ahj7X9aZ4s3xzeanj",
-                                    "type": "Arbit",
-                                    "proposition": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                                    "value": "100000000"
-                                }
-                            ]
-                        }
+                        "Boxes": {}
                     }
                 }
-            };
+            }
 
             // creates the response obj
             var responseObject = {"status":'200',json: () => { return jsonObject }};
@@ -477,16 +427,16 @@ describe("Transactions", () => {
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
-            var response = await brambljs.getBalancesByKey(parameters);
+            var response = await requests.lookupBalancesByAddresses(parameters);
 
             // do validation here
             assert.strictEqual(typeof response.result, "object");
-            expect(response.result).to.contain.keys('22222222222222222222222222222222222222222222','6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ');
+            expect(response.result).to.contain.keys('AUA1XJxBn5M6rUz1EfSAXYvbcgys7noXxBei1Kp8iTykkxyAJeVh');
         });
         it('should fail if no parameters present', function(done) {
             // make call without parameters
-            brambljs
-            .getBalancesByKey()
+            requests
+            .lookupBalancesByAddresses()
             .then((response) => {
                 done(new Error("should not succeded"));
             })
@@ -495,31 +445,47 @@ describe("Transactions", () => {
                 done();
             });
         });
-        it('should fail if no publicKeys provided', function(done) {
-            // set "tx" as empty string to validate
-            parameters.publicKeys = "";
+        it('should fail if no addresses provided', function(done) {
+            // set "addresses" as empty string to validate
+            parameters.addresses = "";
 
-            brambljs
-            .getBalancesByKey(parameters)
+            requests
+            .lookupBalancesByAddresses(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
             .catch((error) => {
-                expect(String(error)).to.equal('Error: A list of publicKeys must be specified');
+                expect(String(error)).to.equal('Error: A list of addresses must be specified');
                 done();
             });
         });
-        it('should fail if publicKeys is not an array', function(done) {
+        it('should fail if addresses is not an array', function(done) {
             // set "tx" as empty string to validate
-            parameters.publicKeys = {};
+            parameters.addresses = {};
 
-            brambljs
-            .getBalancesByKey(parameters)
+            requests
+            .lookupBalancesByAddresses(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
             .catch((error) => {
-                expect(String(error)).to.equal('Error: A list of publicKeys must be specified');
+                expect(String(error)).to.equal('Error: A list of addresses must be specified');
+                done();
+            });
+        });
+        it('should fail if addresses are invalid', function(done) {
+            // set "tx" as empty string to validate
+            parameters.addresses = [
+                "AUA1XJxBn5M6rUz1EfSAXYvbcgys7noXxBei1Kp8iTykkxyAJeV"
+            ];
+
+            requests
+            .lookupBalancesByAddresses(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: Invalid Addresses:: Network Type: <private> Invalid Addresses: <AUA1XJxBn5M6rUz1EfSAXYvbcgys7noXxBei1Kp8iTykkxyAJeV> Invalid Checksums: <>');
                 done();
             });
         });

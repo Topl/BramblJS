@@ -1,5 +1,5 @@
-/** Unit testing for arbits type funtionality:
- * - create raw arbit transfer
+/** Unit testing for polys type funtionality:
+ * - create raw poly transfer
  *
  * @author Raul Aragonez (r.aragonez@topl.me)
  * @date 2020.12.8
@@ -8,7 +8,7 @@
  * and Sinon(https://sinonjs.org/).
  */
 
-const Requests = require("../../src/modules/Requests");
+const Requests = require("../../../src/modules/Requests");
 const assert = require("assert");
 const sinon = require('sinon');
 const chai = require('chai');
@@ -16,9 +16,9 @@ const expect = chai.expect;
 const nodeFetch = require('node-fetch');
 
 /* -------------------------------------------------------------------------- */
-/*                          Arbits type unit tests                            */
+/*                          Polys type unit tests                             */
 /* -------------------------------------------------------------------------- */
-describe("Arbits", () => {
+describe("Polys", () => {
     const localTestObj = {"status":'200',json: () => {
             return {"test":"dummy data"}
         }};
@@ -35,7 +35,7 @@ describe("Arbits", () => {
 
     // run this before all tests
     before(() => {
-        brambljs = new Requests();
+        requests = new Requests();
     });
 
     // run this before every test
@@ -49,32 +49,33 @@ describe("Arbits", () => {
         sinon.restore();
     });
 
-    /* ---------------------------- raw arbit -------------------------------- */
-    describe("create raw arbit transfer", () => {
+    /* ---------------------------- transfer polys -------------------------------- */
+    describe("create raw polys transfer", () => {
         beforeEach(() => {
             parameters = {
-                "recipient": "22222222222222222222222222222222222222222222",
-                "sender": ["6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ"],
-                "amount": 1,
-                "fee": 0,
+                "propositionType": "PublicKeyCurve25519",
+                "recipients": [["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE", 10]],
+                "sender": ["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE"],
+                "changeAddress": "AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE",
+                "fee": 1,
                 "data": ""
             };
         });
 
-        it('should create raw arbit transfer', async () => {
+        it('should create raw polys transfer', async () => {
             // query params using params under beforeEach()
             // mock response data
             let jsonObject = {
                 "jsonrpc": "2.0",
                 "id": "1",
                 "result": {
-                    "txType": "ArbitTransfer",
-                    "txHash": "EeRwxuVuMsrud2xfd2zXaADkqsAJkH6ve1WRNEXu2f7T",
-                    "timestamp": 1586471049860,
+                    "txType": "PolyTransfer",
+                    "txHash": "bGnxUP7Pqsm6ejVJtM6Fy49bYaMRnXYxy8GWmvodKoa",
+                    "timestamp": 1586470958034,
                     "signatures": [],
                     "newBoxes": [
-                        "iDW8A5GdVcSP1P6VdmSAkRFHTrSZ63G2PTvQZx8zy9a",
-                        "5oMe9ybDBpBSr8nXYLNoAb2Lf4no81xoxLgcXWNf4UqA"
+                        "7sCDKSMC3ULvm8PgTmDEPRQZ1HxpM5YThnWsU3friwJR",
+                        "6DEwauT4qJCqDb3hW9eJnWmXCzQRQAnsgx3NjaWJ416r"
                     ],
                     "data": "",
                     "to": [
@@ -90,11 +91,11 @@ describe("Arbits", () => {
                     "from": [
                         {
                             "proposition": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                            "nonce": "-269532489367390959"
+                            "nonce": "3596905697323859524"
                         }
                     ],
                     "boxesToRemove": [
-                        "852rQUseapF1mRUvN9Nu8Vt9Dt7ahj7X9aZ4s3xzeanj"
+                        "39HNS5UbKV75Ysqejt8mARN2vbtthNK2Fh3NEeHbEmry"
                     ],
                     "fee": 0
                 }
@@ -108,16 +109,16 @@ describe("Arbits", () => {
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
-            var response = await brambljs.transferArbits(parameters);
+            var response = await requests.createRawPolyTransfer(parameters);
 
             // do validation here
-            assert.strictEqual(response.result.txType, "ArbitTransfer");
-            assert.strictEqual(response.result.txHash, "EeRwxuVuMsrud2xfd2zXaADkqsAJkH6ve1WRNEXu2f7T");
+            assert.strictEqual(response.result.txType, "PolyTransfer");
+            assert.strictEqual(response.result.txHash, "bGnxUP7Pqsm6ejVJtM6Fy49bYaMRnXYxy8GWmvodKoa");
         });
         it('should fail if no parameters present', function(done) {
             // make call without parameters
-            brambljs
-            .transferArbits()
+            requests
+            .createRawPolyTransfer()
             .then((response) => {
                 done(new Error("should not succeded"));
             })
@@ -126,31 +127,59 @@ describe("Arbits", () => {
                 done();
             });
         });
-        it('should fail if no recipient provided', function(done) {
-            // set "assetCode" as empty string to validate
-            parameters.recipient = "";
+        it('should fail if invalid propositionType provided', function(done) {
+            // set "propositionType" as empty string to validate
+            parameters.propositionType = "testProposition";
 
-            brambljs
-            .transferArbits(parameters)
+            requests
+            .createRawPolyTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
             .catch((error) => {
-                expect(String(error)).to.equal('Error: A recipient must be specified');
+                expect(String(error)).to.equal('Error: A propositionType must be specified: <PublicKeyCurve25519, ThresholdCurve25519>');
                 done();
             });
         });
-        it('should fail if no amount provided', function(done) {
-            // set "assetCode" as empty string to validate
-            parameters.amount = "";
+        it('should fail if no recipients provided', function(done) {
+            // set "recipients" as empty string to validate
+            parameters.recipients = "";
 
-            brambljs
-            .transferArbits(parameters)
+            requests
+            .createRawPolyTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
             .catch((error) => {
-                expect(String(error)).to.equal('Error: An amount must be specified');
+                expect(String(error)).to.equal('Error: At least one recipient must be specified');
+                done();
+            });
+        });
+        it('should fail if no changeAddress provided', function(done) {
+            // set "changeAddress" as empty string to validate
+            parameters.changeAddress = "";
+
+            requests
+            .createRawPolyTransfer(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: A changeAddress must be specified');
+                done();
+            });
+        });
+        it('should fail if no sender provided', function(done) {
+            // set "sender" as empty string to validate
+            parameters.sender = "";
+
+            requests
+            .createRawPolyTransfer(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: An asset sender must be specified');
                 done();
             });
         });
@@ -158,8 +187,8 @@ describe("Arbits", () => {
             // set "fee" as empty string to validate
             parameters.fee = "";
 
-            brambljs
-            .transferArbits(parameters)
+            requests
+            .createRawPolyTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
@@ -172,8 +201,8 @@ describe("Arbits", () => {
             // set "fee" a value < 0
             parameters.fee = -23;
 
-            brambljs
-            .transferArbits(parameters)
+            requests
+            .createRawPolyTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })

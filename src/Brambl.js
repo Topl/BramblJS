@@ -1,7 +1,8 @@
 /**
  * @author James Aman (j.aman@topl.me)
- * @version 3.0.0
- * @date 2020.4.03
+ * @author Raul Aragonez (r.aragonez@topl.me)
+ * @version 1.0.0
+ * @date 2021.03.04
  **/
 
 "use strict";
@@ -15,15 +16,16 @@ const KeyManager = require("./modules/KeyManager");
 
 // Utilities
 const Hash = require("./utils/Hash");
+const Address = require("./utils/address-utils.js");
 
 // Libraries
 const pollTx = require("./lib/polling");
 
 // Constants definitions
 const validTxMethods = [
-  "createAssetsPrototype",
-  "transferAssetsPrototype",
-  "transferTargetAssetsPrototype"
+  "createRawArbitTransfer",
+  "createRawAssetTransfer",
+  "createRawPolyTransfer"
 ];
 
 /**
@@ -40,12 +42,16 @@ const validTxMethods = [
  * @requires KeyManager
  */
 class Brambl {
+  // private variables
+  #networkPrefix;
+
   /**
     * @constructor
     * @param {object|string} params Constructor parameters object
+    * @param {string} params.networkPrefix Network Prefix
+    * @param {string} params.password The password used to encrpt the keyfile, same as [params.KeyManager.password]
     * @param {object} params.KeyManager KeyManager object (may be either an instance or config parameters)
-    * @param {string} params.KeyManager.password The password used to encrpt the keyfile
-    * @param {object} [params.KeyManager.instance] A previously initialized instance of KeyManager
+    * @param {string} [params.KeyManager.password] The password used to encrpt the keyfile
     * @param {string} [params.KeyManager.keyPath] Path to a keyfile
     * @param {string} [params.KeyManager.constants] Parameters for encrypting the user's keyfile
     * @param {object} params.Requests Request object (may be either an instance or config parameters)
@@ -56,55 +62,96 @@ class Brambl {
     // default values for the constructor arguement
     const keyManagerVar = params.KeyManager || {};
     const requestsVar = params.Requests || {};
+    this.#networkPrefix = params.networkPrefix || "private";
 
-    // if only a string is given in the constructor, assume it is the password.
+    // If only a string is given in the constructor, assume it is the password.
     // Therefore, target a local chain provider and make a new key
-    if (params.constructor === String) keyManagerVar.password = params;
+    if (params.constructor === String) {
+      keyManagerVar.password = params;
+    }
 
-    // Setup reqeusts object
-    if (requestsVar.instance) {
-      this.requests = requestsVar.instance;
-    } else if (requestsVar.url) {
-      this.requests = new Requests(requestsVar.url, requestsVar.apiKey);
+    if (params.password && params.password.constructor === String) {
+      keyManagerVar.password = params.password;
+    }
+
+    // validate network prefix
+    if (!Address.isValidNetwork(this.#networkPrefix)) {
+      throw new Error(`Invalid Network Prefix. Must be one of: ${Address.getValidNetworksList()}`);
+    }
+
+    if (requestsVar instanceof Requests) {
+      // Request instance provided, reuse it
+      this.requests = requestsVar;
     } else {
-      this.requests = new Requests();
+      // create new instance and pass parameters
+      this.requests = new Requests(this.#networkPrefix, requestsVar.url, requestsVar.apiKey);
     }
 
     // Setup KeyManager object
-    if (!keyManagerVar.password) throw new Error("An encryption password is required to open a keyfile");
-    if (keyManagerVar.instance) {
-      this.keyManager = keyManagerVar.instance;
-    } else if (keyManagerVar.keyPath) {
-      this.keyManager = new KeyManager({password: keyManagerVar.password, keyPath: keyManagerVar.keyPath, constants: keyManagerVar.constants});
+    if (keyManagerVar instanceof KeyManager) {
+      this.keyManager = keyManagerVar;
     } else {
-      this.keyManager = new KeyManager({password: keyManagerVar.password});
+      if (!keyManagerVar.password) throw new Error("An encryption password is required to open a keyfile");
+      // create new KeyManager
+      this.keyManager = new KeyManager({
+        password: keyManagerVar.password,
+        keyPath: keyManagerVar.keyPath,
+        constants: keyManagerVar.constants,
+        networkPrefix: this.#networkPrefix
+      });
     }
 
-    // Import utilities
-    this.utils = {Hash};
+    // If KeyManager and Requests instances were not created by Brambl class verify that both have a matching NetworkPrefix
+    if (this.#networkPrefix !== this.requests.networkPrefix || this.#networkPrefix !== this.keyManager.networkPrefix) {
+      throw new Error("Incompatible network prefixes set for Requests and KeyManager Instances.");
+    }
+
+    // Expose Utilities
+    this.utils = {Hash, Address};
+  }
+
+  /**
+   * Getter for private property #networkPrefix
+   * @memberof Brambl
+   * @returns {string} value of #networkPrefix
+   */
+  get networkPrefix() {
+    return this.#networkPrefix;
+  }
+
+  /**
+   * Setter for private property #isLocked
+   * @memberof Brambl
+   * @param {any} args ignored, only necessary for setter
+   * @returns {void} Error is thrown to protect private variable
+   */
+  set networkPrefix(args) {
+    throw new Error("Invalid private variable access.");
   }
 
   /**
     * Method for creating a separate Requests instance
     * @static
     *
+    * @param {string} [networkPrefix="private"] Network Prefix, defaults to "private"
     * @param {string} [url="http://localhost:9085/"] Chain provider location
     * @param {string} [apiKey="topl_the_world!"] Access key for authorizing requests to the client API
     * @returns {object} new Requests instance
     * @memberof Brambl
     */
-  static Requests(url, apiKey) {
-    return new Requests(url, apiKey);
+  static Requests(networkPrefix, url, apiKey) {
+    return new Requests(networkPrefix, url, apiKey);
   }
 
   /**
     * Method for creating a separate KeyManager instance
     * @static
     *
-    * @param {object} params constructor object for key manager
-    * @param {string} params.password password for encrypting (decrypting) the keyfile
-    * @param {string} [params.path] path to import keyfile
+    * @param {object} params constructor object for key manager or as a string password
+    * @param {string} [params.password] password for encrypting (decrypting) the keyfile
+    * @param {string} [params.keyPath] path to import keyfile
     * @param {object} [params.constants] default encryption options for storing keyfiles
+    * @param {string} [params.networkPrefix] Network Prefix, defaults to "private"
     * @returns {object} new KeyManager instance
     * @memberof Brambl
     */
@@ -138,17 +185,16 @@ class Brambl {
  */
 Brambl.prototype.addSigToTx = async function(prototypeTx, userKeys) {
   // function for generating a signature in the correct format
-  const genSig = (keys, txBytes) => {
-    return Object.fromEntries( keys.map( (key) => [key.pk, base58.encode(key.sign(txBytes))]));
+  const genSig = (keys, txMsgToSign) => {
+    return Object.fromEntries( keys.map( (key) => [key.pk, base58.encode(key.sign(txMsgToSign))]));
   };
 
-  // in case a single given is given not as an array
+  // list of Key Managers
   const keys = Array.isArray(userKeys) ? userKeys : [userKeys];
 
-  // add signatures of all given key files to the formatted transaction
   return {
-    ...prototypeTx.formattedTx,
-    signatures: genSig(keys, base58.decode(prototypeTx.messageToSign))
+    ...prototypeTx.rawTx,
+    signatures: genSig(keys, prototypeTx.messageToSign)
   };
 };
 
@@ -174,7 +220,8 @@ Brambl.prototype.signAndBroadcast = async function(prototypeTx) {
  */
 Brambl.prototype.transaction = async function(method, params) {
   if (!validTxMethods.includes(method)) throw new Error("Invalid transaction method");
-  return this.requests[method](params).then((res) => this.signAndBroadcast(res.result));
+  return this.requests[method](params)
+      .then((res) => this.signAndBroadcast(res.result));
 };
 
 /**
@@ -194,6 +241,17 @@ Brambl.prototype.transaction = async function(method, params) {
 Brambl.prototype.pollTx = async function(txId, options) {
   const opts = options || {timeout: 90, interval: 3, maxFailedQueries: 10};
   return pollTx(this.requests, txId, opts);
+};
+
+/**
+ * A function to create an Asset Code by utilizing the Key created or imported by
+ * Brambl. Asset Codes are necessary to create Raw Asset transactions.
+ *
+ * @param {string} shortName name of assets, up to 8 bytes long latin-1 enconding
+ * @returns {string} asset code is returned if successful
+ */
+Brambl.prototype.createAssetCode = function(shortName) {
+  return this.utils.Address.createAssetCode(this.networkPrefix, this.keyManager.address, shortName);
 };
 
 module.exports = Brambl;

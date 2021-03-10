@@ -7,10 +7,9 @@
  *
  * @module KeyManager
  *
- * Based on the keythereum library from Jack Peterson
- * https://github.com/Ethereumjs/keythereum
  */
 
+// Initial implementation of this lib isBased on the keythereum library from Jack Peterson https://github.com/Ethereumjs/keythereum
 "use strict";
 
 // Dependencies
@@ -20,7 +19,10 @@ const crypto = require("crypto");
 const curve25519 = require("curve25519-js");
 const {create, dump, recover, str2buf, generateKeystoreFilename} = require("../utils/key-utils.js");
 
-// Default options for key generation as of 2020.01.25
+// utils
+const utils = require("../utils/address-utils.js");
+
+// Default options for key generation as of 2021.02.04
 const defaultOptions = {
   // Symmetric cipher for private key encryption
   cipher: "aes-256-ctr",
@@ -37,7 +39,10 @@ const defaultOptions = {
     n: Math.pow(2, 18), // cost (as given in bifrost)
     r: 8, // blocksize
     p: 1 // parallelization
-  }
+  },
+
+  // networkPrefix
+  networkPrefix: "private"
 };
 
 /* -------------------------------------------------------------------------- */
@@ -54,14 +59,17 @@ class KeyManager {
     #password;
     #keyStorage;
     #pk;
+    #networkPrefix;
+    #address;
 
     /* ------------------------------ Instance constructor ------------------------------ */
     /**
      * @constructor
      * @param {object} params constructor object for key manager or as a string password
      * @param {string} [params.password] password for encrypting (decrypting) the keyfile
-     * @param {string} [params.path] path to import keyfile
+     * @param {string} [params.keyPath] path to import keyfile
      * @param {object} [params.constants] default encryption options for storing keyfiles
+     * @param {string} [params.networkPrefix] Network Prefix, defaults to "private"
      */
     constructor(params) {
       // enforce that a password must be provided
@@ -69,12 +77,14 @@ class KeyManager {
 
       // Initialize a key manager object with a key storage object
       const initKeyStorage = (keyStorage, password) => {
-        this.#pk = keyStorage.publicKeyId;
+        this.#address = keyStorage.address;
         this.#isLocked = false;
         this.#password = password;
         this.#keyStorage = keyStorage;
 
-        if (this.#pk) this.#sk = recover(password, keyStorage, this.constants.scrypt);
+        if (this.#address) {
+          [this.#sk, this.#pk] = recover(password, keyStorage, this.constants.scrypt);
+        }
       };
 
       const generateKey = (password) => {
@@ -85,12 +95,46 @@ class KeyManager {
       // Imports key data object from keystore JSON file.
       const importFromFile = (filepath, password) => {
         const keyStorage = JSON.parse(fs.readFileSync(filepath));
-        initKeyStorage(keyStorage, password);
+
+        // check if address is valid and has a valid network
+        if (keyStorage.address) {
+          // determine prefix and set networkPrefix
+          const prefixResult = utils.getAddressNetwork(keyStorage.address);
+          if (prefixResult.success) {
+            this.#networkPrefix = prefixResult.networkPrefix;
+          } else {
+            throw new Error(prefixResult.error);
+          }
+
+          // validate address
+          const validationResult = utils.validateAddressesByNetwork(this.networkPrefix, keyStorage.address);
+          if (!validationResult.success) {
+            throw new Error("Invalid Addresses::" +
+              " Network Type: <" + this.networkPrefix + ">" +
+              " Invalid Addresses: <" + validationResult.invalidAddresses + ">" +
+              " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
+          }
+
+          initKeyStorage(keyStorage, password);
+        } else {
+          throw new Error("No address found in key");
+        }
       };
 
-      // initialize vatiables
+      // initialize variables
       this.constants = params.constants || defaultOptions;
-      initKeyStorage({publicKeyId: "", crypto: {}}, "");
+
+      // set networkPrefix and validate
+      this.#networkPrefix = params.networkPrefix || "private";
+
+      // ensure constant include this.#networkPrefix for key creation
+      this.constants.networkPrefix = this.#networkPrefix;
+
+      if (this.#networkPrefix !== "private" && !utils.isValidNetwork(this.#networkPrefix)) {
+        throw new Error(`Invalid Network Prefix. Must be one of: ${utils.getValidNetworksList()}`);
+      }
+
+      initKeyStorage({address: "", crypto: {}}, "");
 
       // load in keyfile if a path was given, or default to generating a new key
       if (params.keyPath) {
@@ -113,8 +157,7 @@ class KeyManager {
      * @param {Buffer|string} publicKey A public key (if string, must be base-58 encoded)
      * @param {string} message Message to sign (utf-8 encoded)
      * @param {Buffer|string} signature Signature to verify (if string, must be base-58 encoded)
-     * @param {function=} cb Callback function (optional).
-     * @returns {function} returns function Verify or includes fuinction verify if callback provided
+     * @returns {function} returns function Verify
      * @memberof KeyManager
      */
     static verify(publicKey, message, signature) {
@@ -185,6 +228,45 @@ class KeyManager {
     }
 
     /**
+     * Getter for private property #address
+     * @memberof KeyManager
+     * @param {any} args ignored, only necessary for setter
+     * @returns {void} Error is thrown to protect private variable
+     */
+    get address() {
+      return this.#address;
+    }
+
+    /**
+     * Setter for private property #address
+     * @memberof KeyManager
+     * @param {any} args ignored, only necessary for setter
+     * @returns {void} Error is thrown to protect private variable
+     */
+    set address(args) {
+      throw new Error("Invalid private variable access, instantiate a new KeyManager instead.");
+    }
+
+    /**
+     * Getter for private property #networkPrefix
+     * @memberof KeyManager
+     * @returns {string} value of #networkPrefix
+     */
+    get networkPrefix() {
+      return this.#networkPrefix;
+    }
+
+    /**
+     * Setter for private property #isLocked
+     * @memberof KeyManager
+     * @param {any} args ignored, only necessary for setter
+     * @returns {void} Error is thrown to protect private variable
+     */
+    set networkPrefix(args) {
+      throw new Error("Invalid private variable access.");
+    }
+
+    /**
      * Unlock the key manager to be used in transactions
      * @param {string} password encryption password for accessing the keystorage object
      * @memberof KeyManager
@@ -207,7 +289,6 @@ class KeyManager {
       if (!this.#sk) throw new Error("A key must be initialized before using this key manager");
       if (!message || message.constructor !== String) throw new Error("Invalid message provided as argument.");
 
-      // curve25519sign using this.#sk as private key and provided message
       return curve25519.sign(str2buf(this.#sk), str2buf(message, "utf8"), crypto.randomBytes(64));
     }
 

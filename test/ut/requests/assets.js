@@ -1,6 +1,5 @@
 /** Unit testing for assets type funtionality:
  * - create raw asset transfer
- * - transfer raw asset transfer
  *
  * @author Raul Aragonez (r.aragonez@topl.me)
  * @date 2020.12.8
@@ -9,7 +8,7 @@
  * and Sinon(https://sinonjs.org/).
  */
 
-const Requests = require("../../src/modules/Requests");
+const Requests = require("../../../src/modules/Requests");
 const assert = require("assert");
 const sinon = require('sinon');
 const chai = require('chai');
@@ -36,7 +35,7 @@ describe("Assets", () => {
 
     // run this before all tests
     before(() => {
-        brambljs = new Requests();
+        requests = new Requests();
     });
 
     // run this before every test
@@ -54,23 +53,25 @@ describe("Assets", () => {
     describe("create raw asset transfer", () => {
         beforeEach(() => {
             parameters = {
-                "issuer": "6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ",
-                "recipient": "22222222222222222222222222222222222222222222",
-                "sender": ["6sYyiTguyQ455w2dGEaNbrwkAWAEYV1Zk6FtZMknWDKQ"],
-                "amount": 10,
-                "assetCode": "test",
-                "fee": 0,
-                "data": ""
-            };
+                "propositionType": "PublicKeyCurve25519",
+                "recipients": [
+                  ["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE", 2]
+                ],
+                "assetCode": "6LmGjTkSGsgybGM5ZmjzjDv147p2yuKVAyE9npdDTGwVG5FeparzU965Vq",
+                "sender": ["AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE"],
+                "changeAddress": "AUAftQsaga8DjVfVvq7DK14fm5HvGEDdVLZwexZZvoP7oWkWCLoE",//brambl.keyManager.pk
+                "minting": true,
+                "fee": 1
+              }
         });
 
         it('should NOT fail if parameters are valid', function(done) {
-            const validParameters = ["amount", "assetCode", "data",
-            "fee", "issuer", "recipient", "sender"];
+            const validParameters = ["propositionType", "recipients", "assetCode",
+            "sender", "changeAddress", "minting", "fee"];
             expect(parameters).to.contain.keys(validParameters);
 
-            brambljs
-            .createAssetsPrototype(parameters)
+            requests
+            .createRawAssetTransfer(parameters)
             .then((response) => {
                 assert.strictEqual(typeof response, "object");
                 assert.strictEqual(response.test, "dummy data");
@@ -133,15 +134,15 @@ describe("Assets", () => {
             sinon.stub(nodeFetch, 'Promise').returns(Promise.resolve(responseObject));
 
             // make the call trying to test for
-            var response = await brambljs.createAssetsPrototype(parameters);
+            var response = await requests.createRawAssetTransfer(parameters);
 
             // do validation here
             assert.strictEqual(response.result.formattedTx.txHash, "2ChyrPLSdAXof49X2cd75PmT2Jz1xZdphHkf4WLzdfdW");
         });
         it('should fail if no parameters present', function(done) {
             // make call without parameters
-            brambljs
-            .createAssetsPrototype()
+            requests
+            .createRawAssetTransfer()
             .then((response) => {
                 done(new Error("should not succeded"));
             })
@@ -150,17 +151,31 @@ describe("Assets", () => {
                 done();
             });
         });
-        it('should fail if no issuer provided', function(done) {
-            // set "issuer" as empty string to validate
-            parameters.issuer = "";
+        it('should fail if invalid propositionType provided', function(done) {
+            // set "propositionType" as empty string to validate
+            parameters.propositionType = "testProposition";
 
-            brambljs
-            .createAssetsPrototype(parameters)
+            requests
+            .createRawAssetTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
             .catch((error) => {
-                expect(String(error)).to.equal('Error: An asset issuer must be specified');
+                expect(String(error)).to.equal('Error: A propositionTYpe must be specified: <PublicKeyCurve25519, ThresholdCurve25519>');
+                done();
+            });
+        });
+        it('should fail if no sender provided', function(done) {
+            // set "sender" as empty string to validate
+            parameters.sender = "";
+
+            requests
+            .createRawAssetTransfer(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: An asset sender must be specified');
                 done();
             });
         });
@@ -168,8 +183,8 @@ describe("Assets", () => {
             // set "assetCode" as empty string to validate
             parameters.assetCode = "";
 
-            brambljs
-            .createAssetsPrototype(parameters)
+            requests
+            .createRawAssetTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
@@ -178,31 +193,45 @@ describe("Assets", () => {
                 done();
             });
         });
-        it('should fail if no recipient provided', function(done) {
-            // set "recipient" as empty string to validate
-            parameters.recipient = "";
+        it('should fail if no recipients provided', function(done) {
+            // set "recipients" as empty string to validate
+            parameters.recipients = "";
 
-            brambljs
-            .createAssetsPrototype(parameters)
+            requests
+            .createRawAssetTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
             .catch((error) => {
-                expect(String(error)).to.equal('Error: A recipient must be specified');
+                expect(String(error)).to.equal('Error: At least one recipient must be specified');
                 done();
             });
         });
-        it('should fail if no amount provided', function(done) {
-            // set "amount" as empty string to validate
-            parameters.amount = "";
+        it('should fail if no changeAddress provided', function(done) {
+            // set "changeAddress" as empty string to validate
+            parameters.changeAddress = "";
 
-            brambljs
-            .createAssetsPrototype(parameters)
+            requests
+            .createRawAssetTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
             .catch((error) => {
-                expect(String(error)).to.equal('Error: An amount must be specified');
+                expect(String(error)).to.equal('Error: A changeAddress must be specified');
+                done();
+            });
+        });
+        it('should fail if no minting provided', function(done) {
+            // set "minting" as empty string to validate
+            parameters.minting = "";
+
+            requests
+            .createRawAssetTransfer(parameters)
+            .then((response) => {
+                done(new Error("should not succeded"));
+            })
+            .catch((error) => {
+                expect(String(error)).to.equal('Error: Minting boolean value must be specified');
                 done();
             });
         });
@@ -210,8 +239,8 @@ describe("Assets", () => {
             // set "fee" as empty string to validate
             parameters.fee = "";
 
-            brambljs
-            .createAssetsPrototype(parameters)
+            requests
+            .createRawAssetTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })
@@ -224,8 +253,8 @@ describe("Assets", () => {
             // set "fee" a value < 0
             parameters.fee = -23;
 
-            brambljs
-            .createAssetsPrototype(parameters)
+            requests
+            .createRawAssetTransfer(parameters)
             .then((response) => {
                 done(new Error("should not succeded"));
             })

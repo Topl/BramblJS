@@ -13,8 +13,9 @@
 const blake = require("blake2");
 const crypto = require("crypto");
 const Base58 = require("base-58");
-const keccakHash = require("keccak");
 const curve25519 = require("curve25519-js");
+
+const utils = require("../utils/address-utils.js");
 
 /* ------------------------------ Generic key utils  ------------------------------ */
 
@@ -43,7 +44,7 @@ function isCipherAvailable(cipher) {
 }
 
 /**
- * Symmetric private key encryption using secret (derived) key.
+ * Symmetric privateKey + secretKey encryption using secret (derived) key.
  * @param {Buffer|string} plaintext Data to be encrypted.
  * @param {Buffer|string} key Secret key.
  * @param {Buffer|string} iv Initialization vector.
@@ -54,13 +55,14 @@ function encrypt(plaintext, key, iv, algo) {
   if (!isCipherAvailable(algo)) throw new Error(algo + " is not available");
   const cipher = crypto.createCipheriv(algo, str2buf(key), str2buf(iv));
   const ciphertext = cipher.update(str2buf(plaintext));
+
   return Buffer.concat([ciphertext, cipher.final()]);
 }
 
 /**
- * Symmetric private key decryption using secret (derived) key.
+ * Symmetric privateKey + secretKey decryption using secret (derived) key.
  * @param {Buffer|string} ciphertext Data to be decrypted.
- * @param {Buffer|string} key Secret key.
+ * @param {Buffer|string} key derived key.
  * @param {Buffer|string} iv Initialization vector.
  * @param {string=} algo Encryption algorithm (default: constants.cipher).
  * @returns {Buffer} Decrypted data.
@@ -74,7 +76,7 @@ function decrypt(ciphertext, key, iv, algo) {
 
 /**
  * Calculate message authentication code from secret (derived) key and
- * encrypted text.  The MAC is the keccak-256 hash of the byte array
+ * encrypted text. The MAC is the keccak-256 hash of the byte array
  * formed by concatenating the second 16 bytes of the derived key with
  * the ciphertext key's contents.
  * @param {Buffer|string} derivedKey Secret key derived from password.
@@ -82,9 +84,9 @@ function decrypt(ciphertext, key, iv, algo) {
  * @returns {string} Base58-encoded MAC.
  */
 function getMAC(derivedKey, ciphertext) {
-  const keccak256 = (msg) => keccakHash("keccak256").update(msg).digest();
+  const blake2b = (msg) => blake.createHash("blake2b", {digestLength: 32}).update(msg).digest();
   if (derivedKey !== undefined && derivedKey !== null && ciphertext !== undefined && ciphertext !== null) {
-    return keccak256(Buffer.concat([
+    return blake2b(Buffer.concat([
       str2buf(derivedKey).slice(16, 32),
       str2buf(ciphertext)
     ]));
@@ -163,24 +165,33 @@ function deriveKey(password, salt, kdfParams) {
  * @param {Buffer} salt Randomly generated salt.
  * @param {Buffer} iv Initialization vector.
  * @param {Buffer} algo encryption algorithm to be used
+ * @param {String} network network prefix as string i.e local/private/toplnet
  * @returns {Object} key data object in secret-storage format
  */
-function marshal(derivedKey, keyObject, salt, iv, algo) {
+function marshal(derivedKey, keyObject, salt, iv, algo, network) {
+  // for cipherText: encryption of public + private key
+  const concatKeys = Buffer.concat([keyObject.privateKey, keyObject.publicKey], 64);
+
   // encrypt using last 16 bytes of derived key (this matches Bifrost)
-  const ciphertext = encrypt(keyObject.privateKey, derivedKey, iv, algo);
+  const ciphertext = encrypt(concatKeys, derivedKey, iv, algo);
+
+  // generate address
+  const createAddress = utils.generatePubKeyHashAddress(keyObject.publicKey, network);
+  if (createAddress && !createAddress.success) {
+    throw new Error(createAddress.errorMsg);
+  }
 
   const keyStorage = {
-    publicKeyId: Base58.encode(keyObject.publicKey),
+    address: createAddress.address,
     crypto: {
-      cipher: algo,
+      mac: Base58.encode(getMAC(derivedKey, ciphertext)),
+      kdf: "scrypt",
       cipherText: Base58.encode(ciphertext),
-      cipherParams: {iv: Base58.encode(iv)},
-      mac: Base58.encode(getMAC(derivedKey, ciphertext))
+      kdfSalt: Base58.encode(salt),
+      cipher: algo,
+      cipherParams: {iv: Base58.encode(iv)}
     }
   };
-
-  keyStorage.crypto.kdf = "scrypt";
-  keyStorage.crypto.kdfSalt = Base58.encode(salt);
 
   return keyStorage;
 }
@@ -199,7 +210,7 @@ function dump(password, keyObject, options) {
   const privateKey = str2buf(keyObject.privateKey);
   const publicKey = str2buf(keyObject.publicKey);
 
-  return marshal(deriveKey(password, salt, kdfParams), {privateKey, publicKey}, salt, iv, options.cipher);
+  return marshal(deriveKey(password, salt, kdfParams), {privateKey, publicKey}, salt, iv, options.cipher, options.networkPrefix);
 }
 
 /**
@@ -232,7 +243,19 @@ function recover(password, keyStorage, kdfParams) {
   const mac = str2buf(keyStorage.crypto.mac);
   const algo = keyStorage.crypto.cipher;
 
-  return verifyAndDecrypt(deriveKey(password, salt, kdfParams), iv, ciphertext, mac, algo);
+  return keysEncodedFormat(verifyAndDecrypt(deriveKey(password, salt, kdfParams), iv, ciphertext, mac, algo));
+}
+
+/**
+ * Parse KeysBuffer and split into [secretKey, publicKey]
+ * @param {Buffer} keysBuffer Buffer containing both keys
+ * @returns {Array} Array with format [sk, pk]
+ */
+function keysEncodedFormat(keysBuffer) {
+  if (keysBuffer.length !== 64) {
+    throw new Error("Invalid keysBuffer.");
+  }
+  return [Base58.encode(keysBuffer.slice(0, 32)), Base58.encode(keysBuffer.slice(32))];
 }
 
 /**
