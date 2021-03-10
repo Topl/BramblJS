@@ -1,6 +1,6 @@
 {
   "name": "brambljs",
-  "repository": "https://github.com/Topl/Brambl-JS",
+  "repository": "https://github.com/Topl/BramblJS",
   "version": "1.2.0",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "test:all": "npm run lint && npm run test:ut && npm run test:e2e",
     "test": "npm run lint && npm run test:ut"
   },
-  "author": "topl",
+  "author": "Topl Inc",
   "license": "MPL-2.0",
   "description": "",
   "dependencies": {
