@@ -7,6 +7,7 @@
  */
 
 const KeyManager = require("../../../src/modules/KeyManager");
+const Base58 = require("base-58");
 const assert = require("assert");
 const chai = require('chai');
 const expect = chai.expect;
@@ -288,7 +289,8 @@ describe("KeyManager", () => {
             keyMan.unlockKey("password_test");
 
             // sign with invalid message
-            let signedKey = keyMan.sign("topl_valid_msg");
+            let msg = Base58.encode(Buffer.from("test"))
+            let signedKey = keyMan.sign(msg);
             assert.strictEqual(typeof signedKey, "object");
             assert.strictEqual(signedKey.constructor, Uint8Array);
             assert.strictEqual(signedKey.length, 64);
