@@ -20,16 +20,16 @@ const utils = require("../utils/address-utils.js");
 /* ------------------------------ Generic key utils  ------------------------------ */
 
 /**
- * Convert a string to a Buffer.  If encoding is not specified, hex-encoding
- * will be used if the input is valid hex.  If the input is valid base64 but
- * not valid hex, base64 will be used.  Otherwise, utf8 will be used.
+ * Convert a string to a Buffer with optional Node builtin encoding specified.
+ * If encoding is not specified, Base58 encoding will be assumed, if the input is valid.
  * @param {string} str String to be converted.
  * @param {string=} enc Encoding of the input string (optional).
  * @returns {Buffer} Buffer (bytearray) containing the input data.
  */
 function str2buf(str, enc) {
   if (!str || str.constructor !== String) return str;
-  return enc ? Buffer.from(str, enc) : Buffer.from(Base58.decode(str));
+  else if (enc === "base58") return Buffer.from(Base58.decode(str));
+  else return enc ? Buffer.from(str, enc) : Buffer.from(Base58.decode(str));
 }
 
 /**
@@ -145,7 +145,7 @@ function deriveKey(password, salt, kdfParams) {
   }
 
   // convert strings to Buffers
-  password = str2buf(password, "utf8");
+  password = str2buf(password, "latin1");
   salt = str2buf(salt);
 
   // get scrypt parameters

@@ -186,7 +186,16 @@ class Brambl {
 Brambl.prototype.addSigToTx = async function(prototypeTx, userKeys) {
   // function for generating a signature in the correct format
   const genSig = (keys, txMsgToSign) => {
-    return Object.fromEntries( keys.map( (key) => [key.pk, base58.encode(key.sign(txMsgToSign))]));
+    return Object.fromEntries(
+        keys.map(
+            (key) => {
+              const pubKeyHashByte = Buffer.from("01", "hex");
+              const prop = Buffer.concat([pubKeyHashByte, base58.decode(key.pk)], 33);
+              const sig = Buffer.concat([pubKeyHashByte, key.sign(txMsgToSign)], 65);
+              return [base58.encode(prop), base58.encode(sig)];
+            }
+        )
+    );
   };
 
   // list of Key Managers
