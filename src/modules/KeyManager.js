@@ -162,7 +162,7 @@ class KeyManager {
      */
     static verify(publicKey, message, signature) {
       const pk = str2buf(publicKey);
-      const msg = str2buf(message, "utf8");
+      const msg = str2buf(message, "base58");
       const sig = str2buf(signature);
 
       return curve25519.verify(pk, msg, sig);
@@ -289,7 +289,7 @@ class KeyManager {
       if (!this.#sk) throw new Error("A key must be initialized before using this key manager");
       if (!message || message.constructor !== String) throw new Error("Invalid message provided as argument.");
 
-      return curve25519.sign(str2buf(this.#sk), str2buf(message, "utf8"), crypto.randomBytes(64));
+      return curve25519.sign(str2buf(this.#sk), str2buf(message, "base58"), crypto.randomBytes(64));
     }
 
     /**

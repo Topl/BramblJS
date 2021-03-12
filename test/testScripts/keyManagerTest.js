@@ -8,8 +8,9 @@ console.log(h);
 sig = gjal.sign("this is a msg", Buffer.from);
 console.log(sig);
 
-ver = KeyMan.verify(h.address, "this is a msg", sig);
+ver = KeyMan.verify(gjal.pk, "this is a msg", sig);
 console.log(ver);
+console.log(gjal.pk)
 
 gjal.exportToFile("keystore/");
 
