@@ -170,7 +170,7 @@ The `Address Utilities` are functions used in BramblJS to validate addresses, cr
 const BramblJS = require('brambljs');
 console.log("Valid Networks: " + BramblJS.utils.getValidNetworksList());
 ```
-_Note: Upon importing brambljs module, the utilities functions can be used without having to create a new instance of Brambl module which generates a new Keyfile (this is an expensive oiperation)._
+_Note: Upon importing brambljs module, the utilities functions can be used without having to create a new instance of Brambl module which generates a new Keyfile (this is an expensive operation)._
 
 ### 1b. Import the utilities module using BramblJS module
 ```
