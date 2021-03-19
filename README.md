@@ -161,6 +161,27 @@ console.log(signedKey);
 ```
 <br/><br/>
 
+## Address Utils Module
+The `Address Utilities` are functions used in BramblJS to validate addresses, create asset codes, validate an address network etc. For all available methods see address-utils.js.
+<br/><br/>
+
+### 1a. Import the utilities outside BramblJS module
+```
+const BramblJS = require('brambljs');
+console.log("Valid Networks: " + BramblJS.utils.getValidNetworksList());
+```
+_Note: Upon importing brambljs module, the utilities functions can be used without having to create a new instance of Brambl module which generates a new Keyfile (this is an expensive operation)._
+
+### 1b. Import the utilities module using BramblJS module
+```
+const BramblJS = require('brambljs');
+const brambl = new BramblJS('YOUR_PASS')
+
+// utils are also accesible through brambljs module
+console.log("Valid Networks: " + brambl.utils.getValidNetworksList());
+```
+_Note: If a new instance of BramblJS has been created, the utils can be access through this module._
+
 # Examples
 
 ### Transactions may be issued using the method `brambl.transaction` following instantiation of the class.
