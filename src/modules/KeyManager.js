@@ -52,7 +52,6 @@ const defaultOptions = {
  * @memberof KeyManager
  * @classdesc Create a new instance of the Key management interface.
  */
-
 class KeyManager {
     // Private variables
     #sk;
@@ -78,10 +77,10 @@ class KeyManager {
 
       /**
        * Initializes a key manager object with a key storage object
-       * 
-       * @param {object} keyStorage - The keyStorage object that the keyManager will use to store the keys for a particular address.  
-       * @param {string} password for encrypting (decrypting) the keyfile 
-       * @returns {object}
+       *
+       * @param {object} keyStorage - The keyStorage object that the keyManager will use to store the keys for a particular address.
+       * @param {string} password for encrypting (decrypting) the keyfile
+       * @returns {object} Returns the key storage used in the keyManager
        */
 
       const initKeyStorage = (keyStorage, password) => {
@@ -109,7 +108,8 @@ class KeyManager {
       /**
        * Imports key data object from keystore JSON file.
        * @param {string} filepath the filepath of the keystore JSON
-       * @param {string} password the password for encrypting/decrypting the keyfile
+       * @param {string} password the password for encrypting/decrypting * the keyfile
+       * @returns {object} returns the keyStorage used in the KeyManager
        */
       const importFromFile = (filepath, password) => {
         const keyStorage = JSON.parse(fs.readFileSync(filepath));
