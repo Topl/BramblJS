@@ -5,8 +5,7 @@
  * @author James Aman (j.aman@topl.me)
  * @author Raul Aragonez (r.aragonez@topl.me)
  *
- * @module KeyManager
- *
+ * @namespace KeyManager
  */
 
 // Initial implementation of this lib isBased on the keythereum library from Jack Peterson https://github.com/Ethereumjs/keythereum
@@ -49,7 +48,8 @@ const defaultOptions = {
 /*                           Key Manager Class                                */
 /* -------------------------------------------------------------------------- */
 /**
- * @class
+ * @class KeyManager
+ * @memberof KeyManager
  * @classdesc Create a new instance of the Key management interface.
  */
 class KeyManager {
@@ -75,7 +75,14 @@ class KeyManager {
       // enforce that a password must be provided
       if (!params || (params.constructor !== String && !params.password)) throw new Error("A password must be provided at initialization");
 
-      // Initialize a key manager object with a key storage object
+      /**
+       * Initializes a key manager object with a key storage object
+       *
+       * @param {object} keyStorage - The keyStorage object that the keyManager will use to store the keys for a particular address.
+       * @param {string} password for encrypting (decrypting) the keyfile
+       * @returns {object} Returns the key storage used in the keyManager
+       */
+
       const initKeyStorage = (keyStorage, password) => {
         this.#address = keyStorage.address;
         this.#isLocked = false;
@@ -87,12 +94,23 @@ class KeyManager {
         }
       };
 
+      /**
+       * Generates a new curve25519 key pair and dumps them to an encrypted format
+       * @param {string} password password for encrypting (decrypting) the keyfile
+       * @returns {object}
+       */
+
       const generateKey = (password) => {
         // this will create a new curve25519 key pair and dump to an encrypted format
         initKeyStorage(dump(password, create(this.constants), this.constants), password);
       };
 
-      // Imports key data object from keystore JSON file.
+      /**
+       * Imports key data object from keystore JSON file.
+       * @param {string} filepath the filepath of the keystore JSON
+       * @param {string} password the password for encrypting/decrypting * the keyfile
+       * @returns {object} returns the keyStorage used in the KeyManager
+       */
       const importFromFile = (filepath, password) => {
         const keyStorage = JSON.parse(fs.readFileSync(filepath));
 
@@ -154,6 +172,9 @@ class KeyManager {
     /**
      * Check whether a private key was used to generate the signature for a message.
      * This method is static so that it may be used without generating a keyfile
+     * @function Verify
+     * @memberof KeyManager
+     * @static
      * @param {Buffer|string} publicKey A public key (if string, must be base-58 encoded)
      * @param {string} message Message to sign (utf-8 encoded)
      * @param {Buffer|string} signature Signature to verify (if string, must be base-58 encoded)
@@ -171,6 +192,7 @@ class KeyManager {
     /* ------------------------------ Public methods -------------------------------- */
     /**
      * Getter function to retrieve key storage in the Bifrost compatible format
+     * @function GetKeyStorage
      * @memberof KeyManager
      * @returns {object} returns value of private var keyStorage
      */
