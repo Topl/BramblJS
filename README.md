@@ -1,5 +1,5 @@
-![build](https://github.com/Topl/BramblJS/workflows/build/badge.svg?branch=master)
-![gh-pages docs](https://github.com/Topl/BramblJS/workflows/gh-pages%20docs/badge.svg?branch=master)
+![build](https://github.com/Topl/BramblJS/workflows/build/badge.svg?branch=main)
+![gh-pages docs](https://github.com/Topl/BramblJS/workflows/gh-pages%20docs/badge.svg?branch=main)
 [![npm version](https://badge.fury.io/js/brambljs.svg)](https://badge.fury.io/js/brambljs)
 
 
