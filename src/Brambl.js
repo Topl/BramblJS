@@ -223,7 +223,7 @@ Brambl.prototype.signAndBroadcast = async function(prototypeTx) {
 /**
   * Create a new transaction, then sign and broadcast
   *
-  * @param {string} method The chain resource method to create a transaction for
+  * @param {string} method The chain resource method to create a transaction for. Valid transaction methods are the following: "createRawArbitTransfer", "createRawAssetTransfer", "createRawPolyTransfer".
   * @param {object} params Transaction parameters object
   * @returns {promise} signAndBroadcast promise
  */

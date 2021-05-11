@@ -112,12 +112,17 @@ class Requests {
    * Create a new asset on chain
    * @param {object} params - body parameters passed to the specified json-rpc method
    * @param {string} params.propositionType - Proposition Type -> PublicKeyCurve25519 || TheresholdCurve25519
-   * @param {string} params.recipients - 2-dimensional array (array of tuples) -> [["publicKey of asset recipient", quantity]]
+   * @param {string} params.recipients - 2-dimensional array (array of tuples) -> [["address of recipient", quantity, securityRoot, metadata]]
+   * @param {string} params.recipients[i][0]: Required address of recipient
+   * @param {string} params.recipients[i][1]: Required number of tokens to send to recipient
+   * @param {string} params.recipients[i][2]: Optional security root which is a Base58 encoded 32 byte hash of the data to be stored in the AssetBox.
+   * @param {string} params.recipients[i][3]: Optional metadata tag for asset, must be less than 128 Latin-1 characters.
    * @param {string} params.assetCode - Identifier of the asset
    * @param {string} params.sender - Public key of the asset issuer
    * @param {string} params.changeAddress - Public key of the change recipient
    * @param {boolean} params.minting - Minting boolean
    * @param {number} params.fee - Fee to apply to the transaction
+   * @param {string} params.consolidationAddress - Address for recipient of unspent Assets
    * @param {string} [id="1"] - identifying number for the json-rpc request
    * @returns {object} json-rpc response from the chain
    * @memberof Requests
