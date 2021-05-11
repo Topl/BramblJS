@@ -200,7 +200,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line356">line 356</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line361">line 361</a>
     </li></ul></dd>
     
 
@@ -469,7 +469,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line293">line 293</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line298">line 298</a>
     </li></ul></dd>
     
 
@@ -954,7 +954,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line125">line 125</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line130">line 130</a>
     </li></ul></dd>
     
 
@@ -1100,7 +1100,111 @@
             
 
             <td class="description last">
-                2-dimensional array (array of tuples) -> [["publicKey of asset recipient", quantity]]
+                2-dimensional array (array of tuples) -> [["address of recipient", quantity, securityRoot, metadata]]
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>recipients[i][0]:</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                Required address of recipient
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>recipients[i][1]:</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                Required number of tokens to send to recipient
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>recipients[i][2]:</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                Optional security root which is a Base58 encoded 32 byte hash of the data to be stored in the AssetBox.
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>recipients[i][3]:</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                Optional metadata tag for asset, must be less than 128 Latin-1 characters.
                 
             </td>
         </tr>
@@ -1231,6 +1335,32 @@
 
             <td class="description last">
                 Fee to apply to the transaction
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>consolidationAddress</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                Address for recipient of unspent Assets
                 
             </td>
         </tr>
@@ -1379,7 +1509,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line227">line 227</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line232">line 232</a>
     </li></ul></dd>
     
 
@@ -1830,7 +1960,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line498">line 498</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line503">line 503</a>
     </li></ul></dd>
     
 
@@ -2099,7 +2229,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line478">line 478</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line483">line 483</a>
     </li></ul></dd>
     
 
@@ -2368,7 +2498,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line463">line 463</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line468">line 468</a>
     </li></ul></dd>
     
 
@@ -2548,7 +2678,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line410">line 410</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line415">line 415</a>
     </li></ul></dd>
     
 
@@ -2728,7 +2858,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line425">line 425</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line430">line 430</a>
     </li></ul></dd>
     
 
@@ -2997,7 +3127,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line445">line 445</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line450">line 450</a>
     </li></ul></dd>
     
 
@@ -3266,7 +3396,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line384">line 384</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line389">line 389</a>
     </li></ul></dd>
     
 
@@ -4129,7 +4259,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line356">line 356</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line361">line 361</a>
     </li></ul></dd>
     
 
@@ -4398,7 +4528,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line293">line 293</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line298">line 298</a>
     </li></ul></dd>
     
 
@@ -4883,7 +5013,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line125">line 125</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line130">line 130</a>
     </li></ul></dd>
     
 
@@ -5029,7 +5159,111 @@
             
 
             <td class="description last">
-                2-dimensional array (array of tuples) -> [["publicKey of asset recipient", quantity]]
+                2-dimensional array (array of tuples) -> [["address of recipient", quantity, securityRoot, metadata]]
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>recipients[i][0]:</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                Required address of recipient
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>recipients[i][1]:</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                Required number of tokens to send to recipient
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>recipients[i][2]:</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                Optional security root which is a Base58 encoded 32 byte hash of the data to be stored in the AssetBox.
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>recipients[i][3]:</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                Optional metadata tag for asset, must be less than 128 Latin-1 characters.
                 
             </td>
         </tr>
@@ -5160,6 +5394,32 @@
 
             <td class="description last">
                 Fee to apply to the transaction
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>consolidationAddress</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                Address for recipient of unspent Assets
                 
             </td>
         </tr>
@@ -5308,7 +5568,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line227">line 227</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line232">line 232</a>
     </li></ul></dd>
     
 
@@ -5759,7 +6019,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line498">line 498</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line503">line 503</a>
     </li></ul></dd>
     
 
@@ -6028,7 +6288,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line478">line 478</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line483">line 483</a>
     </li></ul></dd>
     
 
@@ -6297,7 +6557,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line463">line 463</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line468">line 468</a>
     </li></ul></dd>
     
 
@@ -6477,7 +6737,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line410">line 410</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line415">line 415</a>
     </li></ul></dd>
     
 
@@ -6657,7 +6917,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line425">line 425</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line430">line 430</a>
     </li></ul></dd>
     
 
@@ -6926,7 +7186,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line445">line 445</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line450">line 450</a>
     </li></ul></dd>
     
 
@@ -7195,7 +7455,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line384">line 384</a>
+        <a href="modules_Requests.js.html">modules/Requests.js</a>, <a href="modules_Requests.js.html#line389">line 389</a>
     </li></ul></dd>
     
 
@@ -7745,7 +8005,7 @@
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Tue May 11 2021 15:19:00 GMT+0000 (Coordinated Universal Time) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Tue May 11 2021 15:58:35 GMT+0000 (Coordinated Universal Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
