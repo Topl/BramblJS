@@ -8,7 +8,7 @@
  */
 
 const KeyManager = require("../../../src/modules/KeyManager");
-const Base58 = require("base-58");
+const Base58 = require("bs58");
 const assert = require("assert");
 const chai = require("chai");
 const expect = chai.expect;

@@ -187,9 +187,9 @@ class KeyManager {
      * @function Verify
      * @memberof KeyManager
      * @static
-     * @param {Buffer|string} publicKey A public key (if string, must be base-58 encoded)
+     * @param {Buffer|string} publicKey A public key (if string, must be bs58 encoded)
      * @param {string} message Message to sign (utf-8 encoded)
-     * @param {Buffer|string} signature Signature to verify (if string, must be base-58 encoded)
+     * @param {Buffer|string} signature Signature to verify (if string, must be bs58 encoded)
      * @returns {function} returns function Verify
      * @memberof KeyManager
      */

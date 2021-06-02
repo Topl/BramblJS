@@ -8,7 +8,7 @@
 "use strict";
 
 // Dependencies
-const base58 = require("base-58");
+const base58 = require("bs58");
 
 // Primary sub-modules
 const Requests = require("./modules/Requests");
