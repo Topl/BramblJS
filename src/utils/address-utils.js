@@ -335,5 +335,6 @@ module.exports = {
   createAssetCode,
   isValidAssetCode,
   isValidMetadata,
-  getAddressNetwork
+  getAddressNetwork,
+  extractAddressesFromObj
 };
