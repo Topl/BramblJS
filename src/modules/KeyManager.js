@@ -83,10 +83,9 @@ class KeyManager {
        * @param {string} password for encrypting (decrypting) the keyfile
        * @returns {object} Returns the key storage used in the keyManager
        */
-
       const initKeyStorage = (keyStorage, password) => {
         this.#isLocked = false;
-        this.setKeyStorage(keyStorage, password);
+        this.#setKeyStorage(keyStorage, password);
       };
 
       /**
@@ -115,30 +114,28 @@ class KeyManager {
                   " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
           }
 
-          this.setKeyStorage(keyStorage, password);
+          this.#setKeyStorage(keyStorage, password);
         } else {
           throw new Error("No address found in key");
         }
       };
 
       /**
-           * Imports key data object from keystore JSON file.
-           * @param {string} filepath the filepath of the keystore JSON
-           * @param {string} password the password for encrypting/decrypting * the keyfile
-           * @returns {object} returns the keyStorage used in the KeyManager
-           */
+       * Imports key data object from keystore JSON file.
+       * @param {string} filepath the filepath of the keystore JSON
+       * @param {string} password the password for encrypting/decrypting * the keyfile
+       * @returns {object} returns the keyStorage used in the KeyManager
+       */
       const importFromFile = (filepath, password) => {
         const keyStorage = JSON.parse(fs.readFileSync(filepath));
-
         return importKeyPair(keyStorage, password);
       };
 
       /**
        * Generates a new curve25519 key pair and dumps them to an encrypted format
        * @param {string} password password for encrypting (decrypting) the keyfile
-       * @returns {object}
+       * @returns {undefined} no obj returned
        */
-
       const generateKey = (password) => {
         // this will create a new curve25519 key pair and dump to an encrypted format
         initKeyStorage(dump(password, create(this.constants), this.constants), password);
@@ -227,6 +224,24 @@ class KeyManager {
       });
     }
 
+    /**
+     * Setter function to input keyStorage in the Bifrost compatible format
+     * @param {object} keyStorage - The keyStorage object that the keyManager will use to store the keys for a particular address.
+     * @param {string} password for encrypting (decrypting) the keyfile
+     * @function setKeyStorage
+     * @memberof KeyManager
+     * @returns {object};
+     */
+    #setKeyStorage(keyStorage, password) {
+      if (this.#isLocked) throw new Error("Key manager is currently locked. Please unlock and try again.");
+      this.#address = keyStorage.address;
+      this.#password = password;
+      this.#keyStorage = keyStorage;
+      if (this.#address) {
+        [this.#sk, this.#pk] = recover(password, keyStorage, this.constants.scrypt);
+      }
+    }
+
     /* ------------------------------ Public methods -------------------------------- */
 
     /**
@@ -239,24 +254,6 @@ class KeyManager {
       if (this.#isLocked) throw new Error("Key manager is currently locked. Please unlock and try again.");
       if (!this.#pk) throw new Error("A key must be initialized before using this key manager");
       return this.#keyStorage;
-    }
-
-    /**
-       * Setter function to input keyStorage in the Bifrost compatible format
-       * @param {object} keyStorage - The keyStorage object that the keyManager will use to store the keys for a particular address.
-       * @param {string} password for encrypting (decrypting) the keyfile
-       * @function setKeyStorage
-       * @memberof KeyManager
-       * @returns {object};
-       */
-    setKeyStorage(keyStorage, password) {
-      if (this.#isLocked) throw new Error("Key manager is currently locked. Please unlock and try again.");
-      this.#address = keyStorage.address;
-      this.#password = password;
-      this.#keyStorage = keyStorage;
-      if (this.#address) {
-        [this.#sk, this.#pk] = recover(password, keyStorage, this.constants.scrypt);
-      }
     }
 
     /**

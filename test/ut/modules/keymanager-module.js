@@ -437,7 +437,7 @@ describe("KeyManager", () => {
         // export key to file using the path above
         const keyfilePath = keyMan.exportToFile(exportPath);
         assert.strictEqual(keyfilePath.constructor, String, "Key file path is a String");
-        fileCleanup(exportPath);
+        fileCleanup(keyfilePath);
       });
     }
 
@@ -466,7 +466,7 @@ describe("KeyManager", () => {
 
       const newKeyManager = KeyManager.importKeyPairFromFile(keyfilePath, "password_test");
       assert.deepStrictEqual(originalKeyStorage, newKeyManager.getKeyStorage());
-      fileCleanup(importPath);
+      fileCleanup(keyfilePath);
     });
   }
 
@@ -525,7 +525,7 @@ describe("KeyManager", () => {
         throw new Error("Error in file creation: " + err);
       } else {
         // test cleanup
-        fs.rmdirSync(keyfilePath, {recursive: true});
+        fs.rmSync(keyfilePath, {recursive: true});
       }
     });
   }
