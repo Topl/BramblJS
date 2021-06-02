@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 /**
  * @fileOverview Unit testing for KeyManager Module
  *
@@ -456,35 +457,44 @@ describe("KeyManager", () => {
     path + counter++,
     path + counter++
   ];
-  function testImportKeyfiles(importPath) {
+  function testImportKeyPairFromFile(importPath) {
     it("should pass with path" + importPath, () => {
       // first export key to file using the path above
       const originalKeyStorage = keyMan.getKeyStorage();
       const keyfilePath = keyMan.exportToFile(importPath);
       assert.strictEqual(keyfilePath.constructor, String, "Key file path is a string");
 
-      keyMan.importFromFile(keyfilePath, "password_test");
-      assert.deepStrictEqual(originalKeyStorage, keyMan.getKeyStorage());
+      const newKeyManager = KeyManager.importKeyPairFromFile(keyfilePath, "password_test");
+      assert.deepStrictEqual(originalKeyStorage, newKeyManager.getKeyStorage());
       fileCleanup(keyfilePath);
+    });
+  }
+
+  function testImportKeyPair() {
+    it("should return a new keyManager with the unlocked keyPair", () => {
+      // first export keyPair to memory
+      const keyStorage = keyMan.getKeyStorage();
+      const newKeyManager = KeyManager.importKeyPair(keyStorage, "password_test");
+      assert.deepStrictEqual(keyStorage, newKeyManager.getKeyStorage());
     });
   }
 
   testCases.forEach((test) => {
     fileSetup(test);
-    testImportKeyfiles(test);
+    testImportKeyPairFromFile(test);
+    testImportKeyPair();
   });
 
   /* ------------------------------ Import from Memory Success Tests ---------------- */
   describe("importFromKeyPair()", function() {
     const keyMan = new KeyManager("password_test");
-    const keyManAlt = new KeyManager("password_test");
 
     it("should fail if keyPair does not contain address", () => {
       const keyStorage = keyMan.getKeyStorage;
       keyStorage.address = "";
       // attempt to import when the address is the empty string.
       assert.throws(function() {
-        keyManAlt.importKeyPair(keyStorage, "password_test");
+        KeyManager.importKeyPair(keyStorage, "password_test");
       }, Error, "No address found in key");
     });
 
@@ -493,7 +503,7 @@ describe("KeyManager", () => {
       keyStorage.address = "5jb9W76VgpZkGbaowByDHPVnPdtd3UKrDhC1XxNmuBn9z6oxMbpj";
       // attempt to import when address is valid, but for incorrect network
       assert.throws(function() {
-        keyManAlt.importKeyPair(keyStorage, "password_test");
+        KeyManager.importKeyPair(keyStorage, "password_test");
       }, Error, "Invalid network provided");
     });
   });
