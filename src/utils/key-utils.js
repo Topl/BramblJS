@@ -12,7 +12,7 @@
 // Dependencies
 const blake = require("blake2");
 const crypto = require("crypto");
-const Base58 = require("base-58");
+const Base58 = require("bs58");
 const curve25519 = require("curve25519-js");
 
 const utils = require("../utils/address-utils.js");
