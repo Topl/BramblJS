@@ -68,6 +68,7 @@ class KeyManager {
      * @param {object} params constructor object for key manager or as a string password
      * @param {string} [params.password] password for encrypting (decrypting) the keyfile
      * @param {string} [params.keyPath] path to import keyfile
+     * @param {object} [params.keyPair] encrypted keypair javascript object.
      * @param {object} [params.constants] default encryption options for storing keyfiles
      * @param {string} [params.networkPrefix] Network Prefix, defaults to "private"
      */
@@ -82,38 +83,18 @@ class KeyManager {
        * @param {string} password for encrypting (decrypting) the keyfile
        * @returns {object} Returns the key storage used in the keyManager
        */
-
       const initKeyStorage = (keyStorage, password) => {
-        this.#address = keyStorage.address;
         this.#isLocked = false;
-        this.#password = password;
-        this.#keyStorage = keyStorage;
-
-        if (this.#address) {
-          [this.#sk, this.#pk] = recover(password, keyStorage, this.constants.scrypt);
-        }
+        this.#setKeyStorage(keyStorage, password);
       };
 
       /**
-       * Generates a new curve25519 key pair and dumps them to an encrypted format
-       * @param {string} password password for encrypting (decrypting) the keyfile
-       * @returns {object}
-       */
-
-      const generateKey = (password) => {
-        // this will create a new curve25519 key pair and dump to an encrypted format
-        initKeyStorage(dump(password, create(this.constants), this.constants), password);
-      };
-
-      /**
-       * Imports key data object from keystore JSON file.
-       * @param {string} filepath the filepath of the keystore JSON
-       * @param {string} password the password for encrypting/decrypting * the keyfile
+       * Imports the keyfile data object
+       * @param {object} keyStorage: The JS object representing the encrypted keyfile
+       * @param {object} password: The password to unlock the keyfile
        * @returns {object} returns the keyStorage used in the KeyManager
        */
-      const importFromFile = (filepath, password) => {
-        const keyStorage = JSON.parse(fs.readFileSync(filepath));
-
+      const importKeyPair = (keyStorage, password) => {
         // check if address is valid and has a valid network
         if (keyStorage.address) {
           // determine prefix and set networkPrefix
@@ -128,15 +109,36 @@ class KeyManager {
           const validationResult = utils.validateAddressesByNetwork(this.networkPrefix, keyStorage.address);
           if (!validationResult.success) {
             throw new Error("Invalid Addresses::" +
-              " Network Type: <" + this.networkPrefix + ">" +
-              " Invalid Addresses: <" + validationResult.invalidAddresses + ">" +
-              " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
+                  " Network Type: <" + this.networkPrefix + ">" +
+                  " Invalid Addresses: <" + validationResult.invalidAddresses + ">" +
+                  " Invalid Checksums: <" + validationResult.invalidChecksums + ">");
           }
 
-          initKeyStorage(keyStorage, password);
+          this.#setKeyStorage(keyStorage, password);
         } else {
           throw new Error("No address found in key");
         }
+      };
+
+      /**
+       * Imports key data object from keystore JSON file.
+       * @param {string} filepath the filepath of the keystore JSON
+       * @param {string} password the password for encrypting/decrypting * the keyfile
+       * @returns {object} returns the keyStorage used in the KeyManager
+       */
+      const importFromFile = (filepath, password) => {
+        const keyStorage = JSON.parse(fs.readFileSync(filepath));
+        return importKeyPair(keyStorage, password);
+      };
+
+      /**
+       * Generates a new curve25519 key pair and dumps them to an encrypted format
+       * @param {string} password password for encrypting (decrypting) the keyfile
+       * @returns {undefined} no obj returned
+       */
+      const generateKey = (password) => {
+        // this will create a new curve25519 key pair and dump to an encrypted format
+        initKeyStorage(dump(password, create(this.constants), this.constants), password);
       };
 
       // initialize variables
@@ -154,12 +156,18 @@ class KeyManager {
 
       initKeyStorage({address: "", crypto: {}}, "");
 
-      // load in keyfile if a path was given, or default to generating a new key
+      // load in keyfile if a path or object was given, otherwise default to generating a new keypair.
       if (params.keyPath) {
         try {
           importFromFile(params.keyPath, params.password);
         } catch (err) {
           throw new Error("Error importing keyfile - " + err);
+        }
+      } else if (params.keyPair) {
+        try {
+          importKeyPair(params.keyPair, params.password);
+        } catch (err) {
+          throw new Error("Error importing keyPair - " + err);
         }
       } else {
         // Will check if only a string was given and assume it is the password
@@ -169,15 +177,16 @@ class KeyManager {
     }
 
     /* ------------------------------ Static methods ------------------------------------ */
+
     /**
      * Check whether a private key was used to generate the signature for a message.
      * This method is static so that it may be used without generating a keyfile
      * @function Verify
      * @memberof KeyManager
      * @static
-     * @param {Buffer|string} publicKey A public key (if string, must be base-58 encoded)
+     * @param {Buffer|string} publicKey A public key (if string, must be bs58 encoded)
      * @param {string} message Message to sign (utf-8 encoded)
-     * @param {Buffer|string} signature Signature to verify (if string, must be base-58 encoded)
+     * @param {Buffer|string} signature Signature to verify (if string, must be bs58 encoded)
      * @returns {function} returns function Verify
      * @memberof KeyManager
      */
@@ -189,7 +198,52 @@ class KeyManager {
       return curve25519.verify(pk, msg, sig);
     };
 
+    /**
+     * Static wrapper of importing the key pair via a constructor. Generates a new instance of a keyManager with the imported keypair and password.
+     * @param {object} keyStorage: The JS object representing the encrypted keyfile
+     * @param {string} password: The password to unlock the keyfile
+     * @returns {object} returns the keyStorage used in the KeyManager
+     */
+    static importKeyPair(keyStorage, password) {
+      return new KeyManager({
+        password: password,
+        keyPair: keyStorage
+      });
+    }
+
+    /**
+     * Static wrapper of importing the key pair from file via the constructor. Generates a new instance of a keyManager with the imported keypair and password.
+     * @param {string} keyFilePath: The JS object representing the encrypted keyfile
+     * @param {string} password: The password to unlock the keyfile
+     * @returns {object} returns the keyStorage used in the KeyManager
+     */
+    static importKeyPairFromFile(keyFilePath, password) {
+      return new KeyManager({
+        password: password,
+        keyPath: keyFilePath
+      });
+    }
+
+    /**
+     * Setter function to input keyStorage in the Bifrost compatible format
+     * @param {object} keyStorage - The keyStorage object that the keyManager will use to store the keys for a particular address.
+     * @param {string} password for encrypting (decrypting) the keyfile
+     * @function setKeyStorage
+     * @memberof KeyManager
+     * @returns {object};
+     */
+    #setKeyStorage(keyStorage, password) {
+      if (this.#isLocked) throw new Error("Key manager is currently locked. Please unlock and try again.");
+      this.#address = keyStorage.address;
+      this.#password = password;
+      this.#keyStorage = keyStorage;
+      if (this.#address) {
+        [this.#sk, this.#pk] = recover(password, keyStorage, this.constants.scrypt);
+      }
+    }
+
     /* ------------------------------ Public methods -------------------------------- */
+
     /**
      * Getter function to retrieve key storage in the Bifrost compatible format
      * @function GetKeyStorage
