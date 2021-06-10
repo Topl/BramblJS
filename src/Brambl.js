@@ -96,6 +96,7 @@ class Brambl {
       this.keyManager = new KeyManager({
         password: keyManagerVar.password,
         keyPath: keyManagerVar.keyPath,
+        keyFile: keyManagerVar.keyFile,
         constants: keyManagerVar.constants,
         networkPrefix: this.#networkPrefix
       });
@@ -150,6 +151,7 @@ class Brambl {
     * @param {object} params constructor object for key manager or as a string password
     * @param {string} [params.password] password for encrypting (decrypting) the keyfile
     * @param {string} [params.keyPath] path to import keyfile
+    * @param {object} [params.keyFile] encrypted keyFile javascript object.
     * @param {object} [params.constants] default encryption options for storing keyfiles
     * @param {string} [params.networkPrefix] Network Prefix, defaults to "private"
     * @returns {object} new KeyManager instance

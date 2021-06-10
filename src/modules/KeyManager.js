@@ -68,7 +68,7 @@ class KeyManager {
      * @param {object} params constructor object for key manager or as a string password
      * @param {string} [params.password] password for encrypting (decrypting) the keyfile
      * @param {string} [params.keyPath] path to import keyfile
-     * @param {object} [params.keyPair] encrypted keypair javascript object.
+     * @param {object} [params.keyFile] encrypted keyFile javascript object.
      * @param {object} [params.constants] default encryption options for storing keyfiles
      * @param {string} [params.networkPrefix] Network Prefix, defaults to "private"
      */
@@ -94,7 +94,7 @@ class KeyManager {
        * @param {object} password: The password to unlock the keyfile
        * @returns {object} returns the keyStorage used in the KeyManager
        */
-      const importKeyPair = (keyStorage, password) => {
+      const importKeyFile = (keyStorage, password) => {
         // check if address is valid and has a valid network
         if (keyStorage.address) {
           // determine prefix and set networkPrefix
@@ -128,7 +128,7 @@ class KeyManager {
        */
       const importFromFile = (filepath, password) => {
         const keyStorage = JSON.parse(fs.readFileSync(filepath));
-        return importKeyPair(keyStorage, password);
+        return importKeyFile(keyStorage, password);
       };
 
       /**
@@ -156,18 +156,18 @@ class KeyManager {
 
       initKeyStorage({address: "", crypto: {}}, "");
 
-      // load in keyfile if a path or object was given, otherwise default to generating a new keypair.
+      // load in keyfile if a path or object was given, otherwise default to generating a new keyFile.
       if (params.keyPath) {
         try {
           importFromFile(params.keyPath, params.password);
         } catch (err) {
           throw new Error("Error importing keyfile - " + err);
         }
-      } else if (params.keyPair) {
+      } else if (params.keyFile) {
         try {
-          importKeyPair(params.keyPair, params.password);
+          importKeyFile(params.keyFile, params.password);
         } catch (err) {
-          throw new Error("Error importing keyPair - " + err);
+          throw new Error("Error importing keyFile - " + err);
         }
       } else {
         // Will check if only a string was given and assume it is the password
@@ -199,25 +199,27 @@ class KeyManager {
     };
 
     /**
-     * Static wrapper of importing the key pair via a constructor. Generates a new instance of a keyManager with the imported keypair and password.
-     * @param {object} keyStorage: The JS object representing the encrypted keyfile
+     * Static wrapper of importing the key pair via a constructor. Generates a new instance of a keyManager with the imported keyFile and password.
+     * @static
+     * @param {object} keyFile: The JS object representing the encrypted keyfile
      * @param {string} password: The password to unlock the keyfile
      * @returns {object} returns the keyStorage used in the KeyManager
      */
-    static importKeyPair(keyStorage, password) {
+    static importKeyFile(keyFile, password) {
       return new KeyManager({
         password: password,
-        keyPair: keyStorage
+        keyFile: keyFile
       });
     }
 
     /**
-     * Static wrapper of importing the key pair from file via the constructor. Generates a new instance of a keyManager with the imported keypair and password.
+     * Static wrapper of importing the key pair from file via the constructor. Generates a new instance of a keyManager with the imported keyFile and password.
+     * @static
      * @param {string} keyFilePath: The JS object representing the encrypted keyfile
      * @param {string} password: The password to unlock the keyfile
      * @returns {object} returns the keyStorage used in the KeyManager
      */
-    static importKeyPairFromFile(keyFilePath, password) {
+    static importKeyFileFromDisk(keyFilePath, password) {
       return new KeyManager({
         password: password,
         keyPath: keyFilePath
