@@ -13,7 +13,7 @@
 
 const fetch = require("node-fetch");
 const utils = require("../utils/address-utils.js");
-const Base58 = require("base-58");
+const Base58 = require("bs58");
 
 /**
  * General builder function for formatting API request
