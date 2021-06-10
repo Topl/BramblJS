@@ -213,7 +213,7 @@ class KeyManager {
     }
 
     /**
-     * Static wrapper of importing the key pair from file via the constructor. Generates a new instance of a keyManager with the imported keyFile and password.
+     * Static wrapper of importing the key file from disk via the constructor. Generates a new instance of a keyManager with the imported keyFile and password.
      * @static
      * @param {string} keyFilePath: The JS object representing the encrypted keyfile
      * @param {string} password: The password to unlock the keyfile
