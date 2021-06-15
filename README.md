@@ -19,7 +19,7 @@ To install from source:
 ## BramblJS Library
 A helper library for interacting with the Topl protocol. Requests to the API layer of a chain provider conform to JSON-RPC standards and are managed by the Requests module. Key Management conforms to the Dion specification of the Topl protocol as implemented in the reference client Bifrost v1.6.
 
-### BramblJS provides the following modules:
+### BramblJS contains the following modules:
 * `Brambl` - primary module that provides high-level capabilities and access to Requests, KeyManager, Hash and Address.
 * `Requests` - sub-module for sending json-rpc requests to a specified chain provider.
 * `KeyManager` - sub-module that provides functions for creating, importing, and exporting Bifrost compatible keyfiles.
