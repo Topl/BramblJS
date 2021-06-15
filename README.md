@@ -17,7 +17,7 @@ To install from source:
 # Usage
 
 ## BramblJS Library
-A helper library for interacting with the Topl protocol. Requests to the API layer of a chain provider conform to JSON-RPC standards and are managed by the Requests module. Key Management conforms to the Dion specification of the Topl protocol as implemented in the reference client Bifrost v1.3.
+A helper library for interacting with the Topl protocol. Requests to the API layer of a chain provider conform to JSON-RPC standards and are managed by the Requests module. Key Management conforms to the Dion specification of the Topl protocol as implemented in the reference client Bifrost v1.6.
 
 ### BramblJS provides the following modules:
 * `Brambl` - primary module that provides high-level capabilities and access to Requests, KeyManager, Hash and Address.
@@ -121,15 +121,27 @@ _Note: `'PASSWORD'` is the user provided encryption password for the keyfile._
 const keyManager = BramblJS.KeyManager({ password: "PASSWORD", networkPrefix: "private"});
 ```
 
-### 1c. A new `KeyManager` can be created by importing a keyfile
+### 1c. A new `KeyManager` can be created by importing a keyfile from a JSON object
 ```
-const myKeyPath = ".keyfiles/my-keyfile.json";
-const keyManager = BramblJS.KeyManager({ password: "PASSWORD", keyPath: myKeyPath});
+const myKeyFile = myKeyManager.getKeyStorage();
+const keyManager = BramblJS.KeyManager.importKeyFile(myKeyFile, password);
+```
+
+### 1d. A new `KeyManager` can be created by importing a keyfile from a JSON file on disk.
+```
+const myKeyPath = "keyfiles/my-keyfile.json";
+const keyManager = BramblJS.KeyManager.importKeyFileFromDisk(myKeyPath, password);
 ```
 _Note: The network prefix will be determined from the address of the keyfile._
 
 ### 2. Other functions include:
 ```
+
+//check whether a private key was used to generate the signature for a message.
+//Note that this method is static so that it may be used without generating a keyfile.
+
+BramblJS.KeyManager.verify(publicKey, message, signature);
+
 // get key storage
 keyMan.getKeyStorage();
 
