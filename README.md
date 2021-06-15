@@ -77,7 +77,7 @@ const brambl = new BramblJS({
 The `Requests` module is compliant with Bifrost's JSON-RPC interface documented at https://topl-rpc.docs.topl.co<br/>
 A new JSON-RPC interface class may be instantiated by:<br/>
 ```
-const requests = BramblJS.Requests("private", "http://localhost:9085", "YOUR_API_KEY");
+const requests = new BramblJS.Requests("private", "http://localhost:9085", "YOUR_API_KEY");
 ```
 Update the 'url' for requests instance:
 ```
@@ -112,13 +112,13 @@ The `KeyManager` module is compliant with Bifrost's Gjallarhorn Key Manager serv
 
 ### 1a. A new `KeyManager` may be created directly using
 ```
-const keyManager = BramblJS.KeyManager("PASSWORD");
+const keyManager = new BramblJS.KeyManager("PASSWORD");
 ```
 _Note: `'PASSWORD'` is the user provided encryption password for the keyfile._
 
 ### 1b. A new `KeyManager` may be created for a different network
 ```
-const keyManager = BramblJS.KeyManager({ password: "PASSWORD", networkPrefix: "private"});
+const keyManager = new BramblJS.KeyManager({ password: "PASSWORD", networkPrefix: "private"});
 ```
 
 ### 1c. A new `KeyManager` can be created by importing a keyfile from a JSON object
