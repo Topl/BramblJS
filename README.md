@@ -123,10 +123,19 @@ const keyManager = new BramblJS.KeyManager({ password: "PASSWORD", networkPrefix
 
 ### 1c. A new `KeyManager` can be created by importing a keyfile from a JSON object
 ```
-const brambl = new BramblJS('YOUR_PASS').keyManager;
+const myKeyManager = new BramblJS('YOUR_PASS').keyManager;
 const myKeyFile = myKeyManager.getKeyStorage();
 const keyManager = BramblJS.KeyManager.importKeyFile(myKeyFile, password);
 ```
+
+Alternatively, if you have a json object already in memory, you can import it directly.
+
+```
+const myKeyFile = {"publicKeyId":"DPbxHQKbwGrpEaPdYoTRdMQBPwH67RH2dSCdREmWt8aa","crypto":{"cipher":"aes-256-ctr","cipherText":"2gq6UoPzgYd3wTo5r98ra21SNQC4vDTWgsZFwD2VuU5W","cipherParams":{"iv":"fjLbN5ecnsBW1HR6Zxz44"},"mac":"4MubsJSf98v9J4jr9e91Nd88MjzUNWrx473Z3tjfHvDC","kdf":"scrypt","kdfSalt":"8tQPvqQ8QEBTRYwaxUUvmMH76GKiYdtUyj2QvrXdPQ8X"}};
+const keyManager = BramblJS.KeyManager.importKeyFile(myKeyFile, password);
+```
+
+Note that we do not recommend hard coding the encrypted keyfile in the source code, this is simply for demonstration purposes. The password will also have to be known in order to import the encrypted keyfile. 
 
 ### 1d. A new `KeyManager` can be created by importing a keyfile from a JSON file on disk.
 ```
