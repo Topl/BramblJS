@@ -123,6 +123,7 @@ const keyManager = new BramblJS.KeyManager({ password: "PASSWORD", networkPrefix
 
 ### 1c. A new `KeyManager` can be created by importing a keyfile from a JSON object
 ```
+const brambl = new BramblJS('YOUR_PASS').keyManager;
 const myKeyFile = myKeyManager.getKeyStorage();
 const keyManager = BramblJS.KeyManager.importKeyFile(myKeyFile, password);
 ```
