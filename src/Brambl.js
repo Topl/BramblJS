@@ -53,6 +53,7 @@ class Brambl {
     * @param {object} params.KeyManager KeyManager object (may be either an instance or config parameters)
     * @param {string} [params.KeyManager.password] The password used to encrpt the keyfile
     * @param {string} [params.KeyManager.keyPath] Path to a keyfile
+    * @param {object} [params.KeyManager.keyFile] encrypted keyFile javascript object.
     * @param {string} [params.KeyManager.constants] Parameters for encrypting the user's keyfile
     * @param {object} params.Requests Request object (may be either an instance or config parameters)
     * @param {string} [params.Requests.url] The chain provider to send requests to
