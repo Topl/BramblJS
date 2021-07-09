@@ -17,9 +17,9 @@ To install from source:
 # Usage
 
 ## BramblJS Library
-A helper library for interacting with the Topl protocol. Requests to the API layer of a chain provider conform to JSON-RPC standards and are managed by the Requests module. Key Management conforms to the Dion specification of the Topl protocol as implemented in the reference client Bifrost v1.3.
+A helper library for interacting with the Topl protocol. Requests to the API layer of a chain provider conform to JSON-RPC standards and are managed by the Requests module. Key Management conforms to the Dion specification of the Topl protocol as implemented in the reference client Bifrost v1.6.
 
-### BramblJS provides the following modules:
+### BramblJS contains the following modules:
 * `Brambl` - primary module that provides high-level capabilities and access to Requests, KeyManager, Hash and Address.
 * `Requests` - sub-module for sending json-rpc requests to a specified chain provider.
 * `KeyManager` - sub-module that provides functions for creating, importing, and exporting Bifrost compatible keyfiles.
@@ -77,7 +77,7 @@ const brambl = new BramblJS({
 The `Requests` module is compliant with Bifrost's JSON-RPC interface documented at https://topl-rpc.docs.topl.co<br/>
 A new JSON-RPC interface class may be instantiated by:<br/>
 ```
-const requests = BramblJS.Requests("private", "http://localhost:9085", "YOUR_API_KEY");
+const requests = new BramblJS.Requests("private", "http://localhost:9085", "YOUR_API_KEY");
 ```
 Update the 'url' for requests instance:
 ```
@@ -112,24 +112,46 @@ The `KeyManager` module is compliant with Bifrost's Gjallarhorn Key Manager serv
 
 ### 1a. A new `KeyManager` may be created directly using
 ```
-const keyManager = BramblJS.KeyManager("PASSWORD");
+const keyManager = new BramblJS.KeyManager("PASSWORD");
 ```
 _Note: `'PASSWORD'` is the user provided encryption password for the keyfile._
 
 ### 1b. A new `KeyManager` may be created for a different network
 ```
-const keyManager = BramblJS.KeyManager({ password: "PASSWORD", networkPrefix: "private"});
+const keyManager = new BramblJS.KeyManager({ password: "PASSWORD", networkPrefix: "private"});
 ```
 
-### 1c. A new `KeyManager` can be created by importing a keyfile
+### 1c. A new `KeyManager` can be created by importing a keyfile from a JSON object
 ```
-const myKeyPath = ".keyfiles/my-keyfile.json";
-const keyManager = BramblJS.KeyManager({ password: "PASSWORD", keyPath: myKeyPath});
+const myKeyManager = new BramblJS('YOUR_PASS').keyManager;
+const myKeyFile = myKeyManager.getKeyStorage();
+const keyManager = BramblJS.KeyManager.importKeyFile(myKeyFile, password);
+```
+
+Alternatively, if you have a json object already in memory, you can import it directly.
+
+```
+const myKeyFile = {"publicKeyId":"DPbxHQKbwGrpEaPdYoTRdMQBPwH67RH2dSCdREmWt8aa","crypto":{"cipher":"aes-256-ctr","cipherText":"2gq6UoPzgYd3wTo5r98ra21SNQC4vDTWgsZFwD2VuU5W","cipherParams":{"iv":"fjLbN5ecnsBW1HR6Zxz44"},"mac":"4MubsJSf98v9J4jr9e91Nd88MjzUNWrx473Z3tjfHvDC","kdf":"scrypt","kdfSalt":"8tQPvqQ8QEBTRYwaxUUvmMH76GKiYdtUyj2QvrXdPQ8X"}};
+const keyManager = BramblJS.KeyManager.importKeyFile(myKeyFile, password);
+```
+
+Note that we do not recommend hard coding the encrypted keyfile in the source code, this is simply for demonstration purposes. The password will also have to be known in order to import the encrypted keyfile. 
+
+### 1d. A new `KeyManager` can be created by importing a keyfile from a JSON file on disk.
+```
+const myKeyPath = "keyfiles/my-keyfile.json";
+const keyManager = BramblJS.KeyManager.importKeyFileFromDisk(myKeyPath, password);
 ```
 _Note: The network prefix will be determined from the address of the keyfile._
 
 ### 2. Other functions include:
 ```
+
+//check whether a private key was used to generate the signature for a message.
+//Note that this method is static so that it may be used without generating a keyfile.
+
+BramblJS.KeyManager.verify(publicKey, message, signature);
+
 // get key storage
 keyMan.getKeyStorage();
 
