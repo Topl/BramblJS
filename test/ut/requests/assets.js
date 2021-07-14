@@ -222,7 +222,7 @@ describe("Assets", () => {
           .then((response) => {
             done(new Error("should not succeed"));
           }).catch((error) => {
-            expect(String(error)).to.equal(`Error: Invalid metadata in Recipient: ${parameters.recipients[0][3]}`);
+            expect(String(error)).to.equal(`Error: Invalid metadata in Recipient: ${parameters.recipients[0]}`);
             done();
           });
     });

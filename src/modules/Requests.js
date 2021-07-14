@@ -123,7 +123,7 @@ class Requests {
    * @param {boolean} params.minting - Minting boolean
    * @param {number} params.fee - Fee to apply to the transaction
    * @param {string} params.consolidationAddress - Address for recipient of unspent Assets
-   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty). Must be strictly less than 128 Latin-1 encoded characters.
+   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty). Must be less than or equal to 127 Latin-1 encoded characters.
    * @param {string} [id="1"] - identifying number for the json-rpc request
    * @returns {object} json-rpc response from the chain
    * @memberof Requests
@@ -205,9 +205,9 @@ class Requests {
       }
 
       if (metadata !== undefined) {
-        // advance option - metadata: up to 128 bytes
+        // advance option - metadata: up to and including 127 bytes
         if (!utils.isValidMetadata(metadata)) {
-          throw new Error(`Invalid metadata in Recipient: ${metadata}`);
+          throw new Error(`Invalid metadata in Recipient: ${params.recipients[i]}`);
         }
         tokenValueHolder.metadata = metadata;
       }
@@ -298,7 +298,7 @@ class Requests {
    * @param {string} params.changeAddress - Address of the change recipient
    * @param {string} params.consolidationAddress - Address of the change recipient
    * @param {number} params.fee - Fee to apply to the transaction
-   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty). Must be strictly less than 128 Latin-1 encoded characters.
+   * @param {string} [params.data] - Data string which can be associated with this transaction (may be empty). Must be less than or equal to 127 Latin-1 encoded characters.
    * @param {string} [id="1"] - identifying number for the json-rpc request
    * @returns {object} json-rpc response from the chain
    * @memberof Requests
